@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="長方形_26" data-name="長方形 26" width="32" height="32" transform="translate(98 249)" fill="#fff" stroke="#707070" stroke-width="1"/>
+    </clipPath>
+  </defs>
+  <g id="マスクグループ_12" data-name="マスクグループ 12" transform="translate(-98 -249)" clip-path="url(#clip-path)">
+    <g id="グループ_44" data-name="グループ 44" transform="translate(98 255)">
+      <rect id="長方形_27" data-name="長方形 27" width="8" height="20" fill="#fff"/>
+      <path id="長方形_27_-_アウトライン" data-name="長方形 27 - アウトライン" d="M1,1V19H7V1H1M0,0H8V20H0Z" fill="#f86a40"/>
+      <rect id="長方形_28" data-name="長方形 28" width="8" height="20" transform="translate(9)" fill="#fff"/>
+      <path id="長方形_28_-_アウトライン" data-name="長方形 28 - アウトライン" d="M1,1V19H7V1H1M0,0H8V20H0Z" transform="translate(9)" fill="#f86a40"/>
+      <rect id="長方形_29" data-name="長方形 29" width="8" height="18" transform="matrix(0.848, -0.53, 0.53, 0.848, 15.898, 5.183)" fill="#fff"/>
+      <path id="長方形_29_-_アウトライン" data-name="長方形 29 - アウトライン" d="M1,1V17H7V1H1M0,0H8V18H0Z" transform="matrix(0.848, -0.53, 0.53, 0.848, 15.898, 5.183)" fill="#f86a40"/>
+      <rect id="長方形_30" data-name="長方形 30" width="4" height="1" transform="translate(2 5)" fill="#fff"/>
+      <path id="長方形_30_-_アウトライン" data-name="長方形 30 - アウトライン" d="M0,0H4V1H0Z" transform="translate(2 5)" fill="#f86a40"/>
+      <rect id="長方形_31" data-name="長方形 31" width="4" height="1" transform="translate(11 5)" fill="#fff"/>
+      <path id="長方形_31_-_アウトライン" data-name="長方形 31 - アウトライン" d="M0,0H4V1H0Z" transform="translate(11 5)" fill="#f86a40"/>
+    </g>
+  </g>
+</svg>
