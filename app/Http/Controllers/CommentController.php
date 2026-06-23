@@ -71,7 +71,7 @@ class CommentController extends Controller
         $input = $request->all();
 
         /* トピックの存在確認 */
-        $topic = $this->m_topic->getTopicById(data_get($input, 'topic_id'));
+        $topic = $this->m_topic->getTopicById(Arr::get($input, 'topic_id'));
         if (!isset($topic)) {
             /* 不正なIDもしくはトピックが存在しない場合は一覧に戻す */
             session()->flash('flash_failed', __('comments.fail.not_exist'));
@@ -82,7 +82,7 @@ class CommentController extends Controller
         $user_info = Auth::user();
         $user_id = $user_info->id;
         // コメント本文
-        $comment = data_get($input, 'comment');
+        $comment = Arr::get($input, 'comment');
         if (isset($input['comment_id'])) {
             /* 編集 */
             // コメントの存在チェック
