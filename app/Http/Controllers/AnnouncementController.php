@@ -48,7 +48,7 @@ class AnnouncementController extends Controller
     public function showDetail(string|null $id)
     {
         if (empty($id)) {
-            return to_route('404');
+            return abort(404);
         }
 
         // お知らせ取得
@@ -90,14 +90,14 @@ class AnnouncementController extends Controller
     public function showEdit(string|int $id)
     {
         if (empty($id)) {
-            return to_route('404');
+            return abort(404);
         }
 
         // お知らせ取得
         $m_announcement = new Announcement();
         $announcement = $m_announcement->getAnnouncements(false, (array)$id);
         if (empty($announcement)) {
-            return to_route('404');
+            return abort(404);
         }
 
         return view('admin/announcement/edit/index', [
@@ -124,7 +124,7 @@ class AnnouncementController extends Controller
                 $m_announcement_read->_update(Arr::get($post, 'announcement_id'), 0);
                 return to_route('admin.show.announcement.list');
             } catch (\Exception) {
-                return to_route('404');
+                return abort(404);
             }
         }
 

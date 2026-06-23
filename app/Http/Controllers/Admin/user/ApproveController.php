@@ -67,7 +67,7 @@ class ApproveController extends Controller
                 'user' => $unapproved_user,
             ]);
         } else {
-            return to_route('404');
+            return abort(404);
         }
     }
 
@@ -94,7 +94,7 @@ class ApproveController extends Controller
                 return to_route('admin.show.unapproved.list');
             } catch (\Exception $e) {
                 // 登録失敗したら404
-                return to_route('404');
+                return abort(404);
             }
         } else {
             /* ユーザー情報が取得できなかった場合は承認待ちユーザー一覧に戻す */

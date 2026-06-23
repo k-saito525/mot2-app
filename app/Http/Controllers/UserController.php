@@ -203,7 +203,7 @@ class UserController extends Controller
             $target_user = $this->m_user->getUserById(data_get($input, 'user_id'));
             if (empty($target_user)) {
                 /* ユーザーが取得できなければ404(基本ここは通らない想定) */
-                return to_route('404');
+                return abort(404);
             }
 
             // 更新実行

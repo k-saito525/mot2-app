@@ -198,7 +198,7 @@ class PasswordController extends Controller
 
         if (empty($user)) {
             // ユーザー情報が間違っている場合は404にしておく
-            return to_route('404');
+            return abort(404);
         } else {
 
             $user->password = Hash::make($password);

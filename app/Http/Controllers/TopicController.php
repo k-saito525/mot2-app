@@ -110,7 +110,7 @@ class TopicController extends Controller
         $topic = $this->m_topic->getTopicById((int)$id);
         if (empty($topic)) {
             /* 存在しないIDもしくは削除済みの場合は404 */
-            return to_route('404');
+            return abort(404);
         }
 
         // トピックIDをもとに紐づくコメントを取得
@@ -159,7 +159,7 @@ class TopicController extends Controller
         /* 不正アクセス対策 */
         if (empty($topic)) {
             /* IDが不正の場合は404 */
-            return to_route('404');
+            return abort(404);
         }
         if ($user->id !== $topic->user_id) {
             /* 投稿者以外は編集できないため一覧に戻す */

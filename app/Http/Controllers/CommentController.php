@@ -47,13 +47,13 @@ class CommentController extends Controller
     {
         // URLにトピックIDがなかったら404
         if (empty($topic_id)) {
-            return to_route('404');
+            return abort(404);
         }
         // IDをもとにトピック情報を取得
         $topic = $this->m_topic->getTopicById((int)$topic_id);
         if (empty($topic)) {
             /* 存在しないIDもしくは削除済みの場合は404 */
-            return to_route('404');
+            return abort(404);
         }
 
         // トピックIDから紐づくコメントを取得
@@ -159,7 +159,7 @@ class CommentController extends Controller
         $target_comment = $this->m_comment->getCommentsByID($comment_id);
         if (!isset($target_comment)) {
             /* 編集するコメントが存在しない場合は404 */
-            return to_route('404');
+            return abort(404);
         }
 
         // トピックを取得
