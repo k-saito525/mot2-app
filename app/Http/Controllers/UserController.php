@@ -35,7 +35,7 @@ class UserController extends Controller
      * @param string $page  一覧のページ番号
      * @return View
      */
-    public function showList(string $page = ''): View
+    public function showList(string $page = '1'): View
     {
         // ページ番号
         $page = (int)$page;
@@ -182,9 +182,9 @@ class UserController extends Controller
 
             // 更新対象のユーザーを取得
             $target_user = $this->m_user->getUserById(data_get($input, 'user_id'));
-            if (empty($target_user)) {
+            if ($target_user === null) {
                 /* ユーザーが取得できなければ404(基本ここは通らない想定) */
-                return abort(404);
+                abort(404);
             }
 
             // 更新実行

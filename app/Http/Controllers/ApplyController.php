@@ -121,7 +121,7 @@ class ApplyController extends Controller
         $form_input = $request->session()->get('form_input');
         if (empty($form_input)) {
             /* 入力データがセッションに存在しない場合は404 */
-            return abort(404);
+            abort(404);
         }
         // メールアドレスから認証用トークンを生成
         $token = Str::random(64);
@@ -150,7 +150,7 @@ class ApplyController extends Controller
             return to_route('apply.show.complete');
         } catch (\Exception) {
             // 登録失敗したら404を表示
-            return abort(404);
+            abort(404);
         }
     }
 

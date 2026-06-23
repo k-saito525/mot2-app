@@ -18,7 +18,7 @@ class AnnouncementController extends Controller
      *
      * @return View
      */
-    public function showList($page = 1): View
+    public function showList(): View
     {
         // お知らせ取得
         $m_announcement = new Announcement();
@@ -47,22 +47,19 @@ class AnnouncementController extends Controller
     /**
      * お知らせ - 詳細画面の表示(表層側)
      *
-     * @param string|null $id  お知らせID
+     * @param string $id  お知らせID
      * @return View|RedirectResponse
      */
-    public function showDetail(string|null $id): View|RedirectResponse
+    public function showDetail(string $id): View|RedirectResponse
     {
-        if (empty($id)) {
-            return abort(404);
-        }
-
+        $announcement_id = (int)$id;
         // お知らせ取得
         $m_announcement = new Announcement();
-        $announcement = $m_announcement->getAnnouncements(false, array($id));
+        $announcement = $m_announcement->getAnnouncements(false, array($announcement_id));
 
         // 表層側で表示されたお知らせは既読にする
         $m_announcement_read = new AnnouncementRead();
-        $res = $m_announcement_read->storeReadStatus($id);
+        $res = $m_announcement_read->storeReadStatus($announcement_id);
 
         if ($res === false) {
             /* DB更新失敗したらとりあえずHOME画面に戻す */
@@ -92,20 +89,16 @@ class AnnouncementController extends Controller
     /**
      * お知らせ - 編集画面の表示
      *
-     * @param string|int $id  お知らせID
+     * @param string $id  お知らせID
      * @return View
      */
-    public function showEdit(string|int $id): View
+    public function showEdit(string $id): View
     {
-        if (empty($id)) {
-            return abort(404);
-        }
-
         // お知らせ取得
         $m_announcement = new Announcement();
         $announcement = $m_announcement->getAnnouncements(false, (array)$id);
         if (empty($announcement)) {
-            return abort(404);
+            abort(404);
         }
 
         return view('admin/announcement/edit/index', [

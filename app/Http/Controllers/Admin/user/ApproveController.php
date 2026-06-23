@@ -39,13 +39,16 @@ class ApproveController extends Controller
     /**
      * 承認待ちユーザー - 詳細表示
      *
-     * @param int $id ユーザーID
+     * @param string $id ユーザーID
      * @return View
      */
-    public function showDetail(int $id): View
+    public function showDetail(string $id): View
     {
         // IDを元にユーザー情報を取得
-        $unapproved_user = $this->m_user->getUnapprovedUser($id);
+        $unapproved_user = $this->m_user->getUnapprovedUser((int)$id);
+        if ($unapproved_user === null) {
+            abort(404);
+        }
         // 活動参加歴を表示用に調整
         $activity_list = __('iims_activity');
         if (!empty($unapproved_user->past_join)) {
@@ -64,13 +67,9 @@ class ApproveController extends Controller
             $unapproved_user->past_join = $text_past_join;
         }
 
-        if (!empty($unapproved_user)) {
-            return view('admin/user/unapproved/detail', [
-                'user' => $unapproved_user,
-            ]);
-        } else {
-            return abort(404);
-        }
+        return view('admin/user/unapproved/detail', [
+            'user' => $unapproved_user,
+        ]);
     }
 
     /**
@@ -97,7 +96,7 @@ class ApproveController extends Controller
                 return to_route('admin.show.unapproved.list');
             } catch (\Exception) {
                 // 登録失敗したら404
-                return abort(404);
+                abort(404);
             }
         } else {
             /* ユーザー情報が取得できなかった場合は承認待ちユーザー一覧に戻す */

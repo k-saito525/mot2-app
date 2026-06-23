@@ -37,21 +37,17 @@ class CommentController extends Controller
      * @param string $topic_id  コメントするトピックのID
      * @return View
      */
-    public function showForm(string $topic_id = ''): View
+    public function showForm(string $topic_id): View
     {
-        // URLにトピックIDがなかったら404 ※Laravelルータにより基本想定されない
-        if (empty($topic_id)) {
-            return abort(404);
-        }
         // IDをもとにトピック情報を取得
         $topic = $this->m_topic->getTopicById((int)$topic_id);
-        if (empty($topic)) {
+        if ($topic === null) {
             /* 存在しないIDもしくは削除済みの場合は404 */
-            return abort(404);
+            abort(404);
         }
 
         // トピックIDから紐づくコメントを取得
-        $comments = $this->m_comment->getCommentsByTopicID($topic_id);
+        $comments = $this->m_comment->getCommentsByTopicID((int)$topic_id);
 
         // コメント主の情報
         $user = Auth::user();
@@ -72,7 +68,6 @@ class CommentController extends Controller
     public function store(CommentRequest $request): RedirectResponse
     {
         // 入力内容チェック
-        $validated = $request->validated();
         $input = $request->all();
 
         /* トピックの存在確認 */
@@ -155,7 +150,7 @@ class CommentController extends Controller
         $target_comment = $this->m_comment->getCommentsByID($comment_id);
         if (!isset($target_comment)) {
             /* 編集するコメントが存在しない場合は404 */
-            return abort(404);
+            abort(404);
         }
 
         // トピックを取得

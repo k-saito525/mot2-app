@@ -38,9 +38,10 @@ class TopicController extends Controller
     /**
      * トピック - 一覧画面の表示
      *
+     * @param string $page ページ番号
      * @return View
      */
-    public function showList($page = 1): View
+    public function showList(string $page = '1'): View
     {
         /* 表示するトピックの取得 */
         // ページ番号
@@ -89,25 +90,21 @@ class TopicController extends Controller
     /**
      * トピック - 詳細画面の表示
      *
-     * @param string|null $id  トピックID
+     * @param string $id  トピックID
      * @return View|RedirectResponse
      */
-    public function showDetail(string|null $id): View|RedirectResponse
+    public function showDetail(string $id): View|RedirectResponse
     {
-        if (empty($id)) {
-            /* IDが無い場合は一覧に戻す */
-            return to_route('topic.show.list');
-        }
-
         // IDを元にトピックの詳細を取得
-        $topic = $this->m_topic->getTopicById((int)$id);
-        if (empty($topic)) {
+        $topic_id = (int)$id;
+        $topic = $this->m_topic->getTopicById($topic_id);
+        if ($topic === null) {
             /* 存在しないIDもしくは削除済みの場合は404 */
-            return abort(404);
+            abort(404);
         }
 
         // トピックIDをもとに紐づくコメントを取得
-        $comments = new Comment()->getCommentsByTopicID((int)$id);
+        $comments = new Comment()->getCommentsByTopicID($topic_id);
 
         // コメント編集権限があるかどうかの確認用(投稿主か否か)
         $user_id = Auth::id();
@@ -137,25 +134,20 @@ class TopicController extends Controller
     /**
      * トピック編集 - 編集画面の表示
      *
-     * @param string|null $topic_id  編集するトピックのトピックID
+     * @param string $topic_id  編集するトピックのトピックID
      * @return View|RedirectResponse
      */
-    public function showEdit(string $topic_id = null): View|RedirectResponse
+    public function showEdit(string $topic_id): View|RedirectResponse
     {
-        if (empty($topic_id)) {
-            /* トピックIDが無い場合は一覧に戻す */
-            return to_route('topic.show.list');
-        }
-
         // ログインしているユーザー情報を取得
         $user = Auth::user();
         // トピックIDを元にトピック情報を取得
         $topic = $this->m_topic->getTopicById((int)$topic_id, false);
 
         /* 不正アクセス対策 */
-        if (empty($topic)) {
+        if ($topic === null) {
             /* IDが不正の場合は404 */
-            return abort(404);
+            abort(404);
         }
         if ($user->id !== $topic->user_id) {
             /* 投稿者以外は編集できないため一覧に戻す */

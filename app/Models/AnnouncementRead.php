@@ -58,10 +58,10 @@ class AnnouncementRead extends Model
     /**
      * お知らせを既読にする
      *
-     * @param string|int $announcement_id 既読にするお知らせID
+     * @param int $announcement_id 既読にするお知らせID
      * @return bool  true:更新成功 or 既に既読
      */
-    public function storeReadStatus(string|int $announcement_id): bool
+    public function storeReadStatus(int $announcement_id): bool
     {
         // ユーザーID
         $user_id = Auth::id();
