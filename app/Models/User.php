@@ -160,14 +160,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getUserByToken(string $token)
     {
-        $user = $this->where(['verify_token' => $token])->first();
-        if (!empty($user)) {
-            $decoded_token = base64_decode($token);
-            if ($decoded_token === $user->email) {
-                return $user;
-            }
-        }
-        return false;
+        return $this->where(['verify_token' => $token])->first() ?? false;
     }
 
     public function getUserByResetPasswordAccessKey(string $reset_token)

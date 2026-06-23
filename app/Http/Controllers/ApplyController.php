@@ -11,6 +11,7 @@ use App\Mail\MailApplyUser;
 use App\Mail\MailApplyAdmin;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use App\Models\User;
 
 /*
@@ -118,7 +119,7 @@ class ApplyController extends Controller
             return abort(404);
         }
         // メールアドレスから認証用トークンを生成
-        $token = base64_encode($form_input['email']);
+        $token = Str::random(64);
 
         // 入力データをUserモデルのインスタンスにセット
         $user = new User();
