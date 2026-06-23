@@ -127,7 +127,7 @@ class AnnouncementController extends Controller
                 $m_announcement_read->_update(Arr::get($post, 'announcement_id'), 0);
                 return to_route('admin.show.announcement.list');
             } catch (\Exception) {
-                return abort(404);
+                abort(404);
             }
         }
 
