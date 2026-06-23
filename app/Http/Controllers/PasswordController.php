@@ -90,7 +90,7 @@ class PasswordController extends Controller
 
             // 登録成功したらユーザーID設定画面に遷移
             return to_route('identifier.show.form', ['token' => $user->verify_token]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // 登録失敗したら再度入力フォームに戻してやり直させる
             session()->flash('flash_failed', __('passwords.failed_regist_reset'));
             return back();
@@ -138,7 +138,7 @@ class PasswordController extends Controller
                 Mail::to($user->email)->send(new MailPasswordResetMailCheck($user));
                 // 送信完了画面に遷移
                 return to_route('password.reset.show.send');
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // 処理に失敗したらエラーメッセージを表示
                 session()->flash('flash_failed', __('passwords.failed_send'));
                 return back();
@@ -201,7 +201,7 @@ class PasswordController extends Controller
                 $user->save();
                 // 送信完了画面に遷移
                 return to_route('password.reset.show.complete');
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // 処理に失敗したらエラーメッセージを表示
                 session()->flash('flash_failed', __('passwords.failed_send'));
                 return back();

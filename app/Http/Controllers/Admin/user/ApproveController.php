@@ -89,7 +89,7 @@ class ApproveController extends Controller
 
                 // 処理が完了したら承認待ちユーザー一覧画面に遷移
                 return to_route('admin.show.unapproved.list');
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // 登録失敗したら404
                 return abort(404);
             }

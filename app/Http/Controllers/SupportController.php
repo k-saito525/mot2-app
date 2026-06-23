@@ -59,7 +59,7 @@ class SupportController extends Controller
             // 送信成功したら成功メッセージを表示
             session()->flash('flash_success', __('supports.success.complete'));
             return to_route('home.index', '#message');
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // 登録失敗したら再度入力フォームに戻してやり直させる
             session()->flash('flash_failed', __('supports.fail.failed'));
             return back();

@@ -100,7 +100,7 @@ class CommentController extends Controller
                     // 保存完了したらトピック詳細画面に遷移する
                     session()->flash('flash_success', __('comments.success.complete_edit'));
                     return to_route('topic.show.detail', ['id' => $topic->id]);
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     // 失敗したら入力画面に戻す
                     session()->flash('flash_failed', __('comments.fail.failed_edit'));
                     return back();
@@ -131,7 +131,7 @@ class CommentController extends Controller
                 // 保存完了したらトピック詳細画面に遷移する
                 session()->flash('flash_success', __('comments.success.complete_comment'));
                 return to_route('topic.show.detail', ['id' => $topic->id]);
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // 失敗したら入力画面に戻す
                 session()->flash('flash_failed', __('comments.fail.failed_comment'));
                 return to_route('topic.show.detail', ['id' => $topic->id]);

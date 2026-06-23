@@ -215,7 +215,7 @@ class TopicController extends Controller
                 session()->flash('flash_success', $message);
                 // 保存完了したらトピック一覧画面に遷移する
                 return to_route('topic.show.list');
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // 失敗したら入力画面に戻す
                 session()->flash('flash_failed', __('topics.fail.failed'));
                 return back();

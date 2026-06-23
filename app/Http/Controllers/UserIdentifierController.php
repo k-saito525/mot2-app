@@ -70,7 +70,7 @@ class UserIdentifierController extends Controller
 
             // 登録成功したら完了画面に遷移
             return view('identifier/complete/index');
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             session()->flash('flash_failed', __('users.fail.duplicate_identifier'));
             return back();
         }
