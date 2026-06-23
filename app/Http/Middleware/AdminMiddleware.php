@@ -19,7 +19,7 @@ class AdminMiddleware
     {
         // 管理者権限(users.is_admin = 1)を持つユーザーしかアクセス不可にする
         $user = Auth::user();
-        if ($user->is_admin === 1) {
+        if ($user->is_admin) {
             return $next($request);
         } else {
             abort(404);

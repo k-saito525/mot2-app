@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\AnnouncementRequest;
 use Illuminate\Support\Arr;
 use Carbon\Carbon;
-use App\Models\User;
 use App\Models\Announcement;
 use App\Models\AnnouncementRead;
 
@@ -121,22 +117,20 @@ class AnnouncementController extends Controller
             $m_announcements = new Announcement();
             $m_announcements = $m_announcements::find(Arr::get($post, 'announcement_id'));
             // 削除実行
-            $m_announcements->deleted_at = now();
             $m_announcement_read = new AnnouncementRead();
             try {
-                $m_announcements->save();
+                $m_announcements->delete();
                 // announce_readテーブルからも削除
                 $m_announcement_read->_update(Arr::get($post, 'announcement_id'), 0);
                 return to_route('admin.show.announcement.list');
-                exit;
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 return to_route('404');
             }
         }
 
         /* 新規作成・更新 */
         // 入力データのバリデート
-        $validated = $request->validated();
+        $request->validated();
         $input = $request->all();
 
         if (!empty(Arr::get($input, 'pub-end')) && strtotime(Arr::get($input, 'pub-start')) > strtotime(Arr::get($input, 'pub-end'))) {
@@ -170,17 +164,17 @@ class AnnouncementController extends Controller
         try {
             // データベースに保存
             $m_announcements->save();
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // 登録失敗したら入力画面に戻る
             return back();
         }
 
         // 更新後の公開状況によってannouncement_readsテーブルを更新する
-        $now = strtotime(date('Y-m-d'));
-        if (strtotime($m_announcements->pub_start_at) > $now) {
+        $today = Carbon::today();
+        if ($m_announcements->pub_start_at->gt($today)) {
             /* 公開前 */
             $flg = 0;
-        } elseif (!empty($m_announcements->pub_end_at) && (strtotime($m_announcements->pub_end_at) < $now)) {
+        } elseif (!empty($m_announcements->pub_end_at) && $m_announcements->pub_end_at->lt($today)) {
             /* 公開終了 */
             $flg = 0;
         } else {

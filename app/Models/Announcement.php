@@ -2,41 +2,57 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Storage;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
-use App\Models\AnnouncementRead;
 
 class Announcement extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     // テーブル名の定義
     protected $table = 'announcements';
 
-    /**
-     * カラムの型定義(データ取得時に指定の型で取得する)
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'id' => 'integer',
-        'title' => 'string',
-        'content' => 'string',
-        'user_id' => 'integer',
+    protected $fillable = [
+        'title',
+        'content',
+        'user_id',
+        'pub_start_at',
+        'pub_end_at',
+        'publish_status',
     ];
 
     /**
+     * カラムの型定義(データ取得時に指定の型で取得する)
+     */
+    protected function casts(): array
+    {
+        return [
+            'user_id'        => 'integer',
+            'publish_status' => 'integer',
+            'pub_start_at'   => 'date',
+            'pub_end_at'     => 'date',
+        ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function reads(): HasMany
+    {
+        return $this->hasMany(AnnouncementRead::class);
+    }
+
+    /**
      * お知らせ取得
-     * 
+     *
      * @param  bool  $only_id IDのみを取得する場合はtrue
-     * @param  string $target 取得したいお知らせID
+     * @param  array $target  取得したいお知らせIDの配列
      * @return array $res
      */
     public function getAnnouncements(bool $only_id = false, array $target = []): array
@@ -58,7 +74,7 @@ class Announcement extends Model
 
     /**
      * 公開中のお知らせのみを取得
-     * 
+     *
      * @param bool $only_id IDのみを取得する場合true
      * @return array $res
      */
@@ -74,7 +90,7 @@ class Announcement extends Model
             ->get()
             ->toArray();
         // 取得結果の中に公開終了しているお知らせがあったら削除
-        foreach ($tmp as $key => $val) {
+        foreach ($tmp as $val) {
             if (!empty(data_get($val, 'pub_end_at')) && $now > data_get($val, 'pub_end_at', '')) {
                 continue;
             } else {
@@ -92,10 +108,10 @@ class Announcement extends Model
 
     /**
      * 公開中のお知らせを公開ステータスと既読数を含めて取得
-     * 
-     * @param bool $only_id IDのみを取得する場合はtrue
+     *
+     * @param string|int $user_id ユーザーID
      */
-    public function getStatusRead(string|int $user_id)
+    public function getStatusRead(string|int $user_id): array
     {
         // 公開中のお知らせIDを取得
         $announcement_ids = self::getPublicAnnouncements(true);
@@ -108,11 +124,12 @@ class Announcement extends Model
             $announcement_list['unread_count'] = count($announcement_ids) - data_get($read_info, 'read_count');
             $announcement_list['announcement'] = self::getPublicAnnouncements();
             foreach ($announcement_list['announcement'] as $a_key => $a_val) {
-                foreach (data_get($read_info, 'id', []) as $r_key => $r_id)
+                foreach (data_get($read_info, 'id', []) as $r_id) {
                     if ($a_val->id === data_get($r_id, 'announcement_id')) {
                         /* 既読 */
                         $announcement_list['announcement'][$a_key]->pub_status = 1;
                     }
+                }
             }
         }
 

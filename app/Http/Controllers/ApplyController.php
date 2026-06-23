@@ -124,10 +124,10 @@ class ApplyController extends Controller
         $user = new User();
         $user->name = Arr::get($form_input, 'name');
         $user->email = Arr::get($form_input, 'email');
-        // 活動参加歴は JSON 型カラムのため配列で保存する
-        $user->past_join = !empty($form_input['past-join'])
-            ? json_encode(array_keys(Arr::get($form_input, 'past-join')))
-            : null;
+        // past_join は 'array' cast により配列をそのまま代入できる
+        if (!empty($form_input['past-join'])) {
+            $user->past_join = array_keys(Arr::get($form_input, 'past-join'));
+        }
         $user->verify_token = $token;
 
         // 登録実行
@@ -142,7 +142,7 @@ class ApplyController extends Controller
 
             // 申請完了画面に遷移
             return to_route('apply.show.complete');
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // 登録失敗したら404を表示
             return to_route('404');
         }
