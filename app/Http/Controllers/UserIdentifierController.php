@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class UserIdentifierController extends Controller
 {
@@ -21,10 +23,11 @@ class UserIdentifierController extends Controller
 
     /**
      * ユーザーID設定 - 入力画面の表示
-     * 
+     *
      * @param string $token usersテーブルの認証用トークン
+     * @return View|RedirectResponse
      */
-    public function showForm(string $token)
+    public function showForm(string $token): View|RedirectResponse
     {
         if (empty($token)) {
             /* 万が一認証トークンが無いURLだった場合はトップ画面に戻す */
@@ -46,8 +49,10 @@ class UserIdentifierController extends Controller
 
     /**
      * ユーザーID設定 - 登録実行
+     *
+     * @return View|RedirectResponse
      */
-    public function store(UserIdentifierRequest $request)
+    public function store(UserIdentifierRequest $request): View|RedirectResponse
     {
         // 入力画面から渡されたユーザー情報をセッションから取得
         $user = session('user');
@@ -78,8 +83,10 @@ class UserIdentifierController extends Controller
 
     /**
      * ユーザーID設定 - 完了画面の表示
+     *
+     * @return View
      */
-    public function showComplete()
+    public function showComplete(): View
     {
 
         return view('identifier.complete.index');

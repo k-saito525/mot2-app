@@ -137,9 +137,9 @@ Route::middleware('auth')
                 // 一覧画面の表示
                 Route::get('/{page?}', [UserController::class, 'showList'])->name('show.list');
                 // 詳細画面の表示
-                Route::get('/detail/{id}', [UserController::class, 'showDetail'])->name('show.detail');
+                Route::get('/detail/{user_id}', [UserController::class, 'showDetail'])->name('show.detail');
                 // 編集画面の表示
-                Route::get('/edit/{id}', [UserController::class, 'showEdit'])->name('show.edit');
+                Route::get('/edit/{user_id}', [UserController::class, 'showEdit'])->name('show.edit');
                 // 更新実行
                 Route::post('/store', [UserController::class, 'store'])->name('store');
             });
@@ -178,8 +178,6 @@ Route::middleware('auth')
             ->group(function () {
                 // メッセージの保存実行
                 Route::post('/store', [SupportController::class, 'store'])->name('store');
-                // メッセージ送信完了画面の表示
-                Route::get('/complete', [SupportController::class, 'showComplete'])->name('show.complete');
             });
 
 

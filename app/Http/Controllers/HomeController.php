@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use App\Models\Topic;
 use App\Models\Comment;
+use Illuminate\View\View;
 
 /**
  * ログイン後のTOP画面
@@ -29,8 +30,10 @@ class HomeController extends Controller
 
     /**
      * ホーム画面の表示
+     *
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         // ログインしているユーザー
         $user_info = Auth::user();

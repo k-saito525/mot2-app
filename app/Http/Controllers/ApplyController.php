@@ -13,6 +13,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Models\User;
+use Illuminate\View\View;
 
 /*
  * ユーザー会員登録申請
@@ -29,8 +30,10 @@ class ApplyController extends Controller
 
     /**
      * ユーザー登録申請 - 入力画面表示
+     *
+     * @return View
      */
-    public function showForm()
+    public function showForm(): View
     {
         // IIMS活動情報
         $activity_list = __('iims_activity');
@@ -41,10 +44,11 @@ class ApplyController extends Controller
 
     /**
      * ユーザー登録申請 - 入力内容のバリデートから確認画面への遷移
-     * 
+     *
      * @param ApplyRequest $request 入力データ
+     * @return RedirectResponse
      */
-    public function check(ApplyRequest $request)
+    public function check(ApplyRequest $request): RedirectResponse
     {
         // 入力データのバリデート
         $validated = $request->validated();
@@ -87,10 +91,11 @@ class ApplyController extends Controller
 
     /**
      * ユーザー登録申請 - 確認画面の表示
-     * 
-     * @param Request $request 
+     *
+     * @param Request $request
+     * @return View|RedirectResponse
      */
-    public function showConfirm(Request $request)
+    public function showConfirm(Request $request): View|RedirectResponse
     {
         // セッションから入力データを取得
         $form_input = $request->session()->get('form_input');
@@ -106,10 +111,11 @@ class ApplyController extends Controller
 
     /**
      * ユーザー登録申請 - 登録処理
-     * 
-     * @param Request $request 
+     *
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         // 確認画面から渡った入力データをセッションから取得
         $form_input = $request->session()->get('form_input');
@@ -150,8 +156,10 @@ class ApplyController extends Controller
 
     /**
      * ユーザー登録申請 - 申請完了画面の表示
+     *
+     * @return View|RedirectResponse
      */
-    public function showComplete(Request $request)
+    public function showComplete(Request $request): View|RedirectResponse
     {
         if (!$request->session()->has('form_input')) {
             /* URL直打ちや完了後の再読み込みなどはトップに戻す */

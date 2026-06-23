@@ -8,13 +8,17 @@ use Illuminate\Support\Arr;
 use Carbon\Carbon;
 use App\Models\Announcement;
 use App\Models\AnnouncementRead;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class AnnouncementController extends Controller
 {
     /**
      * お知らせ - 一覧画面の表示(管理者側)
+     *
+     * @return View
      */
-    public function showList($page = 1)
+    public function showList($page = 1): View
     {
         // お知らせ取得
         $m_announcement = new Announcement();
@@ -42,10 +46,11 @@ class AnnouncementController extends Controller
 
     /**
      * お知らせ - 詳細画面の表示(表層側)
-     * 
+     *
      * @param string|null $id  お知らせID
+     * @return View|RedirectResponse
      */
-    public function showDetail(string|null $id)
+    public function showDetail(string|null $id): View|RedirectResponse
     {
         if (empty($id)) {
             return abort(404);
@@ -71,8 +76,10 @@ class AnnouncementController extends Controller
 
     /**
      * お知らせ - 新規作成画面の表示
+     *
+     * @return View
      */
-    public function showCreate()
+    public function showCreate(): View
     {
         // 作成者
         $user_id = Auth::id();
@@ -84,10 +91,11 @@ class AnnouncementController extends Controller
 
     /**
      * お知らせ - 編集画面の表示
-     * 
+     *
      * @param string|int $id  お知らせID
+     * @return View
      */
-    public function showEdit(string|int $id)
+    public function showEdit(string|int $id): View
     {
         if (empty($id)) {
             return abort(404);
@@ -107,8 +115,10 @@ class AnnouncementController extends Controller
 
     /**
      * お知らせ - 保存
+     *
+     * @return RedirectResponse
      */
-    public function store(AnnouncementRequest $request)
+    public function store(AnnouncementRequest $request): RedirectResponse
     {
         $post = $request->post();
         if (isset($post['delete'])) {

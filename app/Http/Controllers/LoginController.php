@@ -7,6 +7,7 @@ use App\Http\Requests\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
+use Illuminate\View\View;
 
 /**
  * ログイン用コントローラ
@@ -17,7 +18,7 @@ class LoginController extends Controller
      * ログインフォーム表示
      * ※ログインしていたらホーム画面に遷移させる
      */
-    public function showForm()
+    public function showForm(): View
     {
         return view('login/index');
     }
@@ -59,7 +60,7 @@ class LoginController extends Controller
     /*
      * ログアウト処理
      */
-    public function logout(Request $request)
+    public function logout(Request $request): View
     {
         // ログアウト処理
         Auth::logout();

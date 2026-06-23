@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
+use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -30,10 +31,11 @@ class UserController extends Controller
 
     /**
      * ユーザー情報 - 一覧画面の表示
-     * 
+     *
      * @param string $page  一覧のページ番号
+     * @return View
      */
-    public function showList(string $page = '')
+    public function showList(string $page = ''): View
     {
         // ページ番号
         $page = (int)$page;
@@ -78,46 +80,40 @@ class UserController extends Controller
 
     /**
      * ユーザー情報 - 詳細画面の表示
-     * 
-     * @param string $id  ユーザーID
+     *
+     * @param string $user_id  ユーザーID
+     * @return View|RedirectResponse
      */
-    public function showDetail(string $id)
+    public function showDetail(string $user_id): View|RedirectResponse
     {
-        /* IDを元にユーザー情報を取得 */
-        $user = '';
-        if (!empty($id)) {
-            // ユーザーIDをstring→intにキャスト
-            $user_id = (int)$id;
-            $user = $this->m_user->getUserById($user_id);
-        } else {
-            /* URLにユーザーIDが含まれない場合は前の画面に戻す */
+        // IDを元にユーザー情報を取得
+        $user = $this->m_user->getUserById((int)$user_id);
+        if ($user === null) {
             return to_route('user.show.list');
         }
-        if (is_object($user)) {
-            // sns_links JSON をビュー用に個別プロパティへ展開
-            if (!empty($user->sns_links)) {
-                $sns = json_decode($user->sns_links, true);
-                $user->sns_x = data_get($sns, 'x', '');
-                $user->sns_facebook = data_get($sns, 'facebook', '');
-                $user->sns_instagram = data_get($sns, 'instagram', '');
-            }
-            // 活動参加歴を表示用に変換 ※初期段階では表示無し
-            if (!empty($user->past_join)) {
-                $key_past_join = json_decode($user->past_join, true) ?? [];
-                $activity_list = __('iims_activity');
-                $text_past_join = [];
-                foreach ($activity_list as $category => $list) {
-                    foreach ($key_past_join as $key) {
-                        $res = '';
-                        $res = Arr::get($list, $key);
-                        if (!empty($res)) {
-                            $text_past_join[] = $res;
-                            continue;
-                        }
+
+        // sns_links JSON をビュー用に個別プロパティへ展開
+        if (!empty($user->sns_links)) {
+            $sns = json_decode($user->sns_links, true);
+            $user->sns_x = data_get($sns, 'x', '');
+            $user->sns_facebook = data_get($sns, 'facebook', '');
+            $user->sns_instagram = data_get($sns, 'instagram', '');
+        }
+        // 活動参加歴を表示用に変換 ※初期段階では表示無し
+        if (!empty($user->past_join)) {
+            $key_past_join = json_decode($user->past_join, true) ?? [];
+            $activity_list = __('iims_activity');
+            $text_past_join = [];
+            foreach ($activity_list as $category => $list) {
+                foreach ($key_past_join as $key) {
+                    $res = data_get($list, $key, '');
+                    if (!empty($res)) {
+                        $text_past_join[] = $res;
+                        continue;
                     }
                 }
-                $user->past_join = $text_past_join;
             }
+            $user->past_join = $text_past_join;
         }
 
         /* ユーザーIDをもとにそのユーザーが作成したトピックを取得 */
@@ -131,23 +127,18 @@ class UserController extends Controller
 
     /**
      * ユーザー情報 - 編集画面の表示
-     * 
-     * @param string $id  ユーザーID
+     *
+     * @param string $user_id  ユーザーID
+     * @return View|RedirectResponse
      */
-    public function showEdit(string $id)
+    public function showEdit(string $user_id): View|RedirectResponse
     {
-        $user = '';
-        // IDを元にユーザー情報を取得
-        if (!empty($id)) {
-            // ユーザーIDをstring→intにキャスト
-            $user_id = (int)$id;
-            $user = $this->m_user->getUserById($user_id);
-        } else {
-            /* URLにユーザーIDが含まれない場合は前の画面に戻す */
+        $user = $this->m_user->getUserById((int)$user_id);
+        if ($user === null) {
             return to_route('user.show.list');
         }
         // sns_links JSON をビュー用に個別プロパティへ展開
-        if (is_object($user) && !empty($user->sns_links)) {
+        if (!empty($user->sns_links)) {
             $sns = json_decode($user->sns_links, true);
             $user->sns_x = data_get($sns, 'x', '');
             $user->sns_facebook = data_get($sns, 'facebook', '');
@@ -165,10 +156,11 @@ class UserController extends Controller
 
     /**
      * ユーザー情報 - 更新実行
-     * 
+     *
      * @param UserRequest $request
+     * @return RedirectResponse
      */
-    public function store(UserRequest $request)
+    public function store(UserRequest $request): RedirectResponse
     {
         // 入力内容をバリデート
         $validated = $request->validated();

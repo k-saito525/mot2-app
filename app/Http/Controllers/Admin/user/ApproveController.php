@@ -9,6 +9,8 @@ use App\Mail\MailApprovedUser;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ApproveController extends Controller
 {
@@ -21,8 +23,10 @@ class ApproveController extends Controller
 
     /**
      * 承認待ちユーザー - 一覧表示
+     *
+     * @return View
      */
-    public function showList()
+    public function showList(): View
     {
         // 承認待ちのユーザー情報を取得
         $unapproved_users = $this->m_user->getUnapprovedUsers();
@@ -34,10 +38,11 @@ class ApproveController extends Controller
 
     /**
      * 承認待ちユーザー - 詳細表示
-     * 
+     *
      * @param int $id ユーザーID
+     * @return View
      */
-    public function showDetail(int $id)
+    public function showDetail(int $id): View
     {
         // IDを元にユーザー情報を取得
         $unapproved_user = $this->m_user->getUnapprovedUser($id);
@@ -70,10 +75,11 @@ class ApproveController extends Controller
 
     /**
      * 承認待ちユーザー - 承認処理
-     * 
+     *
      * @param Request $request
+     * @return RedirectResponse
      */
-    public function approve(Request $request)
+    public function approve(Request $request): RedirectResponse
     {
         // IDをもとにユーザー情報を取得
         $id = $request->post('id');

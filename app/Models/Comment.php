@@ -68,7 +68,7 @@ class Comment extends Model
         return $comments;
     }
 
-    public function getCommentsByID(int|string $comment_id)
+    public function getCommentsByID(string $comment_id)
     {
         return DB::table($this->table)
             ->join('users', 'comments.user_id', '=', 'users.id')

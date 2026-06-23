@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\MailPasswordResetMailCheck;
 use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 /**
  * パスワード関連のコントローラ
@@ -29,8 +31,9 @@ class PasswordController extends Controller
      * 新規パスワード登録 - 入力画面の表示
      *
      * @param string $token usersテーブルの認証用トークン
+     * @return View|RedirectResponse
      */
-    public function showFormNew(string $token)
+    public function showFormNew(string $token): View|RedirectResponse
     {
         if (empty($token)) {
             /* 万が一認証トークンが無いURLだった場合はトップ画面に戻す */
@@ -69,8 +72,10 @@ class PasswordController extends Controller
 
     /**
      * 新規パスワード登録 - 登録実行
+     *
+     * @return RedirectResponse
      */
-    public function storeNew(PasswordNewRequest $request)
+    public function storeNew(PasswordNewRequest $request): RedirectResponse
     {
         // 入力データのバリデート
         $validated = $request->validated();
@@ -99,17 +104,20 @@ class PasswordController extends Controller
 
     /**
      * パスワードリセット(非ログイン時) - メールアドレス入力画面の表示
-     * 
+     *
+     * @return View
      */
-    public function showMailFormReset()
+    public function showMailFormReset(): View
     {
         return view('password/mail-check/index');
     }
 
     /**
      * パスワードリセット(非ログイン時) - メール送信
+     *
+     * @return RedirectResponse
      */
-    public function resetSendMail(PasswordResetMailCheckRequest $request)
+    public function resetSendMail(PasswordResetMailCheckRequest $request): RedirectResponse
     {
         // 入力データのバリデート
         $validated = $request->validated();
@@ -148,16 +156,20 @@ class PasswordController extends Controller
 
     /**
      * パスワードリセット(非ログイン時) - 確認用メール送信完了画面の表示
+     *
+     * @return View
      */
-    public function showSendMailReset()
+    public function showSendMailReset(): View
     {
         return view('password/mail-send/index');
     }
 
     /**
      * パスワードリセット(非ログイン時) - 確認用メール送信完了画面の表示
+     *
+     * @return View
      */
-    public function showPasswordFormReset(Request $request)
+    public function showPasswordFormReset(Request $request): View
     {
         // 署名付きURLではない場合
         if (!$request->hasValidSignature()) {
@@ -175,8 +187,10 @@ class PasswordController extends Controller
 
     /**
      * パスワードリセット(非ログイン時) - 確認用メール送信完了画面の表示
+     *
+     * @return RedirectResponse
      */
-    public function storeReset(PasswordResetStoreRequest $request)
+    public function storeReset(PasswordResetStoreRequest $request): RedirectResponse
     {
         // 入力データのバリデート
         $validated = $request->validated();
@@ -211,8 +225,10 @@ class PasswordController extends Controller
 
     /**
      * パスワードリセット(非ログイン時) - 確認用メール送信完了画面の表示
+     *
+     * @return View
      */
-    public function showCompleteReset()
+    public function showCompleteReset(): View
     {
         return view('password/complete/index');
     }

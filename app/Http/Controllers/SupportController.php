@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailSupportAdmin;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 /**
  * 運営へのメッセージ関連のコントローラ
@@ -25,19 +27,12 @@ class SupportController extends Controller
 
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
      * 問い合わせ内容保存
-     * 
+     *
      * @param SupportRequest $request  入力内容
+     * @return RedirectResponse
      */
-    public function store(SupportRequest $request)
+    public function store(SupportRequest $request): RedirectResponse
     {
         // 入力データのバリデート
         $validated = $request->validated();
@@ -68,27 +63,4 @@ class SupportController extends Controller
 
 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Support $support)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Support $support)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Support $support)
-    {
-        //
-    }
 }

@@ -10,6 +10,8 @@ use App\Mail\MailComment;
 use App\Models\Comment;
 use App\Models\User;
 use App\Models\Topic;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 
 /**
@@ -31,12 +33,13 @@ class CommentController extends Controller
 
     /**
      * コメント入力画面の表示
-     * 
-     * @param int|string $topic_id  コメントするトピックのID
+     *
+     * @param string $topic_id  コメントするトピックのID
+     * @return View
      */
-    public function showForm(int|string $topic_id = null)
+    public function showForm(string $topic_id = ''): View
     {
-        // URLにトピックIDがなかったら404
+        // URLにトピックIDがなかったら404 ※Laravelルータにより基本想定されない
         if (empty($topic_id)) {
             return abort(404);
         }
@@ -62,10 +65,11 @@ class CommentController extends Controller
 
     /**
      * コメント保存
-     * 
+     *
      * @param CommentRequest $request
+     * @return RedirectResponse
      */
-    public function store(CommentRequest $request)
+    public function store(CommentRequest $request): RedirectResponse
     {
         // 入力内容チェック
         $validated = $request->validated();
@@ -142,9 +146,10 @@ class CommentController extends Controller
     /**
      * コメント編集画面の表示
      *
-     * @param int|string $comment_id 編集するコメントID
+     * @param string $comment_id 編集するコメントID
+     * @return View|RedirectResponse
      */
-    public function showEdit(int|string $comment_id)
+    public function showEdit(string $comment_id): View|RedirectResponse
     {
         // 編集するコメント情報を取得
         $target_comment = $this->m_comment->getCommentsByID($comment_id);

@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Topic;
 use App\Models\Comment;
 use Carbon\Carbon;
+use Illuminate\View\View;
 
 /**
  * トピック関連のコントローラ
@@ -36,8 +37,10 @@ class TopicController extends Controller
 
     /**
      * トピック - 一覧画面の表示
+     *
+     * @return View
      */
-    public function showList($page = 1)
+    public function showList($page = 1): View
     {
         /* 表示するトピックの取得 */
         // ページ番号
@@ -85,10 +88,11 @@ class TopicController extends Controller
 
     /**
      * トピック - 詳細画面の表示
-     * 
+     *
      * @param string|null $id  トピックID
+     * @return View|RedirectResponse
      */
-    public function showDetail(string|null $id)
+    public function showDetail(string|null $id): View|RedirectResponse
     {
         if (empty($id)) {
             /* IDが無い場合は一覧に戻す */
@@ -117,8 +121,10 @@ class TopicController extends Controller
 
     /**
      * トピック新規作成 - 入力画面の表示
+     *
+     * @return View
      */
-    public function showCreate()
+    public function showCreate(): View
     {
         // ユーザー情報(投稿者)を取得
         $user = Auth::user();
@@ -130,10 +136,11 @@ class TopicController extends Controller
 
     /**
      * トピック編集 - 編集画面の表示
-     * 
+     *
      * @param string|null $topic_id  編集するトピックのトピックID
+     * @return View|RedirectResponse
      */
-    public function showEdit(string $topic_id = null)
+    public function showEdit(string $topic_id = null): View|RedirectResponse
     {
         if (empty($topic_id)) {
             /* トピックIDが無い場合は一覧に戻す */
@@ -163,8 +170,10 @@ class TopicController extends Controller
 
     /**
      * トピック - 入力内容の確認、保存実行
+     *
+     * @return RedirectResponse
      */
-    public function store(TopicRequest $request)
+    public function store(TopicRequest $request): RedirectResponse
     {
         $post = $request->post();
         if (isset($post['delete'])) {
