@@ -18,37 +18,27 @@ use App\Models\Topic;
  */
 class UserController extends Controller
 {
-    // 一覧のデフォルト表示件数
-    const SHOW_CNT_USERS = 40;
+    // ユーザー一覧画面のデフォルト表示件数
+    const int SHOW_CNT_USERS = 40;
 
-    // userモデルのインスタンス格納用
-    private $m_user;
-    // topicモデルのインスタンス格納用
-    private $m_topic;
-    // 全ユーザー情報
-    private $all_users;
+    private User $m_user;
 
     public function __construct()
     {
-        // userモデルのインスタンスを生成
         $this->m_user = new User();
-        // topicモデルのインスタンスを生成
-        $this->m_topic = new Topic();
-        // 全ユーザー情報を取得
-        $this->all_users = $this->m_user->getAllUsers();
     }
 
     /**
      * ユーザー情報 - 一覧画面の表示
      * 
-     * string $page  一覧のページ番号
+     * @param string $page  一覧のページ番号
      */
-    public function showList(string $page = null)
+    public function showList(string $page = '')
     {
         // ページ番号
         $page = (int)$page;
         if ($page <= 0) {
-            /* 不正なページ番号(0以下)の場合は1ページに設定 */
+            /* 不正なページ番号の場合は1ページに設定 */
             $page = 1;
         }
 
@@ -131,7 +121,7 @@ class UserController extends Controller
         }
 
         /* ユーザーIDをもとにそのユーザーが作成したトピックを取得 */
-        $topics = $this->m_topic->getTopicByUser($user_id);
+        $topics = new Topic()->getTopicByUser($user_id);
         return view('user/show/index', [
             'user' => $user,
             'topics' => $topics,
@@ -190,8 +180,7 @@ class UserController extends Controller
         } else {
             // メールアドレスの重複確認
             if (!empty($input['email'])) {
-                $m_user = new User();
-                $res = $m_user->checkMail($input['email']);
+                $res = $this->m_user->checkMail($input['email']);
                 if (!$res) {
                     // エラーメッセージを表示
                     session()->flash('flash_failed_email', __('users.fail.duplicate_mail'));

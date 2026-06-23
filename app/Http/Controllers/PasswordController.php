@@ -4,14 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordNewRequest;
-use App\Http\Requests\PasswordResetRequest;
 use App\Http\Requests\PasswordResetMailCheckRequest;
 use App\Http\Requests\PasswordResetStoreRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailPasswordResetMailCheck;
 use Carbon\Carbon;
@@ -22,19 +18,16 @@ use App\Models\User;
  */
 class PasswordController extends Controller
 {
-
-    // userモデルのインスタンス格納用
-    private $m_user;
+    private User $m_user;
 
     public function __construct()
     {
         $this->m_user = new User();
-        return $this->m_user;
     }
 
     /**
      * 新規パスワード登録 - 入力画面の表示
-     * 
+     *
      * @param string $token usersテーブルの認証用トークン
      */
     public function showFormNew(string $token)

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\user;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\MailApprovedUser;
 use Illuminate\Support\Arr;
@@ -13,13 +12,11 @@ use App\Models\User;
 
 class ApproveController extends Controller
 {
-    // userモデルのインスタンス
-    public $m_user;
+    public User $m_user;
 
     public function __construct()
     {
         $this->m_user = new User();
-        return $this->m_user;
     }
 
     /**

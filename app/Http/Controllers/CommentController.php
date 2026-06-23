@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\CommentRequest;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
@@ -21,20 +18,14 @@ use App\Models\Topic;
 class CommentController extends Controller
 {
 
-    // commentモデルのインスタンス格納用
-    private $m_comment;
-    // topicモデルのインスタンス格納用
-    private $m_topic;
-    // userモデルのインスタンス格納用
-    private $m_user;
+    private Comment $m_comment;
+    private Topic $m_topic;
+    private User $m_user;
 
     public function __construct()
     {
-        // commentモデルのインスタンス生成
         $this->m_comment = new Comment();
-        // topicモデルのインスタンス生成
         $this->m_topic = new Topic();
-        // userモデルのインスタンス生成
         $this->m_user = new User();
     }
 

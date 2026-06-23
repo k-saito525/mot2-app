@@ -20,12 +20,11 @@ use App\Models\User;
 
 class ApplyController extends Controller
 {
-
     // ユーザー登録申請時のデータ
-    private $formApply = [
-        'name',       // 氏名
-        'email',      // メールアドレス
-        'past-join',  // 活動参加歴
+    private array $formApply = [
+        'name',
+        'email',
+        'past-join',
     ];
 
     /**

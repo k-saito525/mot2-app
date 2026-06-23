@@ -6,29 +6,21 @@ use App\Models\Support;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use App\Http\Requests\SupportRequest;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailSupportAdmin;
-use App\Models\User;
-use App\Models\Topic;
-use App\Models\Comment;
 
 /**
  * 運営へのメッセージ関連のコントローラ
  */
 class SupportController extends Controller
 {
-
-    // userモデルのインスタンス格納用
-    private $m_support;
+    private Support $m_support;
 
     public function __construct()
     {
         $this->m_support = new Support();
-        return $this->m_support;
     }
 
 

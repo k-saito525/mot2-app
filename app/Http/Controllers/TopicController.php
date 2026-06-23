@@ -19,30 +19,19 @@ use Carbon\Carbon;
  */
 class TopicController extends Controller
 {
+    // トピック一覧画面のデフォルト表示件数
+    const int SHOW_CNT_TOPICS = 20;
 
-    // 一覧のデフォルト表示件数
-    const SHOW_CNT_TOPICS = 20;
-
-    // topicモデルのインスタンス格納用
-    private $m_topic;
-    // userモデルのインスタンス格納用
-    private $m_user;
-    // commentモデルのインスタンス格納用
-    private $m_comment;
+    private Topic $m_topic;
     // 新規作成・編集の入力項目
-    private $form_topic = [
+    private array $form_topic = [
         'topic-title',
         'topic-detail',
     ];
 
     public function __construct()
     {
-        // topicモデルのインスタンス生成
         $this->m_topic = new Topic();
-        // userモデルのインスタンス生成
-        $this->m_user = new User();
-        // commentモデルのインスタンス生成
-        $this->m_comment = new Comment();
     }
 
     /**
@@ -114,7 +103,7 @@ class TopicController extends Controller
         }
 
         // トピックIDをもとに紐づくコメントを取得
-        $comments = $this->m_comment->getCommentsByTopicID((int)$id);
+        $comments = new Comment()->getCommentsByTopicID((int)$id);
 
         // コメント編集権限があるかどうかの確認用(投稿主か否か)
         $user_id = Auth::id();

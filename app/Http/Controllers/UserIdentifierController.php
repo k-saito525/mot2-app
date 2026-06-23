@@ -5,22 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserIdentifierRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
 use App\Models\User;
 
 class UserIdentifierController extends Controller
 {
     // userモデルのインスタンス格納用
-    private $m_user;
+    private User $m_user;
 
     public function __construct()
     {
         $this->m_user = new User();
-        return $this->m_user;
     }
 
     /**

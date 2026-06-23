@@ -3,15 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Mail;
-use App\Models\User;
 use App\Models\Topic;
 use App\Models\Comment;
-use App\Models\Support;
-use App\Models\Announcement;
 
 /**
  * ログイン後のTOP画面
@@ -21,26 +16,15 @@ use App\Models\Announcement;
 class HomeController extends Controller
 {
     // ホーム画面に表示するトピック数
-    const CNT_SHOW_TOPIC = 5;
-    // userモデルのインスタンス
-    private $m_user;
-    // topicモデルのインスタンス
-    private $m_topic;
-    // commentモデルのインスタンス
-    private $m_comment;
-    // supportモデルのインスタンス
-    private $m_support;
+    const int CNT_SHOW_TOPIC = 5;
+
+    private Topic $m_topic;
+    private Comment $m_comment;
 
     public function __construct()
     {
-        // // userモデルのインスタンス生成
-        $this->m_user = new User();
-        // topicモデルのインスタンス生成
         $this->m_topic = new Topic();
-        // commentモデルのインスタンス生成
         $this->m_comment = new Comment();
-        // supportモデルのインスタンス生成
-        $this->m_support = new Support();
     }
 
     /**
