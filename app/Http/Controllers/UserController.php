@@ -54,8 +54,8 @@ class UserController extends Controller
         $users = [];
         $total_cnt = 0;
         if (!empty($user_info)) {
-            $users = data_get($user_info, 'users');
-            $total_cnt = data_get($user_info, 'cnt');
+            $users = Arr::get($user_info, 'users', []);
+            $total_cnt = Arr::get($user_info, 'cnt', 0);
         }
 
         /* ページネーション */
@@ -93,9 +93,9 @@ class UserController extends Controller
         // sns_links JSON をビュー用に個別プロパティへ展開
         if (!empty($user->sns_links)) {
             $sns = json_decode($user->sns_links, true);
-            $user->sns_x = data_get($sns, 'x', '');
-            $user->sns_facebook = data_get($sns, 'facebook', '');
-            $user->sns_instagram = data_get($sns, 'instagram', '');
+            $user->sns_x = Arr::get($sns, 'x', '');
+            $user->sns_facebook = Arr::get($sns, 'facebook', '');
+            $user->sns_instagram = Arr::get($sns, 'instagram', '');
         }
         // 活動参加歴を表示用に変換 ※初期段階では表示無し
         if (!empty($user->past_join)) {
@@ -104,7 +104,7 @@ class UserController extends Controller
             $text_past_join = [];
             foreach ($activity_list as $category => $list) {
                 foreach ($key_past_join as $key) {
-                    $res = data_get($list, $key, '');
+                    $res = Arr::get($list, $key, '');
                     if (!empty($res)) {
                         $text_past_join[] = $res;
                         continue;
@@ -138,9 +138,9 @@ class UserController extends Controller
         // sns_links JSON をビュー用に個別プロパティへ展開
         if (!empty($user->sns_links)) {
             $sns = json_decode($user->sns_links, true);
-            $user->sns_x = data_get($sns, 'x', '');
-            $user->sns_facebook = data_get($sns, 'facebook', '');
-            $user->sns_instagram = data_get($sns, 'instagram', '');
+            $user->sns_x = Arr::get($sns, 'x', '');
+            $user->sns_facebook = Arr::get($sns, 'facebook', '');
+            $user->sns_instagram = Arr::get($sns, 'instagram', '');
         }
 
         // IIMS活動参加歴
@@ -177,7 +177,7 @@ class UserController extends Controller
             }
 
             // 更新対象のユーザーを取得
-            $target_user = $this->m_user->getUserById(data_get($input, 'user_id'));
+            $target_user = $this->m_user->getUserById((int)Arr::get($input, 'user_id'));
             if ($target_user === null) {
                 /* ユーザーが取得できなければ404(基本ここは通らない想定) */
                 abort(404);
