@@ -24,7 +24,7 @@ class PasswordResetRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email', 'max:255'], // メールアドレス:必須,ユニーク,255文字以内
-            'password' => ['max:50', Password::min(8)->letters()->numbers(), 'confirmed'], // 半角英数(a-z,1-9)の混合で8〜50文字
+            'password' => ['required', 'max:50', Password::min(8)->letters()->numbers(), 'confirmed'], // 半角英数(a-z,1-9)の混合で8〜50文字
         ];
     }
 

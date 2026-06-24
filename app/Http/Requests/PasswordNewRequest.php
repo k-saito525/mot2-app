@@ -24,7 +24,7 @@ class PasswordNewRequest extends FormRequest
     {
         // 半角英数(a-z,1-9)の混合で8〜50文字
         return [
-            'password' => ['max:50', Password::min(8)->letters()->numbers(), 'confirmed'],
+            'password' => ['required', 'max:50', Password::min(8)->letters()->numbers(), 'confirmed'],
         ];
     }
 

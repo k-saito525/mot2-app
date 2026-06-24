@@ -23,7 +23,7 @@ class PasswordResetStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password' => ['max:50', Password::min(8)->letters()->numbers(), 'confirmed'], // 半角英数(a-z,1-9)の混合で8〜50文字
+            'password' => ['required', 'max:50', Password::min(8)->letters()->numbers(), 'confirmed'], // 半角英数(a-z,1-9)の混合で8〜50文字
         ];
     }
 
