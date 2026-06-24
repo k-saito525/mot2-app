@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
 
 class Topic extends Model
 {
@@ -52,19 +51,16 @@ class Topic extends Model
 
     public function getTopics(int $limit = 0)
     {
-        $query = DB::table($this->table)
+        $query = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->select($this->columns)
-            ->whereNull('topics.deleted_at')
             ->orderBy('topics.created_at', 'desc');
         if (!empty($limit)) {
             $query = $query->limit($limit);
         }
         $topics = $query->get();
-        if ($topics->isNotEmpty()) {
-            foreach ($topics as $topic) {
-                $topic->content = self::makeLink(data_get($topic, 'content', ''));
-            }
+        foreach ($topics as $topic) {
+            $topic->content = self::makeLink($topic->content ?? '');
         }
         return $topics;
     }
@@ -72,10 +68,9 @@ class Topic extends Model
     public function getTopicsList(int|null $limit = null, int|null $offset = null): array
     {
         $topic_info = [];
-        $query = DB::table($this->table)
+        $query = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->select($this->columns)
-            ->whereNull('topics.deleted_at')
             ->orderBy('topics.created_at', 'desc');
         if (!empty($limit)) {
             $query = $query->limit($limit);
@@ -83,28 +78,25 @@ class Topic extends Model
         if (!empty($offset)) {
             $query = $query->offset($offset);
         }
-        $topic_info['topics'] = $query->get()->toArray();
-        if (!empty($topic_info['topics'])) {
-            foreach ($topic_info['topics'] as $topic) {
-                $topic->content = self::makeLink(data_get($topic, 'content', ''));
-            }
+        $topics = $query->get();
+        foreach ($topics as $topic) {
+            $topic->content = self::makeLink($topic->content ?? '');
         }
-        $topic_info['cnt'] = DB::table('topics')
+        $topic_info['topics'] = $topics->all();
+        $topic_info['cnt']    = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
-            ->whereNull('topics.deleted_at')
             ->count();
         return $topic_info;
     }
 
     public function getTopicById(int|string $topic_id, bool $flg_link = true)
     {
-        $topic = DB::table($this->table)
+        $topic = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->select($this->columns)
             ->where('topics.id', $topic_id)
-            ->whereNull('topics.deleted_at')
             ->first();
-        if ($flg_link === true && !empty($topic->content)) {
+        if ($flg_link === true && $topic !== null && !empty($topic->content)) {
             $topic->content = self::makeLink($topic->content);
         }
         return $topic;
@@ -112,16 +104,13 @@ class Topic extends Model
 
     public function getTopicByUser(int $user_id)
     {
-        $topics = DB::table($this->table)
+        $topics = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->select($this->columns)
             ->where('topics.user_id', $user_id)
-            ->whereNull('topics.deleted_at')
             ->get();
-        if ($topics->isNotEmpty()) {
-            foreach ($topics as $topic) {
-                $topic->content = self::makeLink(data_get($topic, 'content', ''));
-            }
+        foreach ($topics as $topic) {
+            $topic->content = self::makeLink($topic->content ?? '');
         }
         return $topics;
     }

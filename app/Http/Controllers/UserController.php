@@ -88,19 +88,18 @@ class UserController extends Controller
             return to_route('user.show.list');
         }
 
-        // sns_links JSON をビュー用に個別プロパティへ展開
+        // sns_links はEloquentのcastで配列として取得済み
         if (!empty($user->sns_links)) {
-            $sns = json_decode($user->sns_links, true);
-            $user->sns_x = Arr::get($sns, 'x', '');
-            $user->sns_facebook = Arr::get($sns, 'facebook', '');
-            $user->sns_instagram = Arr::get($sns, 'instagram', '');
+            $user->sns_x        = Arr::get($user->sns_links, 'x', '');
+            $user->sns_facebook = Arr::get($user->sns_links, 'facebook', '');
+            $user->sns_instagram = Arr::get($user->sns_links, 'instagram', '');
         }
         // 活動参加歴を表示用に変換 ※初期段階では表示無し
         if (!empty($user->past_join)) {
-            $key_past_join = json_decode($user->past_join, true) ?? [];
+            $key_past_join = $user->past_join ?? [];
             $activity_list = __('iims_activity');
             $text_past_join = [];
-            foreach ($activity_list as $category => $list) {
+            foreach ($activity_list as $list) {
                 foreach ($key_past_join as $key) {
                     $res = Arr::get($list, $key, '');
                     if (!empty($res)) {
@@ -133,12 +132,11 @@ class UserController extends Controller
         if ($user === null) {
             return to_route('user.show.list');
         }
-        // sns_links JSON をビュー用に個別プロパティへ展開
+        // sns_links はEloquentのcastで配列として取得済み
         if (!empty($user->sns_links)) {
-            $sns = json_decode($user->sns_links, true);
-            $user->sns_x = Arr::get($sns, 'x', '');
-            $user->sns_facebook = Arr::get($sns, 'facebook', '');
-            $user->sns_instagram = Arr::get($sns, 'instagram', '');
+            $user->sns_x        = Arr::get($user->sns_links, 'x', '');
+            $user->sns_facebook = Arr::get($user->sns_links, 'facebook', '');
+            $user->sns_instagram = Arr::get($user->sns_links, 'instagram', '');
         }
 
         // IIMS活動参加歴

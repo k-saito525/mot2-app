@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
 
 class Comment extends Model
 {
@@ -52,30 +51,26 @@ class Comment extends Model
 
     public function getCommentsByTopicID(int $topic_id = 0)
     {
-        $comments = DB::table($this->table)
+        $comments = static::query()
             ->join('users', 'comments.user_id', '=', 'users.id')
             ->join('topics', 'comments.topic_id', '=', 'topics.id')
             ->select($this->columns)
             ->where('comments.topic_id', $topic_id)
-            ->whereNull('comments.deleted_at')
             ->orderBy('comments.created_at', 'asc')
             ->get();
-        if ($comments->isNotEmpty()) {
-            foreach ($comments as $comment) {
-                $comment->comment = Topic::makeLink(data_get($comment, 'comment', ''));
-            }
+        foreach ($comments as $comment) {
+            $comment->comment = Topic::makeLink($comment->comment ?? '');
         }
         return $comments;
     }
 
     public function getCommentsByID(string $comment_id)
     {
-        return DB::table($this->table)
+        return static::query()
             ->join('users', 'comments.user_id', '=', 'users.id')
             ->join('topics', 'comments.topic_id', '=', 'topics.id')
             ->select($this->columns)
             ->where('comments.id', $comment_id)
-            ->whereNull('comments.deleted_at')
             ->first();
     }
 

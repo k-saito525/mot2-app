@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -76,28 +75,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getUsersList(int|null $limit = null, int|null $offset = null): array
     {
         $user_info = [];
-        $query = DB::table($this->table)
-            ->whereNull('users.deleted_at')
-            ->orderBy('users.created_at', 'desc');
+        $query = static::query()->orderBy('created_at', 'desc');
         if (!empty($limit)) {
             $query = $query->limit($limit);
         }
         if (!empty($offset)) {
             $query = $query->offset($offset);
         }
-        $user_info['users'] = $query->get()->toArray();
-        $user_info['cnt'] = DB::table($this->table)
-            ->whereNull('users.deleted_at')
-            ->count();
+        $user_info['users'] = $query->get()->all();
+        $user_info['cnt']   = static::query()->count();
         return $user_info;
     }
 
     public function getUserById(int $id)
     {
-        return DB::table('users')
-            ->where('id', $id)
+        return static::where('id', $id)
             ->where('is_approved', 1)
-            ->whereNull('deleted_at')
             ->first();
     }
 
@@ -111,11 +104,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function checkMail(string $mail = ''): bool
     {
-        $ret = DB::table('users')
-            ->where('email', $mail)
-            ->whereNull('deleted_at')
-            ->first();
-        return empty($ret);
+        return !static::where('email', $mail)->exists();
     }
 
     public function getUnapprovedUsers()
