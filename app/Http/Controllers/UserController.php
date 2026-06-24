@@ -67,8 +67,6 @@ class UserController extends Controller
         // 前のページ番号
         $page_previous = $page - 1;
 
-        // ログインしているユーザーIDを取得(トピック編集ボタンの表示/非表示に使用)
-        $user_id = Auth::id();
         return view('user/index', [
             'users' => $users,
             'total_cnt' => $total_cnt,
