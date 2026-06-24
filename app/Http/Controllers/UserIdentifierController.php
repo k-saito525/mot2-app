@@ -63,14 +63,12 @@ class UserIdentifierController extends Controller
             return to_route('login.show.form');
         }
 
-        // 入力データのバリデート
-        $validated = $request->validated();
         // 入力データを取得
         $input = $request->only('user_identifier');
 
         // 登録実行
         try {
-            $user->user_identifier = data_get($input, 'user_identifier');
+            $user->user_identifier = Arr::get($input, 'user_identifier');
             $user->save();
 
             // 登録成功したら完了画面に遷移

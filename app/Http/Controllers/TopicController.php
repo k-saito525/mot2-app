@@ -185,9 +185,7 @@ class TopicController extends Controller
         } else {
             /* 新規作成・更新 */
 
-            // 入力データのバリデート
-            $validated = $request->validated();
-            // バリデートOKの場合、取得
+            // 入力データを取得
             $input = $request->all();
 
             $message = '';

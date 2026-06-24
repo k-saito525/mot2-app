@@ -34,16 +34,14 @@ class SupportController extends Controller
      */
     public function store(SupportRequest $request): RedirectResponse
     {
-        // 入力データのバリデート
-        $validated = $request->validated();
         // 入力データを取得
         $input = $request->only([
             'message',
             'user_id',
         ]);
 
-        $this->m_support->message = data_get($input, 'message');
-        $this->m_support->user_id = data_get($input, 'user_id');
+        $this->m_support->message = Arr::get($input, 'message');
+        $this->m_support->user_id = Arr::get($input, 'user_id');
         // 登録実行
         try {
             $this->m_support->save();

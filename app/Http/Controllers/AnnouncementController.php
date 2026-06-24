@@ -132,8 +132,6 @@ class AnnouncementController extends Controller
         }
 
         /* 新規作成・更新 */
-        // 入力データのバリデート
-        $request->validated();
         $input = $request->all();
 
         if (!empty(Arr::get($input, 'pub-end')) && Carbon::parse(Arr::get($input, 'pub-start'))->gt(Carbon::parse(Arr::get($input, 'pub-end')))) {

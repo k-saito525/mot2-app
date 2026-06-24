@@ -50,8 +50,6 @@ class ApplyController extends Controller
      */
     public function check(ApplyRequest $request): RedirectResponse
     {
-        // 入力データのバリデート
-        $validated = $request->validated();
         $input = $request->only($this->formApply);
         // メールアドレスの重複確認
         $m_user = new User();

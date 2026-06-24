@@ -77,8 +77,6 @@ class PasswordController extends Controller
      */
     public function storeNew(PasswordNewRequest $request): RedirectResponse
     {
-        // 入力データのバリデート
-        $validated = $request->validated();
         // 入力データを取得
         $input = $request->only([
             'password',
@@ -119,8 +117,6 @@ class PasswordController extends Controller
      */
     public function resetSendMail(PasswordResetMailCheckRequest $request): RedirectResponse
     {
-        // 入力データのバリデート
-        $validated = $request->validated();
         // 入力データを取得
         $email = $request->input('email');
 
@@ -192,8 +188,6 @@ class PasswordController extends Controller
      */
     public function storeReset(PasswordResetStoreRequest $request): RedirectResponse
     {
-        // 入力データのバリデート
-        $validated = $request->validated();
         // 入力データを取得
         $password = $request->input('password');
         // セッションから再設定キーと有効期限を取得

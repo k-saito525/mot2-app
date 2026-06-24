@@ -162,8 +162,6 @@ class UserController extends Controller
      */
     public function store(UserRequest $request): RedirectResponse
     {
-        // 入力内容をバリデート
-        $validated = $request->validated();
         $input = $request->all();
 
         if (empty($input)) {
