@@ -31,14 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'user_cover_image',
         'sns_links',
         'email',
-        'email_verified_at',
         'password',
-        'remember_token',
-        'verify_token',
-        'reset_password_access_key',
-        'reset_password_expire_at',
-        'is_approved',
-        'is_admin',
     ];
 
     protected $hidden = [

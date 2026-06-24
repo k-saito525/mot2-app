@@ -18,6 +18,11 @@ class AnnouncementRead extends Model
     // テーブル名の定義
     protected $table = 'announcement_reads';
 
+    // 複合主キー (user_id + announcement_id) のため id カラムは存在しない
+    // Eloquent は複合主キー非対応のため、全クエリは DB::table() で直接操作する
+    protected $primaryKey = null;
+    public $incrementing = false;
+
     // created_at のみ存在するためupdated_atは無効化
     const UPDATED_AT = null;
 
