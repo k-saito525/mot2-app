@@ -25,12 +25,12 @@ class AnnouncementController extends Controller
         $announcement_list = $m_announcement->getAnnouncements();
 
         // 今日の日付
-        $today = new Carbon(date('Y-m-d'));
+        $today = Carbon::today();
         foreach ($announcement_list as $key => $val) {
-            if (!empty($val->pub_end_at) && new Carbon($val->pub_end_at) < $today) {
+            if (!empty($val->pub_end_at) && Carbon::parse($val->pub_end_at)->lt($today)) {
                 $announcement_list[$key]->pub_status = '公開終了';
             } else {
-                if (new Carbon($val->pub_start_at) <= $today) {
+                if (Carbon::parse($val->pub_start_at)->lte($today)) {
                     /* 公開期間内 */
                     $announcement_list[$key]->pub_status = '公開中';
                 } else {
@@ -136,14 +136,14 @@ class AnnouncementController extends Controller
         $request->validated();
         $input = $request->all();
 
-        if (!empty(Arr::get($input, 'pub-end')) && strtotime(Arr::get($input, 'pub-start')) > strtotime(Arr::get($input, 'pub-end'))) {
+        if (!empty(Arr::get($input, 'pub-end')) && Carbon::parse(Arr::get($input, 'pub-start'))->gt(Carbon::parse(Arr::get($input, 'pub-end')))) {
             session()->flash('pub-start', '日付の選択が正しくありません');
             return back();
         }
         // 公開ステータスの確認 1:公開中
         //  現在時刻を取得
-        $now = strtotime('now');
-        if ($now < strtotime(Arr::get($input, 'pub-start')) || $now > strtotime(Arr::get($input, 'pub-end'))) {
+        $now = Carbon::now();
+        if ($now->lt(Carbon::parse(Arr::get($input, 'pub-start'))) || $now->gt(Carbon::parse(Arr::get($input, 'pub-end')))) {
             $flg_public = 0;
         } else {
             $flg_public = 1;
