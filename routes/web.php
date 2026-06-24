@@ -137,9 +137,9 @@ Route::middleware('auth')
                 // 一覧画面の表示
                 Route::get('/{page?}', [UserController::class, 'showList'])->name('show.list');
                 // 詳細画面の表示
-                Route::get('/detail/{user_id}', [UserController::class, 'showDetail'])->name('show.detail');
+                Route::get('/detail/{id}', [UserController::class, 'showDetail'])->name('show.detail');
                 // 編集画面の表示
-                Route::get('/edit/{user_id}', [UserController::class, 'showEdit'])->name('show.edit');
+                Route::get('/edit/{id}', [UserController::class, 'showEdit'])->name('show.edit');
                 // 更新実行
                 Route::post('/store', [UserController::class, 'store'])->name('store');
             });
@@ -159,7 +159,7 @@ Route::middleware('auth')
                 // トピック - 作成・更新・削除実行
                 Route::post('/store', [TopicController::class, 'store'])->name('store');
                 // コメント - 入力画面の表示
-                Route::get('/comment/{topic_id}', [CommentController::class, 'showForm'])->name('show.create.comment');
+                Route::get('/comment/{id}', [CommentController::class, 'showForm'])->name('show.create.comment');
             });
 
         /* コメント関連 */
@@ -169,7 +169,7 @@ Route::middleware('auth')
                 // コメント新規作成・編集の実行
                 Route::post('/store', [CommentController::class, 'store'])->name('store');
                 // コメント編集画面の表示
-                Route::get('/edit/{comment_id}', [CommentController::class, 'showEdit'])->name('show.edit');
+                Route::get('/edit/{id}', [CommentController::class, 'showEdit'])->name('show.edit');
             });
 
         /* サポート機能 */

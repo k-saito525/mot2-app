@@ -134,15 +134,15 @@ class TopicController extends Controller
     /**
      * トピック編集 - 編集画面の表示
      *
-     * @param string $topic_id  編集するトピックのトピックID
+     * @param string $id  編集するトピックのトピックID
      * @return View|RedirectResponse
      */
-    public function showEdit(string $topic_id): View|RedirectResponse
+    public function showEdit(string $id): View|RedirectResponse
     {
         // ログインしているユーザー情報を取得
         $user = Auth::user();
         // トピックIDを元にトピック情報を取得
-        $topic = $this->m_topic->getTopicById((int)$topic_id, false);
+        $topic = $this->m_topic->getTopicById((int)$id, false);
 
         /* 不正アクセス対策 */
         if ($topic === null) {

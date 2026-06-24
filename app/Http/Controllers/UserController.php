@@ -79,13 +79,13 @@ class UserController extends Controller
     /**
      * ユーザー情報 - 詳細画面の表示
      *
-     * @param string $user_id  ユーザーID
+     * @param string $id  ユーザーID
      * @return View|RedirectResponse
      */
-    public function showDetail(string $user_id): View|RedirectResponse
+    public function showDetail(string $id): View|RedirectResponse
     {
         // IDを元にユーザー情報を取得
-        $user = $this->m_user->getUserById((int)$user_id);
+        $user = $this->m_user->getUserById((int)$id);
         if ($user === null) {
             return to_route('user.show.list');
         }
@@ -115,7 +115,7 @@ class UserController extends Controller
         }
 
         /* ユーザーIDをもとにそのユーザーが作成したトピックを取得 */
-        $topics = new Topic()->getTopicByUser($user_id);
+        $topics = new Topic()->getTopicByUser($id);
         return view('user/show/index', [
             'user' => $user,
             'topics' => $topics,
@@ -126,12 +126,12 @@ class UserController extends Controller
     /**
      * ユーザー情報 - 編集画面の表示
      *
-     * @param string $user_id  ユーザーID
+     * @param string $id  ユーザーID
      * @return View|RedirectResponse
      */
-    public function showEdit(string $user_id): View|RedirectResponse
+    public function showEdit(string $id): View|RedirectResponse
     {
-        $user = $this->m_user->getUserById((int)$user_id);
+        $user = $this->m_user->getUserById((int)$id);
         if ($user === null) {
             return to_route('user.show.list');
         }

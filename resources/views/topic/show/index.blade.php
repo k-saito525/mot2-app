@@ -79,7 +79,7 @@
                   @endif
                   @if(data_get($comment, 'user_id') === $user_id)
                   <div class="c-reply-edit">
-                    <a href="{{ route('comment.show.edit', ['comment_id' => data_get($comment, 'id')]) }}" class="c-button--mini">
+                    <a href="{{ route('comment.show.edit', ['id' => data_get($comment, 'id')]) }}" class="c-button--mini">
                       <img src="/img/common/icon-pencil.svg" alt="">
                       <span>回答を編集</span>
                     </a>
@@ -91,7 +91,7 @@
               @endif
             </div>
             <div class="c-button-wrap">
-              <a href="{{ route('topic.show.create.comment', ['topic_id' => data_get($topic, 'id')]) }}/#comment" class="c-button">
+              <a href="{{ route('topic.show.create.comment', ['id' => data_get($topic, 'id')]) }}/#comment" class="c-button">
                 <img src="/img/common/icon-reply.svg" alt="">
                 <span>このトピックに回答する</span>
               </a>

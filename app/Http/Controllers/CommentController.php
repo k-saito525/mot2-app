@@ -34,20 +34,20 @@ class CommentController extends Controller
     /**
      * コメント入力画面の表示
      *
-     * @param string $topic_id  コメントするトピックのID
+     * @param string $id  コメントするトピックのID
      * @return View
      */
-    public function showForm(string $topic_id): View
+    public function showForm(string $id): View
     {
         // IDをもとにトピック情報を取得
-        $topic = $this->m_topic->getTopicById((int)$topic_id);
+        $topic = $this->m_topic->getTopicById((int)$id);
         if ($topic === null) {
             /* 存在しないIDもしくは削除済みの場合は404 */
             abort(404);
         }
 
         // トピックIDから紐づくコメントを取得
-        $comments = $this->m_comment->getCommentsByTopicID((int)$topic_id);
+        $comments = $this->m_comment->getCommentsByTopicID((int)$id);
 
         // コメント主の情報
         $user = Auth::user();
@@ -141,13 +141,13 @@ class CommentController extends Controller
     /**
      * コメント編集画面の表示
      *
-     * @param string $comment_id 編集するコメントID
+     * @param string $id 編集するコメントID
      * @return View|RedirectResponse
      */
-    public function showEdit(string $comment_id): View|RedirectResponse
+    public function showEdit(string $id): View|RedirectResponse
     {
         // 編集するコメント情報を取得
-        $target_comment = $this->m_comment->getCommentsByID($comment_id);
+        $target_comment = $this->m_comment->getCommentsByID($id);
         if (!isset($target_comment)) {
             /* 編集するコメントが存在しない場合は404 */
             abort(404);
