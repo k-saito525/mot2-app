@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Models\Topic;
+use App\Services\UserService;
 
 /**
  * ユーザー情報関連のコントローラ
@@ -24,7 +22,7 @@ class UserController extends Controller
 
     private User $m_user;
 
-    public function __construct()
+    public function __construct(private readonly UserService $userService)
     {
         $this->m_user = new User();
     }
@@ -184,7 +182,7 @@ class UserController extends Controller
             }
 
             // 更新実行
-            $error = $this->m_user->saveUser($input);
+            $error = $this->userService->updateProfile($input);
             if (empty($error)) {
                 /* エラーメッセージがなければ更新成功 */
                 session()->flash('flash_success', __('users.success.updated'));

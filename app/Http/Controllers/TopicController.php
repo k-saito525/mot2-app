@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\TopicRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Mail;
-use App\Models\User;
 use App\Models\Topic;
 use App\Models\Comment;
-use Carbon\Carbon;
+use App\Services\TopicService;
 use Illuminate\View\View;
 
 /**
@@ -24,13 +21,8 @@ class TopicController extends Controller
     const int SHOW_CNT_TOPICS = 20;
 
     private Topic $m_topic;
-    // 新規作成・編集の入力項目
-    private array $form_topic = [
-        'topic-title',
-        'topic-detail',
-    ];
 
-    public function __construct()
+    public function __construct(private readonly TopicService $topicService)
     {
         $this->m_topic = new Topic();
     }
@@ -172,7 +164,7 @@ class TopicController extends Controller
             /* 削除 */
 
             // 削除実行
-            $result = $this->m_topic->deleteTopic((int)$post['topic-id']);
+            $result = $this->topicService->delete((int)$post['topic-id']);
             if ($result) {
                 // 完了したらトピック一覧画面に遷移する
                 session()->flash('flash_success', __('topics.success.delete'));

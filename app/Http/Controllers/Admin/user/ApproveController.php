@@ -4,19 +4,19 @@ namespace App\Http\Controllers\Admin\user;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Mail\MailApprovedUser;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Arr;
 
 class ApproveController extends Controller
 {
-    public User $m_user;
+    private User $m_user;
 
-    public function __construct()
+    public function __construct(private readonly UserService $userService)
     {
         $this->m_user = new User();
     }
@@ -87,7 +87,7 @@ class ApproveController extends Controller
         if (!empty($user)) {
             try {
                 // 承認ステータスを更新
-                $this->m_user->approveUser($user->id);
+                $this->userService->approve($user->id);
 
                 // ユーザーに承認完了通知を送信
                 Mail::to($user->email)->send(new MailApprovedUser($user));

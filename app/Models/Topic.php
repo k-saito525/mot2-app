@@ -126,39 +126,6 @@ class Topic extends Model
         return $topics;
     }
 
-    public function deleteTopic(int $topic_id): bool
-    {
-        $topic = $this->where('id', $topic_id)->first();
-        if (empty($topic)) {
-            return false;
-        }
-
-        $comment_ids = DB::table('comments')
-            ->where('topic_id', $topic_id)
-            ->whereNull('deleted_at')
-            ->pluck('id')
-            ->toArray();
-
-        if (!empty($comment_ids)) {
-            $m_comment = new Comment();
-            foreach ($comment_ids as $id) {
-                try {
-                    $m_comment->deleteComments($id);
-                } catch (\Exception) {
-                    return false;
-                }
-            }
-        }
-
-        try {
-            $topic->delete();
-        } catch (\Exception) {
-            return false;
-        }
-
-        return true;
-    }
-
     public static function makeLink(string $content = ''): string
     {
         if (empty($content)) {

@@ -106,40 +106,4 @@ class Announcement extends Model
         return $res;
     }
 
-    /**
-     * 公開中のお知らせを公開ステータスと既読数を含めて取得
-     *
-     * @param string|int $user_id ユーザーID
-     */
-    public function getStatusRead(string|int $user_id): array
-    {
-        // 公開中のお知らせIDを取得
-        $announcement_ids = self::getPublicAnnouncements(true);
-
-        if (!empty($announcement_ids)) {
-            // 公開中お知らせの中で既読数を取得
-            $m_announcement_read = new AnnouncementRead();
-            $read_info = $m_announcement_read->getCount($user_id, $announcement_ids);
-            // お知らせリストに既読のステータスを追加 ※未読の場合はキー自体作成しない
-            $announcement_list['unread_count'] = count($announcement_ids) - data_get($read_info, 'read_count');
-            $announcement_list['announcement'] = self::getPublicAnnouncements();
-            foreach ($announcement_list['announcement'] as $a_key => $a_val) {
-                foreach (data_get($read_info, 'id', []) as $r_id) {
-                    if ($a_val->id === data_get($r_id, 'announcement_id')) {
-                        /* 既読 */
-                        $announcement_list['announcement'][$a_key]->pub_status = 1;
-                    }
-                }
-            }
-        }
-
-        // 公開中のお知らせが1件も無い場合の返却用
-        if (!isset($announcement_list)) {
-            $announcement_list = [
-                'unread_count' => 0,
-                'announcement' => '',
-            ];
-        }
-        return $announcement_list;
-    }
 }
