@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Topic;
 
 class TopicRequest extends FormRequest
 {
@@ -11,7 +12,19 @@ class TopicRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $topic_id = $this->input('topic-id');
+
+        // 新規作成はログイン済みなら誰でも可
+        if ($topic_id === null) {
+            return true;
+        }
+
+        // 編集・削除はオーナーのみ
+        $topic = Topic::find((int) $topic_id);
+        if ($topic === null) {
+            return false;
+        }
+        return $topic->user_id === $this->user()->id;
     }
 
     /**
