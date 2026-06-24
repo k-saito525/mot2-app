@@ -47,7 +47,7 @@ class HomeController extends Controller
             $recc_topic = data_get($topics, 0);
             $comment_recc_topics = $this->m_comment->getCommentsByTopicID(data_get($recc_topic, 'id'));
             // 抜き出した最新の1件は削除
-            Arr::except($topics, 0);
+            $topics = $topics->slice(1);
         } else {
             /* トピックが1件も存在しない場合はエラー回避のため空配列を作成 */
             $recc_topic = [];
