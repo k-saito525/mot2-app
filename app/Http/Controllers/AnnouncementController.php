@@ -67,7 +67,7 @@ class AnnouncementController extends Controller
         }
 
         return view('announcement/detail/index', [
-            'announcement' => data_get($announcement, 0, []),
+            'announcement' => Arr::get($announcement, 0, []),
         ]);
     }
 
@@ -102,7 +102,7 @@ class AnnouncementController extends Controller
         }
 
         return view('admin/announcement/edit/index', [
-            'announcement' => data_get($announcement, 0, []),
+            'announcement' => Arr::get($announcement, 0, []),
         ]);
     }
 

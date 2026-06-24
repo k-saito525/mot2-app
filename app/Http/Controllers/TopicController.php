@@ -60,8 +60,8 @@ class TopicController extends Controller
         $topics = [];
         $total_cnt = 0;
         if (!empty($topic_info)) {
-            $topics = data_get($topic_info, 'topics');
-            $total_cnt = data_get($topic_info, 'cnt');
+            $topics = Arr::get($topic_info, 'topics', []);
+            $total_cnt = Arr::get($topic_info, 'cnt', 0);
         }
 
         /* ページネーション */
