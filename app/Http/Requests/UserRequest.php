@@ -29,15 +29,15 @@ class UserRequest extends FormRequest
             // 表示用のユーザーID → 必須, 半角英(大小)数アンダーバーのみ
             'user_identifier' => ['required', 'regex:/^[a-zA-Z0-9_]+$/', 'min:8', 'max:24'],
             // メールアドレス:必須,(重複確認はコントローラで行う),255文字以内
-            'email' => ['nullable:email', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
             // カバー画像 → ファイルサイズ:8MB, 拡張子:jpg,jpeg,png
             'user_cover_image' => ['max:8192', 'mimes:jpg,jpeg,png'],
             // Xリンク → URL形式
-            'sns_x' => ['nullable:url', 'max:200'],
+            'sns_x' => ['nullable', 'url', 'max:200'],
             // Facebookリンク → URL形式
-            'sns_facebook' => ['nullable:url', 'max:200'],
+            'sns_facebook' => ['nullable', 'url', 'max:200'],
             // Instagramリンク → URL形式
-            'sns_instagram' => ['nullable:url', 'max:200'],
+            'sns_instagram' => ['nullable', 'url', 'max:200'],
             // 自己紹介 → 400文字以内
             'introduction_text' => ['max:400'],
         ];
