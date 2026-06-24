@@ -27,7 +27,7 @@ class AnnouncementRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'announcement-title.required'  => 'タイトルは必ず入力してください。',

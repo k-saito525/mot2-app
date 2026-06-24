@@ -26,7 +26,7 @@ class CommentRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'comment.required' => 'コメントが未入力です。',

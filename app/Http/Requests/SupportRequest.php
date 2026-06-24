@@ -26,7 +26,7 @@ class SupportRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'message.required' => '本文は必ず入力してください。',

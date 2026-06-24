@@ -22,16 +22,16 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // アイコン画像 → ファイルサイズ:8MB, 拡張子:jpg,jpeg,png
-            'user_icon' => ['max:8192', 'mimes:jpg,jpeg,png'],
+            // アイコン画像 → ファイルサイズ:2MB, 拡張子:jpg,jpeg,png
+            'user_icon' => ['max:2048', 'mimes:jpg,jpeg,png'],
             // 名前 → 必須, 50文字以内
             'name' => ['required', 'max:50'],
             // 表示用のユーザーID → 必須, 半角英(大小)数アンダーバーのみ
             'user_identifier' => ['required', 'regex:/^[a-zA-Z0-9_]+$/', 'min:8', 'max:24'],
             // メールアドレス:必須,(重複確認はコントローラで行う),255文字以内
             'email' => ['nullable', 'email', 'max:255'],
-            // カバー画像 → ファイルサイズ:8MB, 拡張子:jpg,jpeg,png
-            'user_cover_image' => ['max:8192', 'mimes:jpg,jpeg,png'],
+            // カバー画像 → ファイルサイズ:2MB, 拡張子:jpg,jpeg,png
+            'user_cover_image' => ['max:2048', 'mimes:jpg,jpeg,png'],
             // Xリンク → URL形式
             'sns_x' => ['nullable', 'url', 'max:200'],
             // Facebookリンク → URL形式
@@ -43,7 +43,7 @@ class UserRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'user_icon.max'            => 'アイコン画像のファイルサイズは2MB以内にしてください。',

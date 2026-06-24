@@ -31,7 +31,7 @@ class PasswordResetRequest extends FormRequest
     /**
      * エラーメッセージのカスタム
      */
-    public function messages()
+    public function messages(): array
     {
         return [
             'password.confirmed' => 'パスワードが一致しません。',

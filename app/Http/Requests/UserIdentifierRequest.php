@@ -27,7 +27,7 @@ class UserIdentifierRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'user_identifier.required' => 'ユーザーIDは必須項目です',
