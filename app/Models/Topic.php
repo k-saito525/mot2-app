@@ -108,7 +108,7 @@ class Topic extends Model
      *
      * @param  int  $topic_id トピックID
      * @param  bool $flg_link content 内のURLをリンクに変換するか
-     * @return static|null
+     * @return ?static null: 対象トピックなし
      */
     public function getTopicById(int $topic_id, bool $flg_link = true): ?static
     {
