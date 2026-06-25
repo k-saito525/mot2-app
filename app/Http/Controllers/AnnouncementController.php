@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\AnnouncementRequest;
+use App\Services\AnnouncementService;
 use Illuminate\Support\Arr;
 use Carbon\Carbon;
 use App\Models\Announcement;
-use App\Models\AnnouncementRead;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -114,19 +114,12 @@ class AnnouncementController extends Controller
         $post = $request->post();
         if (isset($post['delete'])) {
             /* 削除 */
-
-            $m_announcements = new Announcement();
-            $m_announcements = $m_announcements::find(Arr::get($post, 'announcement_id'));
-            // 削除実行
-            $m_announcement_read = new AnnouncementRead();
-            try {
-                $m_announcements->delete();
-                // announce_readテーブルからも削除
-                $m_announcement_read->_update((int) Arr::get($post, 'announcement_id'), 0);
-                return to_route('admin.show.announcement.list');
-            } catch (\Exception) {
+            $announcement_id = (int) Arr::get($post, 'announcement_id');
+            $result = (new AnnouncementService())->delete($announcement_id);
+            if (!$result) {
                 abort(404);
             }
+            return to_route('admin.show.announcement.list');
         }
 
         /* 新規作成・更新 */
@@ -160,29 +153,9 @@ class AnnouncementController extends Controller
         $m_announcements->publish_status = $flg_public;
 
         // 登録実行
-        try {
-            // データベースに保存
-            $m_announcements->save();
-        } catch (\Exception) {
-            // 登録失敗したら入力画面に戻る
+        $result = (new AnnouncementService())->saveAndSyncReads($m_announcements);
+        if (!$result) {
             return back();
-        }
-
-        // 更新後の公開状況によってannouncement_readsテーブルを更新する
-        $today = Carbon::today();
-        if ($m_announcements->pub_start_at->gt($today)) {
-            /* 公開前 */
-            $flg = 0;
-        } elseif (!empty($m_announcements->pub_end_at) && $m_announcements->pub_end_at->lt($today)) {
-            /* 公開終了 */
-            $flg = 0;
-        } else {
-            /* 公開中 */
-            $flg = 1;
-        }
-        if (isset($flg)) {
-            $m_announcement_reads = new AnnouncementRead();
-            $m_announcement_reads->_update($m_announcements->id, $flg);
         }
 
         // 一覧画面に遷移

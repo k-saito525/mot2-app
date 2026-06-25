@@ -12,9 +12,6 @@ class AnnouncementRead extends Model
 {
     use HasFactory;
 
-    const NOT_PUBLIC = 0;
-    const IS_PUBLIC = 1;
-
     // テーブル名の定義
     protected $table = 'announcement_reads';
 
@@ -95,22 +92,15 @@ class AnnouncementRead extends Model
     }
 
     /**
-     * お知らせ削除時に関連する既読レコードを削除する
+     * お知らせIDに紐づく既読レコードを削除する
      *
      * @param  int $announcement_id お知らせID
-     * @param  int $flg             NOT_PUBLIC(0): 既読レコードを削除、IS_PUBLIC(1): 何もしない
      * @return void
      */
-    public function _update(int $announcement_id, int $flg): void
+    public function deleteReadsByAnnouncementId(int $announcement_id): void
     {
-        if ($flg === self::NOT_PUBLIC) {
-            try {
-                DB::table($this->table)
-                    ->where('announcement_id', $announcement_id)
-                    ->delete();
-            } catch (\Exception) {
-                //
-            }
-        }
+        DB::table($this->table)
+            ->where('announcement_id', $announcement_id)
+            ->delete();
     }
 }
