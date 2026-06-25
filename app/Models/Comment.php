@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,7 +50,13 @@ class Comment extends Model
         return $this->belongsTo(Topic::class);
     }
 
-    public function getCommentsByTopicID(int $topic_id = 0)
+    /**
+     * トピックIDに紐づくコメント一覧を取得する
+     *
+     * @param  int $topic_id トピックID
+     * @return Collection<int, static>
+     */
+    public function getCommentsByTopicID(int $topic_id): Collection
     {
         $comments = static::query()
             ->join('users', 'comments.user_id', '=', 'users.id')
@@ -64,7 +71,13 @@ class Comment extends Model
         return $comments;
     }
 
-    public function getCommentsByID(string $comment_id)
+    /**
+     * IDを指定してコメントを1件取得する
+     *
+     * @param  int $comment_id コメントID
+     * @return ?static null: 対象コメントなし
+     */
+    public function getCommentsByID(int $comment_id): ?static
     {
         return static::query()
             ->join('users', 'comments.user_id', '=', 'users.id')
@@ -74,7 +87,13 @@ class Comment extends Model
             ->first();
     }
 
-    public function deleteComments(int|string $comment_id): bool
+    /**
+     * コメントを削除する
+     *
+     * @param  int $comment_id コメントID
+     * @return bool true: 削除成功
+     */
+    public function deleteComments(int $comment_id): bool
     {
         $comment = self::find($comment_id);
         if (!empty($comment)) {

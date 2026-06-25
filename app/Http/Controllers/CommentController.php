@@ -147,7 +147,7 @@ class CommentController extends Controller
     public function showEdit(string $id): View|RedirectResponse
     {
         // 編集するコメント情報を取得
-        $target_comment = $this->m_comment->getCommentsByID($id);
+        $target_comment = $this->m_comment->getCommentsByID((int) $id);
         if (!isset($target_comment)) {
             /* 編集するコメントが存在しない場合は404 */
             abort(404);
