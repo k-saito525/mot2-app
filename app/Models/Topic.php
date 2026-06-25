@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,13 +50,19 @@ class Topic extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function getTopics(int $limit = 0)
+    /**
+     * トピック一覧を取得する
+     *
+     * @param  ?int $limit 取得件数（null の場合は全件）
+     * @return Collection<int, static>
+     */
+    public function getTopics(?int $limit = null): Collection
     {
         $query = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->select($this->columns)
             ->orderBy('topics.created_at', 'desc');
-        if (!empty($limit)) {
+        if ($limit !== null) {
             $query = $query->limit($limit);
         }
         $topics = $query->get();
@@ -65,17 +72,24 @@ class Topic extends Model
         return $topics;
     }
 
-    public function getTopicsList(int|null $limit = null, int|null $offset = null): array
+    /**
+     * トピック一覧と総件数を取得する
+     *
+     * @param  ?int $limit  取得件数
+     * @param  ?int $offset 取得開始位置
+     * @return array{ topics: array, cnt: int }
+     */
+    public function getTopicsList(?int $limit = null, ?int $offset = null): array
     {
         $topic_info = [];
         $query = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->select($this->columns)
             ->orderBy('topics.created_at', 'desc');
-        if (!empty($limit)) {
+        if ($limit !== null) {
             $query = $query->limit($limit);
         }
-        if (!empty($offset)) {
+        if ($offset !== null) {
             $query = $query->offset($offset);
         }
         $topics = $query->get();
@@ -89,7 +103,14 @@ class Topic extends Model
         return $topic_info;
     }
 
-    public function getTopicById(int|string $topic_id, bool $flg_link = true)
+    /**
+     * IDを指定してトピックを1件取得する
+     *
+     * @param  int  $topic_id トピックID
+     * @param  bool $flg_link content 内のURLをリンクに変換するか
+     * @return static|null
+     */
+    public function getTopicById(int $topic_id, bool $flg_link = true): ?static
     {
         $topic = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
@@ -102,7 +123,13 @@ class Topic extends Model
         return $topic;
     }
 
-    public function getTopicByUser(int $user_id)
+    /**
+     * ユーザーIDに紐づくトピック一覧を取得する
+     *
+     * @param  int $user_id ユーザーID
+     * @return Collection<int, static>
+     */
+    public function getTopicByUser(int $user_id): Collection
     {
         $topics = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
@@ -115,6 +142,12 @@ class Topic extends Model
         return $topics;
     }
 
+    /**
+     * テキスト内のURLをaタグに変換する
+     *
+     * @param  string $content 変換対象のテキスト
+     * @return string
+     */
     public static function makeLink(string $content = ''): string
     {
         if (empty($content)) {
