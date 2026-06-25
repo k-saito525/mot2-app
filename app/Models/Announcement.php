@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,11 +50,11 @@ class Announcement extends Model
     }
 
     /**
-     * お知らせ取得
+     * お知らせ一覧を取得する
      *
-     * @param  bool  $only_id IDのみを取得する場合はtrue
-     * @param  array $target  取得したいお知らせIDの配列
-     * @return array
+     * @param  bool  $only_id true の場合はIDのみ取得
+     * @param  array $target  取得対象のお知らせIDの配列（空の場合は全件）
+     * @return array<int, array>
      */
     public function getAnnouncements(bool $only_id = false, array $target = []): array
     {
@@ -68,12 +69,12 @@ class Announcement extends Model
     }
 
     /**
-     * 公開中のお知らせを公開ステータスと既読数を含めて取得
+     * 公開中のお知らせを未読数・既読状態付きで取得する
      *
-     * @param  string|int  $user_id ユーザーID
+     * @param  int $user_id ユーザーID
      * @return array{ unread_count: int, announcement: array|string }
      */
-    public function getStatusRead(string|int $user_id): array
+    public function getStatusRead(int $user_id): array
     {
         $announcements = $this->getPublicAnnouncements();
 
@@ -102,11 +103,11 @@ class Announcement extends Model
     }
 
     /**
-     * 公開中のお知らせのみを取得
+     * 公開期間中のお知らせ一覧を取得する
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection<int, static>
      */
-    private function getPublicAnnouncements(): \Illuminate\Database\Eloquent\Collection
+    private function getPublicAnnouncements(): Collection
     {
         $now = now()->toDateString();
         return static::where('pub_start_at', '<=', $now)
