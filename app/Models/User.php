@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -63,23 +64,21 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Support::class);
     }
 
-    public function getAllUsers(bool $except = false, ?int $id = null)
-    {
-        $query = $this->where('is_approved', 1);
-        if ($except) {
-            $query = $query->where('id', '!=', $id);
-        }
-        return $query->orderBy('id', 'asc')->get();
-    }
-
-    public function getUsersList(int|null $limit = null, int|null $offset = null): array
+    /**
+     * ユーザー一覧と総件数を取得する
+     *
+     * @param  ?int $limit  取得件数
+     * @param  ?int $offset 取得開始位置
+     * @return array{ users: array, cnt: int }
+     */
+    public function getUsersList(?int $limit = null, ?int $offset = null): array
     {
         $user_info = [];
         $query = static::query()->orderBy('created_at', 'desc');
-        if (!empty($limit)) {
+        if ($limit !== null) {
             $query = $query->limit($limit);
         }
-        if (!empty($offset)) {
+        if ($offset !== null) {
             $query = $query->offset($offset);
         }
         $user_info['users'] = $query->get()->all();
@@ -87,49 +86,94 @@ class User extends Authenticatable implements MustVerifyEmail
         return $user_info;
     }
 
-    public function getUserById(int $id)
+    /**
+     * IDを指定して承認済みユーザーを1件取得する
+     *
+     * @param  int $id ユーザーID
+     * @return ?static null: 対象ユーザーなし
+     */
+    public function getUserById(int $id): ?static
     {
         return static::where('id', $id)
             ->where('is_approved', 1)
             ->first();
     }
 
-    public function getUserByEmail(string $email)
+    /**
+     * メールアドレスを指定して承認済みユーザーを1件取得する
+     *
+     * @param  string $email メールアドレス
+     * @return ?static null: 対象ユーザーなし
+     */
+    public function getUserByEmail(string $email): ?static
     {
-        return $this->where([
-            ['email', '=', $email],
-            ['is_approved', '=', 1],
-        ])->first();
+        return $this->where('email', $email)
+            ->where('is_approved', 1)
+            ->first();
     }
 
+    /**
+     * メールアドレスが未登録かチェックする
+     *
+     * @param  string $mail メールアドレス
+     * @return bool true: 未登録、false: 登録済み
+     */
     public function checkMail(string $mail = ''): bool
     {
         return !static::where('email', $mail)->exists();
     }
 
-    public function getUnapprovedUsers()
+    /**
+     * 未承認ユーザー一覧を取得する
+     *
+     * @return Collection<int, static>
+     */
+    public function getUnapprovedUsers(): Collection
     {
         return $this->where('is_approved', 0)->get();
     }
 
-    public function getUnapprovedUser(int $id)
+    /**
+     * IDを指定して未承認ユーザーを1件取得する
+     *
+     * @param  int $id ユーザーID
+     * @return ?static null: 対象ユーザーなし
+     */
+    public function getUnapprovedUser(int $id): ?static
     {
-        return $this->where([
-            ['id', '=', $id],
-            ['is_approved', '=', 0],
-        ])->first();
+        return $this->where('id', $id)
+            ->where('is_approved', 0)
+            ->first();
     }
 
-    public function getUserByToken(string $token)
+    /**
+     * メール認証トークンを指定してユーザーを1件取得する
+     *
+     * @param  string $token 認証トークン
+     * @return ?static null: 対象ユーザーなし
+     */
+    public function getUserByToken(string $token): ?static
     {
-        return $this->where(['verify_token' => $token])->first() ?? false;
+        return $this->where('verify_token', $token)->first();
     }
 
-    public function getUserByResetPasswordAccessKey(string $reset_token)
+    /**
+     * パスワードリセット用アクセスキーを指定してユーザーを1件取得する
+     *
+     * @param  string $reset_token パスワードリセット用アクセスキー
+     * @return ?static null: 対象ユーザーなし
+     */
+    public function getUserByResetPasswordAccessKey(string $reset_token): ?static
     {
         return $this->where('reset_password_access_key', $reset_token)->first();
     }
 
+    /**
+     * 参加歴キーを表示用テキストに変換する
+     *
+     * @param  string $key カンマ区切りの参加歴キー
+     * @return string カンマ区切りの表示用テキスト
+     */
     public function convertPastJoinToText(string $key): string
     {
         $arr_ret = [];
