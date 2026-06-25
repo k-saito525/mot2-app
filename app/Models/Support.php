@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,9 +44,11 @@ class Support extends Model
     }
 
     /**
-     * メッセージ取得 - 一覧表示用
+     * メッセージ一覧を取得する
+     *
+     * @return Collection<int, static>
      */
-    public function getMessages()
+    public function getMessages(): Collection
     {
         return static::query()
             ->join('users', 'supports.user_id', '=', 'users.id')
@@ -55,11 +58,12 @@ class Support extends Model
     }
 
     /**
-     * メッセージ取得 - 詳細表示用
+     * IDを指定してメッセージを1件取得する
      *
-     * @param int|string $id supportsテーブルのID
+     * @param  int $id supportsテーブルのID
+     * @return ?static null: 対象メッセージなし
      */
-    public function getMessageById(int|string $id)
+    public function getMessageById(int $id): ?static
     {
         return static::query()
             ->join('users', 'supports.user_id', '=', 'users.id')
