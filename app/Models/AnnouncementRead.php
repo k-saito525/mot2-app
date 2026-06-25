@@ -37,12 +37,13 @@ class AnnouncementRead extends Model
     }
 
     /**
-     * お知らせIDをもとに、既読のお知らせIDと数を取得
+     * お知らせIDをもとに既読のお知らせIDと既読数を取得する
      *
-     * @param string|int $user_id         ユーザーID
-     * @param array      $announcement_id 対象お知らせIDの配列
+     * @param  int   $user_id         ユーザーID
+     * @param  array $announcement_id 対象お知らせIDの配列
+     * @return array{ id: array, read_count: int }
      */
-    public function getCount(string|int $user_id, array $announcement_id = []): array
+    public function getCount(int $user_id, array $announcement_id): array
     {
         $res = [];
         // 既読のお知らせID
@@ -63,8 +64,8 @@ class AnnouncementRead extends Model
     /**
      * お知らせを既読にする
      *
-     * @param int $announcement_id 既読にするお知らせID
-     * @return bool  true:更新成功 or 既に既読
+     * @param  int $announcement_id 既読にするお知らせID
+     * @return bool true: 登録成功または既に既読、false: 登録失敗
      */
     public function storeReadStatus(int $announcement_id): bool
     {
@@ -96,10 +97,11 @@ class AnnouncementRead extends Model
     /**
      * お知らせ削除時に関連する既読レコードを削除する
      *
-     * @param string|int $announcement_id お知らせID
-     * @param int $flg NOT_PUBLIC(0):既読レコードを削除、IS_PUBLIC(1):何もしない
+     * @param  int $announcement_id お知らせID
+     * @param  int $flg             NOT_PUBLIC(0): 既読レコードを削除、IS_PUBLIC(1): 何もしない
+     * @return void
      */
-    public function _update(string|int $announcement_id, int $flg): void
+    public function _update(int $announcement_id, int $flg): void
     {
         if ($flg === self::NOT_PUBLIC) {
             try {

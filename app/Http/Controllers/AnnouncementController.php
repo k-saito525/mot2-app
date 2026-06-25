@@ -122,7 +122,7 @@ class AnnouncementController extends Controller
             try {
                 $m_announcements->delete();
                 // announce_readテーブルからも削除
-                $m_announcement_read->_update(Arr::get($post, 'announcement_id'), 0);
+                $m_announcement_read->_update((int) Arr::get($post, 'announcement_id'), 0);
                 return to_route('admin.show.announcement.list');
             } catch (\Exception) {
                 abort(404);
