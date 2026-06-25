@@ -54,7 +54,7 @@ class ApproveController extends Controller
         if (!empty($unapproved_user->past_join)) {
             $key_past_join = explode(',', data_get($unapproved_user, 'past_join'));
             $text_past_join = [];
-            foreach ($activity_list as $category => $list) {
+            foreach ($activity_list as $list) {
                 foreach ($key_past_join as $key) {
                     $res = '';
                     $res = Arr::get($list, $key);
@@ -81,7 +81,7 @@ class ApproveController extends Controller
     public function approve(Request $request): RedirectResponse
     {
         // IDをもとにユーザー情報を取得
-        $id = $request->post('id');
+        $id = (int) $request->post('id');
         $user = $this->m_user->getUnapprovedUser($id);
 
         if (!empty($user)) {

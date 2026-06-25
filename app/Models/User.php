@@ -179,7 +179,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $arr_ret = [];
         $activity_list = __('iims_activity');
         $arr_past_join = explode(',', $key);
-        foreach ($activity_list as $category => $list) {
+        foreach ($activity_list as $list) {
             foreach ($arr_past_join as $join_key) {
                 $view_text = Arr::get($list, $join_key);
                 if (!empty($view_text)) {
