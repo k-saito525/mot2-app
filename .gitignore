@@ -33,3 +33,7 @@ public_html/storage
 public_html/hot
 
 *.bkp
+
+# Claude Code
+CLAUDE.md
+.claude/
