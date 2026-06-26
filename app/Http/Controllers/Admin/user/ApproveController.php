@@ -14,12 +14,7 @@ use Illuminate\Support\Arr;
 
 class ApproveController extends Controller
 {
-    private User $m_user;
-
-    public function __construct(private readonly UserService $userService)
-    {
-        $this->m_user = new User();
-    }
+    public function __construct(private readonly UserService $userService) {}
 
     /**
      * 承認待ちユーザー - 一覧表示
@@ -29,7 +24,7 @@ class ApproveController extends Controller
     public function showList(): View
     {
         // 承認待ちのユーザー情報を取得
-        $unapproved_users = $this->m_user->getUnapprovedUsers();
+        $unapproved_users = User::unapproved()->get();
 
         return view('admin/user/unapproved/list', [
             'users' => $unapproved_users,
@@ -45,7 +40,7 @@ class ApproveController extends Controller
     public function showDetail(string $id): View
     {
         // IDを元にユーザー情報を取得
-        $unapproved_user = $this->m_user->getUnapprovedUser((int)$id);
+        $unapproved_user = User::unapproved()->find((int)$id);
         if ($unapproved_user === null) {
             abort(404);
         }
@@ -82,7 +77,7 @@ class ApproveController extends Controller
     {
         // IDをもとにユーザー情報を取得
         $id = (int) $request->post('id');
-        $user = $this->m_user->getUnapprovedUser($id);
+        $user = User::unapproved()->find($id);
 
         if (!empty($user)) {
             try {

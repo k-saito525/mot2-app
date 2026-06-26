@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserIdentifierRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -13,14 +11,6 @@ use Illuminate\View\View;
 
 class UserIdentifierController extends Controller
 {
-    // userモデルのインスタンス格納用
-    private User $m_user;
-
-    public function __construct()
-    {
-        $this->m_user = new User();
-    }
-
     /**
      * ユーザーID設定 - 入力画面の表示
      *
@@ -33,7 +23,7 @@ class UserIdentifierController extends Controller
             /* 万が一認証トークンが無いURLだった場合はトップ画面に戻す */
             return to_route('top');
         }
-        $user = $this->m_user->getUserByToken($token);
+        $user = User::where('verify_token', $token)->first();
         if (!$user) {
             /* 認証トークンからユーザー情報を取得できなければトップ画面に戻す */
             return to_route('top');

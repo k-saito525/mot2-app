@@ -20,13 +20,6 @@ use Illuminate\View\View;
  */
 class PasswordController extends Controller
 {
-    private User $m_user;
-
-    public function __construct()
-    {
-        $this->m_user = new User();
-    }
-
     /**
      * 新規パスワード登録 - 入力画面の表示
      *
@@ -40,7 +33,7 @@ class PasswordController extends Controller
             return to_route('top');
         }
         // 認証トークンからユーザー情報を取得できなければトップ画面に戻す
-        $user = $this->m_user->getUserByToken($token);
+        $user = User::where('verify_token', $token)->first();
         if (!$user) {
             return to_route('top');
         }
@@ -121,7 +114,7 @@ class PasswordController extends Controller
         $email = $request->input('email');
 
         // 入力されたメールアドレスからユーザー情報を特定
-        $user = $this->m_user->getUserByEmail($email);
+        $user = User::approved()->where('email', $email)->first();
 
         if (empty($user)) {
             // 入力されたアドレスで会員情報が取得できない場合、メールは送信せずに完了画面を表示する
@@ -190,12 +183,11 @@ class PasswordController extends Controller
     {
         // 入力データを取得
         $password = $request->input('password');
-        // セッションから再設定キーと有効期限を取得
+        // セッションから再設定キーを取得
         $reset_token = $request->session()->get('reset_token');
-        $expired_at = $request->session()->get('expired_at');
 
         // 入力されたメールアドレスからユーザー情報を特定
-        $user = $this->m_user->getUserByResetPasswordAccessKey($reset_token);
+        $user = User::where('reset_password_access_key', $reset_token)->first();
 
         if (empty($user)) {
             // ユーザー情報が間違っている場合は404にしておく

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -64,6 +64,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Support::class);
     }
 
+    public function scopeApproved(Builder $query): Builder
+    {
+        return $query->where('is_approved', 1);
+    }
+
+    public function scopeUnapproved(Builder $query): Builder
+    {
+        return $query->where('is_approved', 0);
+    }
+
     /**
      * ユーザー一覧と総件数を取得する
      *
@@ -84,88 +94,6 @@ class User extends Authenticatable implements MustVerifyEmail
         $user_info['users'] = $query->get()->all();
         $user_info['cnt']   = static::query()->count();
         return $user_info;
-    }
-
-    /**
-     * IDを指定して承認済みユーザーを1件取得する
-     *
-     * @param  int $id ユーザーID
-     * @return ?static null: 対象ユーザーなし
-     */
-    public function getUserById(int $id): ?static
-    {
-        return static::where('id', $id)
-            ->where('is_approved', 1)
-            ->first();
-    }
-
-    /**
-     * メールアドレスを指定して承認済みユーザーを1件取得する
-     *
-     * @param  string $email メールアドレス
-     * @return ?static null: 対象ユーザーなし
-     */
-    public function getUserByEmail(string $email): ?static
-    {
-        return $this->where('email', $email)
-            ->where('is_approved', 1)
-            ->first();
-    }
-
-    /**
-     * メールアドレスが未登録かチェックする
-     *
-     * @param  string $mail メールアドレス
-     * @return bool true: 未登録、false: 登録済み
-     */
-    public function checkMail(string $mail = ''): bool
-    {
-        return !static::where('email', $mail)->exists();
-    }
-
-    /**
-     * 未承認ユーザー一覧を取得する
-     *
-     * @return Collection<int, static>
-     */
-    public function getUnapprovedUsers(): Collection
-    {
-        return $this->where('is_approved', 0)->get();
-    }
-
-    /**
-     * IDを指定して未承認ユーザーを1件取得する
-     *
-     * @param  int $id ユーザーID
-     * @return ?static null: 対象ユーザーなし
-     */
-    public function getUnapprovedUser(int $id): ?static
-    {
-        return $this->where('id', $id)
-            ->where('is_approved', 0)
-            ->first();
-    }
-
-    /**
-     * メール認証トークンを指定してユーザーを1件取得する
-     *
-     * @param  string $token 認証トークン
-     * @return ?static null: 対象ユーザーなし
-     */
-    public function getUserByToken(string $token): ?static
-    {
-        return $this->where('verify_token', $token)->first();
-    }
-
-    /**
-     * パスワードリセット用アクセスキーを指定してユーザーを1件取得する
-     *
-     * @param  string $reset_token パスワードリセット用アクセスキー
-     * @return ?static null: 対象ユーザーなし
-     */
-    public function getUserByResetPasswordAccessKey(string $reset_token): ?static
-    {
-        return $this->where('reset_password_access_key', $reset_token)->first();
     }
 
     /**

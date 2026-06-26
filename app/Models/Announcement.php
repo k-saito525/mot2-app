@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,6 +49,13 @@ class Announcement extends Model
         return $this->hasMany(AnnouncementRead::class);
     }
 
+    public function scopePublished(Builder $query): Builder
+    {
+        $now = now()->toDateString();
+        return $query->where('pub_start_at', '<=', $now)
+            ->where(fn($q) => $q->whereNull('pub_end_at')->orWhere('pub_end_at', '>=', $now));
+    }
+
     /**
      * お知らせ一覧を取得する
      *
@@ -76,7 +83,7 @@ class Announcement extends Model
      */
     public function getStatusRead(int $user_id): array
     {
-        $announcements = $this->getPublicAnnouncements();
+        $announcements = static::published()->get();
 
         if ($announcements->isEmpty()) {
             return ['unread_count' => 0, 'announcement' => ''];
@@ -100,19 +107,6 @@ class Announcement extends Model
             'unread_count' => count($announcement_ids) - $read_count,
             'announcement' => $announcements->all(),
         ];
-    }
-
-    /**
-     * 公開期間中のお知らせ一覧を取得する
-     *
-     * @return Collection<int, static>
-     */
-    private function getPublicAnnouncements(): Collection
-    {
-        $now = now()->toDateString();
-        return static::where('pub_start_at', '<=', $now)
-            ->where(fn($q) => $q->whereNull('pub_end_at')->orWhere('pub_end_at', '>=', $now))
-            ->get();
     }
 
 }

@@ -8,8 +8,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailComment;
 use App\Models\Comment;
-use App\Models\User;
 use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -22,13 +22,11 @@ class CommentController extends Controller
 
     private Comment $m_comment;
     private Topic $m_topic;
-    private User $m_user;
 
     public function __construct()
     {
         $this->m_comment = new Comment();
         $this->m_topic = new Topic();
-        $this->m_user = new User();
     }
 
     /**
@@ -124,7 +122,7 @@ class CommentController extends Controller
                 if ($user_id !== $topic->user_id) {
                     /* コメント主がトピック作成者では無い場合のみ送信 */
                     // トピック作成者情報
-                    $topic_author = $this->m_user->getUserById((int)$topic->user_id);
+                    $topic_author = User::approved()->find((int)$topic->user_id);
                     Mail::to($topic_author->email)->send(new MailComment($topic_author, $user_info, $topic->id));
                 }
                 // 保存完了したらトピック詳細画面に遷移する

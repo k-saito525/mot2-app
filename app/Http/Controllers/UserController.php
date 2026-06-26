@@ -83,7 +83,7 @@ class UserController extends Controller
     public function showDetail(string $id): View|RedirectResponse
     {
         // IDを元にユーザー情報を取得
-        $user = $this->m_user->getUserById((int)$id);
+        $user = User::approved()->find((int)$id);
         if ($user === null) {
             return to_route('user.show.list');
         }
@@ -128,7 +128,7 @@ class UserController extends Controller
      */
     public function showEdit(string $id): View|RedirectResponse
     {
-        $user = $this->m_user->getUserById((int)$id);
+        $user = User::approved()->find((int)$id);
         if ($user === null) {
             return to_route('user.show.list');
         }
@@ -164,16 +164,14 @@ class UserController extends Controller
         } else {
             // メールアドレスの重複確認
             if (!empty($input['email'])) {
-                $res = $this->m_user->checkMail($input['email']);
-                if (!$res) {
-                    // エラーメッセージを表示
+                if (User::where('email', $input['email'])->exists()) {
                     session()->flash('flash_failed_email', __('users.fail.duplicate_mail'));
                     return back();
                 }
             }
 
             // 更新対象のユーザーを取得
-            $target_user = $this->m_user->getUserById((int)Arr::get($input, 'user_id'));
+            $target_user = User::approved()->find((int)Arr::get($input, 'user_id'));
             if ($target_user === null) {
                 /* ユーザーが取得できなければ404(基本ここは通らない想定) */
                 abort(404);

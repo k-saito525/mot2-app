@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ApplyRequest;
 use App\Mail\MailApplyUser;
 use App\Mail\MailApplyAdmin;
@@ -52,10 +51,7 @@ class ApplyController extends Controller
     {
         $input = $request->only($this->formApply);
         // メールアドレスの重複確認
-        $m_user = new User();
-        $res = $m_user->checkMail($input['email']);
-        if (!$res) {
-            // エラーメッセージを表示
+        if (User::where('email', $input['email'])->exists()) {
             session()->flash('flash_failed', __('users.fail.duplicate_mail'));
             return to_route('apply.form');
         }
@@ -64,7 +60,7 @@ class ApplyController extends Controller
         if (isset($input['past-join'])) {
             /* 確認画面表示用にIIMS活動情報を取得 */
             $activity_list = __('iims_activity');
-            foreach ($activity_list as $category => $list) {
+            foreach ($activity_list as $list) {
                 foreach (Arr::get($input, 'past-join') as $key) {
                     $res = '';
                     $res = Arr::get($list, $key);
