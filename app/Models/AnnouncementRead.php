@@ -35,21 +35,21 @@ class AnnouncementRead extends Model
     }
 
     /**
-     * お知らせIDをもとに既読のお知らせIDと既読数を取得する
+     * お知らせIDをもとに既読レコードと既読数を取得する
      *
-     * @param  int   $user_id         ユーザーID
-     * @param  array $announcement_id 対象お知らせIDの配列
-     * @return array{ id: array, read_count: int }
+     * @param  int        $user_id          ユーザーID
+     * @param  array<int> $announcement_ids 対象お知らせIDの配列
+     * @return array{ reads: array<int, array{user_id: int, announcement_id: int}>, read_count: int }
      */
-    public function getCount(int $user_id, array $announcement_id): array
+    public function getCount(int $user_id, array $announcement_ids): array
     {
         $reads = static::query()
             ->where('user_id', $user_id)
-            ->whereIn('announcement_id', $announcement_id)
+            ->whereIn('announcement_id', $announcement_ids)
             ->get();
 
         return [
-            'id'         => $reads->toArray(),
+            'reads'      => $reads->toArray(),
             'read_count' => $reads->count(),
         ];
     }

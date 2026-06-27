@@ -92,7 +92,7 @@ class Announcement extends Model
         $announcement_ids = $announcements->pluck('id')->all();
         $read_info        = (new AnnouncementRead())->getCount($user_id, $announcement_ids);
         $read_count       = Arr::get($read_info, 'read_count', 0);
-        $read_ids         = collect(Arr::get($read_info, 'id', []))
+        $read_ids         = collect(Arr::get($read_info, 'reads', []))
             ->map(fn($r) => data_get($r, 'announcement_id'))
             ->all();
 
