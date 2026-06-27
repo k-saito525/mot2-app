@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 
 class AnnouncementRead extends Model
 {
@@ -57,14 +56,12 @@ class AnnouncementRead extends Model
     /**
      * お知らせを既読にする
      *
+     * @param  int $user_id         ユーザーID
      * @param  int $announcement_id 既読にするお知らせID
      * @return bool true: 登録成功または既に既読、false: 登録失敗
      */
-    public function storeReadStatus(int $announcement_id): bool
+    public function storeReadStatus(int $user_id, int $announcement_id): bool
     {
-        // ユーザーID
-        $user_id = Auth::id();
-
         try {
             static::query()->firstOrCreate([
                 'user_id'         => $user_id,

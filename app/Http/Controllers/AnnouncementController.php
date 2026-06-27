@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\AnnouncementRequest;
-use App\Services\AnnouncementService;
-use Illuminate\Support\Arr;
-use Carbon\Carbon;
 use App\Models\Announcement;
+use App\Models\AnnouncementRead;
+use App\Services\AnnouncementService;
+use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -57,7 +58,7 @@ class AnnouncementController extends Controller
 
         // 表層側で表示されたお知らせは既読にする
         $m_announcement_read = new AnnouncementRead();
-        $res = $m_announcement_read->storeReadStatus($announcement_id);
+        $res = $m_announcement_read->storeReadStatus(Auth::id(), $announcement_id);
 
         if ($res === false) {
             /* DB更新失敗したらとりあえずHOME画面に戻す */
