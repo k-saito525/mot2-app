@@ -31,19 +31,8 @@
               運営が申請内容を確認でき次第、メールにてお知らせいたしますので、しばらくお待ちください。
             </p>
           </div>
-          @if($errors->any() || session('flash_failed'))
-          <div class="form-error">
-            <ul>
-              @foreach ($errors->all() as $error)
-              <li class="error-text">・{{ $error }}</li>
-              @endforeach
-              @if(session('flash_failed'))
-              {{-- 重複チェックエラー --}}
-              <li class="error-text">・{{ session('flash_failed') }}</li>
-              @endif
-            </ul>
-          </div>
-          @endif
+          @include('components.form-errors')
+          @include('components.flash-messages')
           <form action="{{ route('apply.check') }}" method="POST" class="c-form">
             @csrf
             <div class="c-form-item c-form-item--register">
@@ -60,10 +49,6 @@
               @error('email')
               <p class="error-text">※{{ $message }}</p>
               @enderror
-              @if(session('flash_failed'))
-              {{-- 重複チェックエラー --}}
-              <p class="error-text">{{ session('flash_failed') }}</p>
-              @endif
             </div>
             <div class="c-form-item--register iims_activity">
               <p class="c-form-item-title">過去のIIMS活動参加歴 (複数選択可)</p>

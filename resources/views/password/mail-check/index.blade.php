@@ -27,20 +27,8 @@
               メールが届かない場合は、該当のメールアドレスで登録がされていない可能性がございます。お手数ですが<a href="/apply/">こちら</a>よりユーザー登録の申請をし直してください。
             </p>
           </div>
-          @if($errors->any())
-          <div class="form-error">
-            <ul>
-              @foreach ($errors->all() as $error)
-              <li class="error-text">・{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-          @endif
-          @if(session('flash_failed'))
-          <div class="form-error">
-            <p class="error-text">{{ session('flash_failed') }}</p>
-          </div>
-          @endif
+          @include('components.form-errors')
+          @include('components.flash-messages')
           <form action="{{ route('password.reset.send') }}" method="POST" class="c-form">
             @csrf
             <div class="c-form-item">

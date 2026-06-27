@@ -18,11 +18,7 @@
       <main class="l-main">
         <section class="p-sub__section">
           <h1 class="p-sub__head01">{{ data_get($user, 'name') }}さんのページ</h1>
-          @if(session('flash_success'))
-          <div class="flash-complete">
-            <p class="flash-text">・{{ session('flash_success') }}</p>
-          </div>
-          @endif
+          @include('components.flash-messages')
           <div class="p-sub__inner is-user-info">
             <div class="c-user-info__cover">
               @if(!empty(data_get($user, 'user_cover_image')))

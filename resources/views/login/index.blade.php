@@ -18,21 +18,8 @@
       <main class="l-main">
         <section class="p-sub__section">
           <h1 class="p-sub__head01">ログイン</h1>
-          @if($errors->any())
-          <div class="form-error">
-            <ul>
-              @foreach ($errors->all() as $error)
-              <li class="error-text">・{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-          @endif
-          @if(session('flash_failed'))
-          {{-- ユーザーIDが登録だった場合、フラッシュメッセージを表示する --}}
-          <div class="form-error">
-            <p class="error-text">{{ session('flash_failed') }}</p>
-          </div>
-          @endif
+          @include('components.form-errors')
+          @include('components.flash-messages')
           @if(session('complete_regist'))
           <div class="form-error">
             <p class="error-text">{{ session('complete_regist') }}</p>

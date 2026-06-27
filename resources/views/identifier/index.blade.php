@@ -22,20 +22,8 @@
                         <p>続いて、ユーザーIDの設定をしてください。</p>
                         <p>※半角英数アンダースコア(_)を使用して、8文字以上24文字以内で設定してください。</p>
                     </div>
-                    @if($errors->any())
-                    <div class="form-error">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li class="error-text">・{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-                    @if(session('flash_failed'))
-                    <div class="form-error">
-                        <p class="error-text">{{ session('flash_failed') }}</p>
-                    </div>
-                    @endif
+                    @include('components.form-errors')
+                    @include('components.flash-messages')
                     <form action="{{ route('identifier.store') }}" method="POST" class="c-form">
                         @csrf
                         <div class="c-form-item">

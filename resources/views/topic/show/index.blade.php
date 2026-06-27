@@ -18,11 +18,7 @@
       <main class="l-main">
         <section class="p-sub__section">
           <h1 class="p-sub__head01">このトピックの詳細</h1>
-          @if(session('flash_success'))
-          <div class="flash-complete">
-            <p class="flash-text">・{{ session('flash_success') }}</p>
-          </div>
-          @endif
+          @include('components.flash-messages')
           <p class="c-topic-title">{{ data_get($topic, 'title') }}</p>
           <div class="p-sub__inner">
             <div class="c-user no-link">

@@ -24,20 +24,8 @@
               まず、MOT2へログインするためのパスワードを設定してください。
             </p>
           </div>
-          @if($errors->any())
-          <div class="form-error">
-            <ul>
-              @foreach ($errors->all() as $error)
-              <li class="error-text">・{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-          @endif
-          @if(session('flash_failed'))
-          <div class="form-error">
-            <p class="error-text">{{ session('flash_failed') }}</p>
-          </div>
-          @endif
+          @include('components.form-errors')
+          @include('components.flash-messages')
           <form action="{{ route('password.new.store') }}" method="POST" class="c-form">
             @csrf
             <div class="c-form-item">

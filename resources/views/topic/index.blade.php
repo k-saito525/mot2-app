@@ -24,17 +24,7 @@
             </a>
           </div>
           <h1 class="p-sub__head01">トピック一覧　(全{{ $topics->total() }}件)</h1>
-          @if(session('flash_success'))
-          <div class="flash-complete">
-            <p class="flash-text">・{{ session('flash_success') }}</p>
-          </div>
-          @endif
-          @if(session('flash_failed'))
-          {{-- ユーザーIDが登録だった場合、フラッシュメッセージを表示する --}}
-          <div class="form-error">
-            <p class="error-text">{{ session('flash_failed') }}</p>
-          </div>
-          @endif
+          @include('components.flash-messages')
           @if($topics->isEmpty())
           <p>現在表示できるトピックはありません。</p>
           @else

@@ -17,20 +17,8 @@
             <main class="l-main">
                 <section class="p-sub__section">
                     <h1 class="p-sub__head01">お知らせの新規作成</h1>
-                    @if($errors->any())
-                    <div class="form-error">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li class="error-text">・{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-                    @if(session('flash_failed'))
-                    <div class="form-error">
-                        <p class="error-text">{{ session('flash_failed') }}</p>
-                    </div>
-                    @endif
+                    @include('components.form-errors')
+                    @include('components.flash-messages')
                     <div class="p-sub__inner">
                         <form action="{{ route('admin.announcement.store') }}" method="POST" class="c-form">
                             @csrf
