@@ -32,7 +32,7 @@ class Comment extends Model
     /**
      * comment 内のURLをaタグに変換したテキストを返すアクセサ
      *
-     * @return Attribute
+     * @return Attribute<null, string>
      */
     protected function commentFormatted(): Attribute
     {
