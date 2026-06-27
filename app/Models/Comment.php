@@ -72,7 +72,7 @@ class Comment extends Model
      * @param  int $comment_id コメントID
      * @return ?static null: 対象コメントなし
      */
-    public function getCommentsByID(int $comment_id): ?static
+    public function getCommentByID(int $comment_id): ?static
     {
         return static::query()
             ->with('user')
