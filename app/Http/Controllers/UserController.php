@@ -20,12 +20,7 @@ class UserController extends Controller
     // ユーザー一覧画面のデフォルト表示件数
     const int SHOW_CNT_USERS = 40;
 
-    private User $m_user;
-
-    public function __construct(private readonly UserService $userService)
-    {
-        $this->m_user = new User();
-    }
+    public function __construct(private readonly UserService $userService) {}
 
     /**
      * ユーザー情報 - 一覧画面の表示
@@ -35,42 +30,12 @@ class UserController extends Controller
      */
     public function showList(string $page = '1'): View
     {
-        // ページ番号
-        $page = (int)$page;
-        if ($page <= 0) {
-            /* 不正なページ番号の場合は1ページに設定 */
-            $page = 1;
-        }
-
-        // 表示件数
-        $limit = self::SHOW_CNT_USERS;
-        // 何件目から取得するか設定
-        $offset = ($page - 1) * $limit;
-        // トピック情報(新しい順)と総件数を取得
-        $user_info = $this->m_user->getUsersList($limit, $offset);
-        // 取得したトピック情報をトピックと総件数に分ける
-        $users = [];
-        $total_cnt = 0;
-        if (!empty($user_info)) {
-            $users = Arr::get($user_info, 'users', []);
-            $total_cnt = Arr::get($user_info, 'cnt', 0);
-        }
-
-        /* ページネーション */
-        // 次のページ番号
-        $page_next = '';
-        if ($total_cnt > (self::SHOW_CNT_USERS * $page)) {
-            $page_next = $page + 1;
-        }
-        // 前のページ番号
-        $page_previous = $page - 1;
+        $page = max(1, (int)$page);
+        $users = User::orderBy('created_at', 'desc')
+            ->paginate(self::SHOW_CNT_USERS, ['*'], 'page', $page);
 
         return view('user/index', [
             'users' => $users,
-            'total_cnt' => $total_cnt,
-            'page' => $page,
-            'page_next' => $page_next,
-            'page_previous' => $page_previous,
         ]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -73,34 +74,25 @@ class Topic extends Model
     }
 
     /**
-     * トピック一覧と総件数を取得する
+     * トピック一覧をページネータで取得する
      *
-     * @param  ?int $limit  取得件数
-     * @param  ?int $offset 取得開始位置
-     * @return array{ topics: array, cnt: int }
+     * @param  int $perPage 1ページあたりの取得件数
+     * @param  int $page    ページ番号
+     * @return LengthAwarePaginator
      */
-    public function getTopicsList(?int $limit = null, ?int $offset = null): array
+    public function getTopicsList(int $perPage, int $page): LengthAwarePaginator
     {
-        $topic_info = [];
-        $query = static::query()
+        $paginator = static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
-            ->select($this->columns)
-            ->orderBy('topics.created_at', 'desc');
-        if ($limit !== null) {
-            $query = $query->limit($limit);
-        }
-        if ($offset !== null) {
-            $query = $query->offset($offset);
-        }
-        $topics = $query->get();
-        foreach ($topics as $topic) {
+            ->orderBy('topics.created_at', 'desc')
+            ->paginate($perPage, $this->columns, 'page', $page);
+
+        $paginator->getCollection()->transform(function ($topic) {
             $topic->content = self::makeLink($topic->content ?? '');
-        }
-        $topic_info['topics'] = $topics->all();
-        $topic_info['cnt']    = static::query()
-            ->join('users', 'topics.user_id', '=', 'users.id')
-            ->count();
-        return $topic_info;
+            return $topic;
+        });
+
+        return $paginator;
     }
 
     /**

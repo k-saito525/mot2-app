@@ -75,28 +75,6 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * ユーザー一覧と総件数を取得する
-     *
-     * @param  ?int $limit  取得件数
-     * @param  ?int $offset 取得開始位置
-     * @return array{ users: array, cnt: int }
-     */
-    public function getUsersList(?int $limit = null, ?int $offset = null): array
-    {
-        $user_info = [];
-        $query = static::query()->orderBy('created_at', 'desc');
-        if ($limit !== null) {
-            $query = $query->limit($limit);
-        }
-        if ($offset !== null) {
-            $query = $query->offset($offset);
-        }
-        $user_info['users'] = $query->get()->all();
-        $user_info['cnt']   = static::query()->count();
-        return $user_info;
-    }
-
-    /**
      * 参加歴キーを表示用テキストに変換する
      *
      * @param  string $key カンマ区切りの参加歴キー

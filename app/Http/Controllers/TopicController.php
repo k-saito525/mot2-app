@@ -35,47 +35,12 @@ class TopicController extends Controller
      */
     public function showList(string $page = '1'): View
     {
-        /* 表示するトピックの取得 */
-        // ページ番号
-        $page = (int)$page;
-        if ($page <= 0) {
-            /* 不正なページ番号(0以下)の場合は1ページに設定 */
-            $page = 1;
-        }
-        // 表示件数
-        $limit = self::SHOW_CNT_TOPICS;
-        // 何件目から取得するか設定
-        $offset = ($page - 1) * $limit;
-        // トピック情報(新しい順)と総件数を取得
-        $topic_info = $this->m_topic->getTopicsList($limit, $offset);
-        // 取得したトピック情報をトピックと総件数に分ける
-        $topics = [];
-        $total_cnt = 0;
-        if (!empty($topic_info)) {
-            $topics = Arr::get($topic_info, 'topics', []);
-            $total_cnt = Arr::get($topic_info, 'cnt', 0);
-        }
-
-        /* ページネーション */
-        // 次のページ番号
-        $page_next = '';
-        if ($total_cnt > (self::SHOW_CNT_TOPICS * $page)) {
-            $page_next = $page + 1;
-        }
-        // 前のページ番号
-        $page_previous = $page - 1;
-
-
-        // ログインしているユーザーIDを取得(トピック編集ボタンの表示/非表示に使用)
-        $user_id = Auth::id();
+        $page = max(1, (int)$page);
+        $topics = $this->m_topic->getTopicsList(self::SHOW_CNT_TOPICS, $page);
 
         return view('topic/index', [
             'topics' => $topics,
-            'total_cnt' => $total_cnt,
-            'user_id' => $user_id,
-            'page' => $page,
-            'page_next' => $page_next,
-            'page_previous' => $page_previous,
+            'user_id' => Auth::id(),
         ]);
     }
 

@@ -17,8 +17,8 @@
     <div class="l-contents">
       <main class="l-main">
         <section class="p-sub__section">
-          <h1 class="p-sub__head01">ユーザー一覧　(全{{ $total_cnt }}件)</h1>
-          @if(empty($users))
+          <h1 class="p-sub__head01">ユーザー一覧　(全{{ $users->total() }}件)</h1>
+          @if($users->isEmpty())
           <p>現在表示できるユーザー情報はありません。</p>
           @else
           <div class="p-sub__inner">
@@ -52,11 +52,11 @@
             </div>
             @endif
             <div class="c-pagenation">
-              @if($page > 1)
-              <a href="{{ route('user.show.list', ['page' => $page_previous]) }}" class="c-pagenation-item">＜ 前のページ</a>
+              @if($users->currentPage() > 1)
+              <a href="{{ route('user.show.list', ['page' => $users->currentPage() - 1]) }}" class="c-pagenation-item">＜ 前のページ</a>
               @endif
-              @if(!empty($page_next))
-              <a href="{{ route('user.show.list', ['page' => $page_next]) }}" class="c-pagenation-item">次のページ ＞</a>
+              @if($users->hasMorePages())
+              <a href="{{ route('user.show.list', ['page' => $users->currentPage() + 1]) }}" class="c-pagenation-item">次のページ ＞</a>
               @endif
             </div>
           </div>

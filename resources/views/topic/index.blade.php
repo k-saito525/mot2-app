@@ -23,7 +23,7 @@
               <span>トピックを新規作成する</span>
             </a>
           </div>
-          <h1 class="p-sub__head01">トピック一覧　(全{{ $total_cnt }}件)</h1>
+          <h1 class="p-sub__head01">トピック一覧　(全{{ $topics->total() }}件)</h1>
           @if(session('flash_success'))
           <div class="flash-complete">
             <p class="flash-text">・{{ session('flash_success') }}</p>
@@ -35,7 +35,7 @@
             <p class="error-text">{{ session('flash_failed') }}</p>
           </div>
           @endif
-          @if(empty($topics))
+          @if($topics->isEmpty())
           <p>現在表示できるトピックはありません。</p>
           @else
           @foreach($topics as $topic)
@@ -88,11 +88,11 @@
           @endforeach
           @endif
           <div class="c-pagenation">
-            @if($page > 1)
-            <a href="{{ route('topic.show.list', ['page' => $page_previous]) }}" class="c-pagenation-item">＜ 前のページ</a>
+            @if($topics->currentPage() > 1)
+            <a href="{{ route('topic.show.list', ['page' => $topics->currentPage() - 1]) }}" class="c-pagenation-item">＜ 前のページ</a>
             @endif
-            @if(!empty($page_next))
-            <a href="{{ route('topic.show.list', ['page' => $page_next]) }}" class="c-pagenation-item">次のページ ＞</a>
+            @if($topics->hasMorePages())
+            <a href="{{ route('topic.show.list', ['page' => $topics->currentPage() + 1]) }}" class="c-pagenation-item">次のページ ＞</a>
             @endif
           </div>
         </section>
