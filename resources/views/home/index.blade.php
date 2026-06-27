@@ -87,7 +87,7 @@
                   </div>
                   <div class="c-reply-detail">
                     <p>
-                      {!! nl2br(data_get($comment_recc_topic, 'comment')) !!}
+                      {!! nl2br(data_get($comment_recc_topic, 'comment_formatted')) !!}
                     </p>
                     <time class="c-reply-date" datetime="{{ data_get($comment_recc_topic, 'created_at') }}">{{ data_get($comment_recc_topic, 'created_at') }}</time>
                     @if(strtotime(data_get($comment_recc_topic, 'created_at')) !== strtotime(data_get($comment_recc_topic, 'updated_at')))

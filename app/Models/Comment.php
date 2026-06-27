@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,18 @@ class Comment extends Model
         'users.user_identifier',
     ];
 
+    /**
+     * comment 内のURLをaタグに変換したテキストを返すアクセサ
+     *
+     * @return Attribute
+     */
+    protected function commentFormatted(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => Topic::makeLink($this->getRawOriginal('comment') ?? '')
+        );
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -58,17 +71,13 @@ class Comment extends Model
      */
     public function getCommentsByTopicID(int $topic_id): Collection
     {
-        $comments = static::query()
+        return static::query()
             ->join('users', 'comments.user_id', '=', 'users.id')
             ->join('topics', 'comments.topic_id', '=', 'topics.id')
             ->select($this->columns)
             ->where('comments.topic_id', $topic_id)
             ->orderBy('comments.created_at', 'asc')
             ->get();
-        foreach ($comments as $comment) {
-            $comment->comment = Topic::makeLink($comment->comment ?? '');
-        }
-        return $comments;
     }
 
     /**
