@@ -79,7 +79,7 @@ class Announcement extends Model
      * 公開中のお知らせを未読数・既読状態付きで取得する
      *
      * @param  int $user_id ユーザーID
-     * @return array{ unread_count: int, announcement: array|string }
+     * @return array{ unread_count: int, announcement: Announcement[]|string }
      */
     public function getStatusRead(int $user_id): array
     {
