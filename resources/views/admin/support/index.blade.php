@@ -20,7 +20,7 @@
                     <div class="p-sub__inner">
                         @forelse($messages as $message)
                         <div class="c-user">
-                            <p>送信者：{{ data_get($message, 'username') }}</p>
+                            <p>送信者：{{ data_get($message, 'user.name') }}</p>
                             <p>送信日時：{{ data_get($message, 'created_at') }}</p>
                             <p>送信内容：{!! nl2br(htmlspecialchars(data_get($message, 'message'))) !!}</p>
                         </div>

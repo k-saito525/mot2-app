@@ -29,18 +29,6 @@ class Comment extends Model
         ];
     }
 
-    private $columns = [
-        'comments.id',
-        'comments.comment',
-        'comments.created_at',
-        'comments.updated_at',
-        'topics.id as topic_id',
-        'users.id as user_id',
-        'users.name as username',
-        'users.user_icon',
-        'users.user_identifier',
-    ];
-
     /**
      * comment 内のURLをaタグに変換したテキストを返すアクセサ
      *
@@ -72,11 +60,9 @@ class Comment extends Model
     public function getCommentsByTopicID(int $topic_id): Collection
     {
         return static::query()
-            ->join('users', 'comments.user_id', '=', 'users.id')
-            ->join('topics', 'comments.topic_id', '=', 'topics.id')
-            ->select($this->columns)
-            ->where('comments.topic_id', $topic_id)
-            ->orderBy('comments.created_at', 'asc')
+            ->with('user')
+            ->where('topic_id', $topic_id)
+            ->orderBy('created_at', 'asc')
             ->get();
     }
 
@@ -89,11 +75,8 @@ class Comment extends Model
     public function getCommentsByID(int $comment_id): ?static
     {
         return static::query()
-            ->join('users', 'comments.user_id', '=', 'users.id')
-            ->join('topics', 'comments.topic_id', '=', 'topics.id')
-            ->select($this->columns)
-            ->where('comments.id', $comment_id)
-            ->first();
+            ->with('user')
+            ->find($comment_id);
     }
 
     /**

@@ -36,21 +36,21 @@
               <div class="c-user">
                 <a href="{{ route('user.show.detail', ['id' => data_get($recc_topic, 'user_id')]) }}">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($recc_topic, 'user_icon')))
-                    <img src="{{ asset('storage/'. data_get($recc_topic, 'user_icon')) }}" alt="">
+                    @if(!empty(data_get($recc_topic, 'user.user_icon')))
+                    <img src="{{ asset('storage/'. data_get($recc_topic, 'user.user_icon')) }}" alt="">
                     @else
                     <img src="/img/common/dummy_icon.png" alt="">
                     @endif
                   </div>
                   <div class="c-user-info">
-                    <div class="c-user-name">{{ data_get($recc_topic, 'name') }}</div>
-                    <div class="c-user-id">@ {{ data_get($recc_topic, 'user_identifier') }}</div>
+                    <div class="c-user-name">{{ data_get($recc_topic, 'user.name') }}</div>
+                    <div class="c-user-id">@ {{ data_get($recc_topic, 'user.user_identifier') }}</div>
                   </div>
                 </a>
               </div>
               <div class="c-topic-detail">
                 <p>
-                  {!! nl2br(data_get($recc_topic, 'content')) !!}
+                  {!! nl2br(data_get($recc_topic, 'content_formatted')) !!}
                 </p>
                 <time class="c-topic-date" datetime="{{ data_get($recc_topic, 'created_at') }}">{{ data_get($recc_topic, 'created_at') }}</time>
                 @if(strtotime(data_get($recc_topic, 'created_at')) !== strtotime(data_get($recc_topic, 'updated_at')))
@@ -75,15 +75,15 @@
                 @foreach($comment_recc_topics as $comment_recc_topic)
                 <div class="c-reply c-reply--has-detail">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($comment_recc_topic, 'user_icon')))
-                    <img src="{{ asset('storage/'. data_get($comment_recc_topic, 'user_icon')) }}" alt="">
+                    @if(!empty(data_get($comment_recc_topic, 'user.user_icon')))
+                    <img src="{{ asset('storage/'. data_get($comment_recc_topic, 'user.user_icon')) }}" alt="">
                     @else
                     <img src="/img/common/dummy_icon.png" alt="">
                     @endif
                   </div>
                   <div class="c-user-info">
-                    <div class="c-user-name">{{ data_get($comment_recc_topic, 'username') }}</div>
-                    <div class="c-user-id">@ {{ data_get($comment_recc_topic, 'user_identifier') }}</div>
+                    <div class="c-user-name">{{ data_get($comment_recc_topic, 'user.name') }}</div>
+                    <div class="c-user-id">@ {{ data_get($comment_recc_topic, 'user.user_identifier') }}</div>
                   </div>
                   <div class="c-reply-detail">
                     <p>
@@ -118,14 +118,14 @@
               <div class="c-user">
                 <a href="{{ route('user.show.detail', ['id' => $topic->user_id]) }}">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($topic, 'user_icon')))
-                    <img src="{{ asset('storage/'. data_get($topic, 'user_icon')) }}" alt="">
+                    @if(!empty(data_get($topic, 'user.user_icon')))
+                    <img src="{{ asset('storage/'. data_get($topic, 'user.user_icon')) }}" alt="">
                     @else
                     <img src="/img/common/dummy_icon.png" alt="">
                     @endif
                   </div>
                   <div class="c-user-info">
-                    <div class="c-user-name">{{ $topic->name }}</div>
+                    <div class="c-user-name">{{ $topic->user->name }}</div>
                   </div>
                 </a>
               </div>

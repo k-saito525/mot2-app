@@ -30,18 +30,6 @@ class Topic extends Model
         ];
     }
 
-    private $columns = [
-        'topics.id',
-        'topics.title',
-        'topics.content',
-        'topics.user_id',
-        'topics.created_at',
-        'topics.updated_at',
-        'users.name',
-        'users.user_icon',
-        'users.user_identifier',
-    ];
-
     /**
      * content 内のURLをaタグに変換したテキストを返すアクセサ
      *
@@ -73,9 +61,8 @@ class Topic extends Model
     public function getTopics(?int $limit = null): Collection
     {
         $query = static::query()
-            ->join('users', 'topics.user_id', '=', 'users.id')
-            ->select($this->columns)
-            ->orderBy('topics.created_at', 'desc');
+            ->with('user')
+            ->orderBy('created_at', 'desc');
         if ($limit !== null) {
             $query = $query->limit($limit);
         }
@@ -92,9 +79,9 @@ class Topic extends Model
     public function getTopicsList(int $perPage, int $page): LengthAwarePaginator
     {
         return static::query()
-            ->join('users', 'topics.user_id', '=', 'users.id')
-            ->orderBy('topics.created_at', 'desc')
-            ->paginate($perPage, $this->columns, 'page', $page);
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage, ['*'], 'page', $page);
     }
 
     /**
@@ -106,10 +93,8 @@ class Topic extends Model
     public function getTopicById(int $topic_id): ?static
     {
         return static::query()
-            ->join('users', 'topics.user_id', '=', 'users.id')
-            ->select($this->columns)
-            ->where('topics.id', $topic_id)
-            ->first();
+            ->with('user')
+            ->find($topic_id);
     }
 
     /**
@@ -121,9 +106,8 @@ class Topic extends Model
     public function getTopicByUser(int $user_id): Collection
     {
         return static::query()
-            ->join('users', 'topics.user_id', '=', 'users.id')
-            ->select($this->columns)
-            ->where('topics.user_id', $user_id)
+            ->with('user')
+            ->where('user_id', $user_id)
             ->get();
     }
 

@@ -30,14 +30,6 @@ class Support extends Model
         ];
     }
 
-    // 表示用カラム
-    private $columns = [
-        'supports.id',
-        'supports.message',
-        'supports.created_at',
-        'users.name as username',
-    ];
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -51,8 +43,7 @@ class Support extends Model
     public function getMessages(): Collection
     {
         return static::query()
-            ->join('users', 'supports.user_id', '=', 'users.id')
-            ->select($this->columns)
+            ->with('user')
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -66,9 +57,7 @@ class Support extends Model
     public function getMessageById(int $id): ?static
     {
         return static::query()
-            ->join('users', 'supports.user_id', '=', 'users.id')
-            ->select($this->columns)
-            ->where('supports.id', $id)
-            ->first();
+            ->with('user')
+            ->find($id);
     }
 }

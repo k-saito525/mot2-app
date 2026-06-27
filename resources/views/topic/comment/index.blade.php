@@ -22,20 +22,20 @@
           <div class="p-sub__inner">
             <div class="c-user no-link">
               <div class="c-user-icon">
-                @if(!empty(data_get($topic, 'user_icon')))
-                <img src="{{ asset('storage/'. data_get($topic, 'user_icon')) }}" alt="">
+                @if(!empty(data_get($topic, 'user.user_icon')))
+                <img src="{{ asset('storage/'. data_get($topic, 'user.user_icon')) }}" alt="">
                 @else
                 <img src="/img/common/dummy_icon.png" alt="">
                 @endif
               </div>
               <div class="c-user-info">
-                <div class="c-user-name">{{ data_get($topic, 'name') }}</div>
-                <div class="c-user-id">@ {{ data_get($topic, 'user_identifier') }}</div>
+                <div class="c-user-name">{{ data_get($topic, 'user.name') }}</div>
+                <div class="c-user-id">@ {{ data_get($topic, 'user.user_identifier') }}</div>
               </div>
             </div>
             <div class="c-topic-detail">
               <p>
-                {!! nl2br(data_get($topic, 'content')) !!}
+                {!! nl2br(data_get($topic, 'content_formatted')) !!}
               </p>
               <time class="c-topic-date" datetime="{{ data_get($topic, 'created_at') }}">{{ data_get($topic, 'created_at') }}</time>
               @if(strtotime(data_get($topic, 'created_at')) !== strtotime(data_get($topic, 'updated_at')))
@@ -50,15 +50,15 @@
               <div class="c-reply c-reply--has-detail">
                 <div class="c-user no-link">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($comment, 'user_icon')))
-                    <img src="{{ asset('storage/'. data_get($comment, 'user_icon')) }}" alt="">
+                    @if(!empty(data_get($comment, 'user.user_icon')))
+                    <img src="{{ asset('storage/'. data_get($comment, 'user.user_icon')) }}" alt="">
                     @else
                     <img src="/img/common/dummy_icon.png" alt="">
                     @endif
                   </div>
                   <div class="c-user-info">
-                    <div class="c-user-name">{{ data_get($comment, 'username') }}</div>
-                    <div class="c-user-id">@ {{ data_get($comment, 'user_identifier') }}</div>
+                    <div class="c-user-name">{{ data_get($comment, 'user.name') }}</div>
+                    <div class="c-user-id">@ {{ data_get($comment, 'user.user_identifier') }}</div>
                   </div>
                 </div>
                 <div class="c-reply-detail">
