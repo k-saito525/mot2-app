@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class AnnouncementRead extends Model
 {
@@ -16,12 +15,14 @@ class AnnouncementRead extends Model
     protected $table = 'announcement_reads';
 
     // 複合主キー (user_id + announcement_id) のため id カラムは存在しない
-    // Eloquent は複合主キー非対応のため、全クエリは DB::table() で直接操作する
+    // Eloquent は複合主キー非対応のため find() は使用不可
     protected $primaryKey = null;
     public $incrementing = false;
 
     // created_at のみ存在するためupdated_atは無効化
     const UPDATED_AT = null;
+
+    protected $fillable = ['user_id', 'announcement_id'];
 
     public function user(): BelongsTo
     {
@@ -42,20 +43,15 @@ class AnnouncementRead extends Model
      */
     public function getCount(int $user_id, array $announcement_id): array
     {
-        $res = [];
-        // 既読のお知らせID
-        $res['id'] = DB::table($this->table)
-            ->join('announcements', 'announcement_reads.announcement_id', '=', 'announcements.id')
-            ->where('announcement_reads.user_id', $user_id)
-            ->whereIn('announcement_reads.announcement_id', $announcement_id)
-            ->whereNull('announcements.deleted_at')
-            ->get()
-            ->toArray();
+        $reads = static::query()
+            ->where('user_id', $user_id)
+            ->whereIn('announcement_id', $announcement_id)
+            ->get();
 
-        // 既読数
-        $res['read_count'] = count($res['id']);
-
-        return $res;
+        return [
+            'id'         => $reads->toArray(),
+            'read_count' => $reads->count(),
+        ];
     }
 
     /**
@@ -69,25 +65,14 @@ class AnnouncementRead extends Model
         // ユーザーID
         $user_id = Auth::id();
 
-        $exists = DB::table($this->table)
-            ->where('user_id', $user_id)
-            ->where('announcement_id', $announcement_id)
-            ->exists();
-
-        if (!$exists) {
-            /* 未読の場合のみDB更新 */
-            try {
-                DB::table($this->table)
-                    ->insert([
-                        'user_id'         => $user_id,
-                        'announcement_id' => $announcement_id,
-                    ]);
-                return true;
-            } catch (\Exception) {
-                return false;
-            }
-        } else {
+        try {
+            static::query()->firstOrCreate([
+                'user_id'         => $user_id,
+                'announcement_id' => $announcement_id,
+            ]);
             return true;
+        } catch (\Exception) {
+            return false;
         }
     }
 
@@ -99,7 +84,7 @@ class AnnouncementRead extends Model
      */
     public function deleteReadsByAnnouncementId(int $announcement_id): void
     {
-        DB::table($this->table)
+        static::query()
             ->where('announcement_id', $announcement_id)
             ->delete();
     }
