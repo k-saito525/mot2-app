@@ -23,6 +23,8 @@ class UserService
     public function updateProfile(array $input, User $user): string
     {
         $changed_email = false;
+        $old_icon      = null;
+        $old_cover     = null;
 
         if (!empty(Arr::get($input, 'name', ''))) {
             $user->name = Arr::get($input, 'name', '');
@@ -64,15 +66,17 @@ class UserService
             $user->past_join = Arr::get($input, 'past-join', []);
         }
 
-        if (!empty(Arr::get($input, 'user_icon'))) {
-            $user->user_icon = $this->storeImage(Arr::get($input, 'user_icon'), 'icon', $user->user_icon);
-        }
-
-        if (!empty(Arr::get($input, 'user_cover_image'))) {
-            $user->user_cover_image = $this->storeImage(Arr::get($input, 'user_cover_image'), 'cover', $user->user_cover_image);
-        }
-
         try {
+            if (!empty(Arr::get($input, 'user_icon'))) {
+                $old_icon        = $user->user_icon;
+                $user->user_icon = $this->storeImage(Arr::get($input, 'user_icon'), 'icon');
+            }
+
+            if (!empty(Arr::get($input, 'user_cover_image'))) {
+                $old_cover             = $user->user_cover_image;
+                $user->user_cover_image = $this->storeImage(Arr::get($input, 'user_cover_image'), 'cover');
+            }
+
             $user->save();
             if ($changed_email) {
                 Mail::to($user->email)->send(new MailChangeEmail($user, $old_email));
@@ -81,23 +85,30 @@ class UserService
             return __('users.fail.failed_update');
         }
 
+        if ($old_icon !== null) {
+            Storage::disk('public')->delete('icon/' . $old_icon);
+        }
+        if ($old_cover !== null) {
+            Storage::disk('public')->delete('cover/' . $old_cover);
+        }
+
         return '';
     }
 
     /**
-     * 画像をストレージに保存し、既存ファイルを削除してパスを返す
+     * 画像をストレージに保存してパスを返す
      *
-     * @param  UploadedFile $file         アップロードされたファイル
-     * @param  string       $directory    保存先ディレクトリ名（例: 'icon', 'cover'）
-     * @param  string|null  $existingPath 既存ファイルのパス（削除対象）
+     * @param  UploadedFile $file      アップロードされたファイル
+     * @param  string       $directory 保存先ディレクトリ名（例: 'icon', 'cover'）
      * @return string 保存後のファイルパス
+     * @throws \RuntimeException ファイル保存に失敗した場合
      */
-    private function storeImage(UploadedFile $file, string $directory, ?string $existingPath): string
+    private function storeImage(UploadedFile $file, string $directory): string
     {
-        if (!empty($existingPath)) {
-            Storage::disk('public')->delete($directory . '/' . $existingPath);
-        }
         $path = $file->store($directory);
+        if ($path === false) {
+            throw new \RuntimeException('Image upload failed.');
+        }
         return str_replace('public/' . $directory . '/', '', $path);
     }
 
