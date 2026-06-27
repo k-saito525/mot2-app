@@ -113,7 +113,7 @@ class UserController extends Controller
             }
 
             // 更新実行
-            $error = $this->userService->updateProfile($input);
+            $error = $this->userService->updateProfile($input, $target_user);
             if (empty($error)) {
                 /* エラーメッセージがなければ更新成功 */
                 session()->flash('flash_success', __('users.success.updated'));

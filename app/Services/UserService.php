@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\MailChangeEmail;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -15,12 +16,12 @@ class UserService
      *
      * アイコン・カバー画像のストレージ操作と、メールアドレス変更時の通知送信も行う。
      *
-     * @param  array  $input リクエスト入力値（user_id を含む）
+     * @param  array  $input リクエスト入力値
+     * @param  User   $user  更新対象のユーザー
      * @return string エラーメッセージ。成功時は空文字列を返す
      */
-    public function updateProfile(array $input): string
+    public function updateProfile(array $input, User $user): string
     {
-        $user = User::find(Arr::get($input, 'user_id'));
         $changed_email = false;
 
         if (!empty(Arr::get($input, 'name', ''))) {
@@ -64,19 +65,11 @@ class UserService
         }
 
         if (!empty(Arr::get($input, 'user_icon'))) {
-            if (!empty($user->user_icon)) {
-                Storage::disk('public')->delete('icon/' . $user->user_icon);
-            }
-            $path_icon = Arr::get($input, 'user_icon')->store('icon');
-            $user->user_icon = str_replace('public/icon/', '', $path_icon);
+            $user->user_icon = $this->storeImage(Arr::get($input, 'user_icon'), 'icon', $user->user_icon);
         }
 
         if (!empty(Arr::get($input, 'user_cover_image'))) {
-            if (!empty($user->user_cover_image)) {
-                Storage::disk('public')->delete('cover/' . $user->user_cover_image);
-            }
-            $path_cover = Arr::get($input, 'user_cover_image')->store('cover');
-            $user->user_cover_image = str_replace('public/cover/', '', $path_cover);
+            $user->user_cover_image = $this->storeImage(Arr::get($input, 'user_cover_image'), 'cover', $user->user_cover_image);
         }
 
         try {
@@ -89,6 +82,23 @@ class UserService
         }
 
         return '';
+    }
+
+    /**
+     * 画像をストレージに保存し、既存ファイルを削除してパスを返す
+     *
+     * @param  UploadedFile $file         アップロードされたファイル
+     * @param  string       $directory    保存先ディレクトリ名（例: 'icon', 'cover'）
+     * @param  string|null  $existingPath 既存ファイルのパス（削除対象）
+     * @return string 保存後のファイルパス
+     */
+    private function storeImage(UploadedFile $file, string $directory, ?string $existingPath): string
+    {
+        if (!empty($existingPath)) {
+            Storage::disk('public')->delete($directory . '/' . $existingPath);
+        }
+        $path = $file->store($directory);
+        return str_replace('public/' . $directory . '/', '', $path);
     }
 
     /**
