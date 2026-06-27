@@ -42,6 +42,18 @@ class Topic extends Model
         'users.user_identifier',
     ];
 
+    /**
+     * content 内のURLをaタグに変換したテキストを返すアクセサ
+     *
+     * @return Attribute
+     */
+    protected function contentFormatted(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => self::makeLink($this->getRawOriginal('content') ?? '')
+        );
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -67,11 +79,7 @@ class Topic extends Model
         if ($limit !== null) {
             $query = $query->limit($limit);
         }
-        $topics = $query->get();
-        foreach ($topics as $topic) {
-            $topic->content = self::makeLink($topic->content ?? '');
-        }
-        return $topics;
+        return $query->get();
     }
 
     /**
@@ -83,37 +91,25 @@ class Topic extends Model
      */
     public function getTopicsList(int $perPage, int $page): LengthAwarePaginator
     {
-        $paginator = static::query()
+        return static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->orderBy('topics.created_at', 'desc')
             ->paginate($perPage, $this->columns, 'page', $page);
-
-        $paginator->getCollection()->transform(function ($topic) {
-            $topic->content = self::makeLink($topic->content ?? '');
-            return $topic;
-        });
-
-        return $paginator;
     }
 
     /**
      * IDを指定してトピックを1件取得する
      *
-     * @param  int  $topic_id トピックID
-     * @param  bool $flg_link content 内のURLをリンクに変換するか
+     * @param  int $topic_id トピックID
      * @return ?static null: 対象トピックなし
      */
-    public function getTopicById(int $topic_id, bool $flg_link = true): ?static
+    public function getTopicById(int $topic_id): ?static
     {
-        $topic = static::query()
+        return static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->select($this->columns)
             ->where('topics.id', $topic_id)
             ->first();
-        if ($flg_link === true && $topic !== null && !empty($topic->content)) {
-            $topic->content = self::makeLink($topic->content);
-        }
-        return $topic;
     }
 
     /**
@@ -124,15 +120,11 @@ class Topic extends Model
      */
     public function getTopicByUser(int $user_id): Collection
     {
-        $topics = static::query()
+        return static::query()
             ->join('users', 'topics.user_id', '=', 'users.id')
             ->select($this->columns)
             ->where('topics.user_id', $user_id)
             ->get();
-        foreach ($topics as $topic) {
-            $topic->content = self::makeLink($topic->content ?? '');
-        }
-        return $topics;
     }
 
     /**
@@ -146,10 +138,11 @@ class Topic extends Model
         if (empty($content)) {
             return '';
         }
+        $escaped = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
         return mb_ereg_replace(
             "(https?)(://[[:alnum:]\+\$\;\?\.%,!#~*/:@&=_-]+)",
             '<a class="content-link" href="\1\2">\1\2</a>',
-            $content
+            $escaped
         );
     }
 }

@@ -42,7 +42,7 @@
             </div>
             <div class="c-topic-detail">
               <p>
-                {!! nl2br(data_get($topic, 'content')) !!}
+                {!! nl2br(data_get($topic, 'content_formatted')) !!}
               </p>
               <time class="c-topic-date" datetime="{{ data_get($topic, 'created_at') }}">{{ data_get($topic, 'created_at') }}</time>
               @if(strtotime(data_get($topic, 'created_at')) !== strtotime(data_get($topic, 'updated_at')))

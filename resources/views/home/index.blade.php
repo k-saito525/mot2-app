@@ -130,7 +130,7 @@
                 </a>
               </div>
               <div class="c-topic-detail">
-                <p>{!! nl2br(htmlspecialchars($topic->content)) !!}</p>
+                <p>{!! nl2br($topic->content_formatted) !!}</p>
                 <time class="c-topic-date" datetime="{{ $topic->created_at }}">{{ $topic->created_at }}</time>
                 <time class="c-topic-date" datetime="{{ $topic->updated_at }}">（更新：{{ $topic->updated_at }}）</time>
               </div>

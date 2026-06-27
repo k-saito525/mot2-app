@@ -55,8 +55,8 @@ class TopicController extends Controller
         // IDを元にトピックの詳細を取得
         $topic_id = (int)$id;
         $topic = $this->m_topic->getTopicById($topic_id);
+        // 存在しないIDもしくは削除済みの場合は404
         if ($topic === null) {
-            /* 存在しないIDもしくは削除済みの場合は404 */
             abort(404);
         }
 
@@ -99,15 +99,14 @@ class TopicController extends Controller
         // ログインしているユーザー情報を取得
         $user = Auth::user();
         // トピックIDを元にトピック情報を取得
-        $topic = $this->m_topic->getTopicById((int)$id, false);
+        $topic = $this->m_topic->getTopicById((int)$id);
 
-        /* 不正アクセス対策 */
+        // 不正アクセス対策
         if ($topic === null) {
-            /* IDが不正の場合は404 */
             abort(404);
         }
+        // 投稿者以外は編集できないため一覧に戻す
         if ($user->id !== $topic->user_id) {
-            /* 投稿者以外は編集できないため一覧に戻す */
             return back();
         }
 
