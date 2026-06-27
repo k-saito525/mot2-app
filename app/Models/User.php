@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Arr;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -74,25 +73,4 @@ class User extends Authenticatable implements MustVerifyEmail
         return $query->where('is_approved', 0);
     }
 
-    /**
-     * 参加歴キーを表示用テキストに変換する
-     *
-     * @param  string $key カンマ区切りの参加歴キー
-     * @return string カンマ区切りの表示用テキスト
-     */
-    public function convertPastJoinToText(string $key): string
-    {
-        $arr_ret = [];
-        $activity_list = __('iims_activity');
-        $arr_past_join = explode(',', $key);
-        foreach ($activity_list as $list) {
-            foreach ($arr_past_join as $join_key) {
-                $view_text = Arr::get($list, $join_key);
-                if (!empty($view_text)) {
-                    $arr_ret[] = $view_text;
-                }
-            }
-        }
-        return implode(',', $arr_ret);
-    }
 }

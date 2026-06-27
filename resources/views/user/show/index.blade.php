@@ -49,23 +49,23 @@
             </div>
             <div class="c-user-info__foot">
               <div class="c-user__sns">
-                @if(!empty(data_get($user, 'sns_x')))
+                @if(data_get($user->sns_links, 'x'))
                 <div class="c-user__sns-item">
-                  <a href="{{ data_get($user, 'sns_x') }}" target="_blank">
+                  <a href="{{ data_get($user->sns_links, 'x') }}" target="_blank">
                     <img src="/img/common/icon_circle_x.svg" alt="X">
                   </a>
                 </div>
                 @endif
-                @if(!empty(data_get($user, 'sns_facebook')))
+                @if(data_get($user->sns_links, 'facebook'))
                 <div class="c-user__sns-item">
-                  <a href="{{ data_get($user, 'sns_facebook') }}" target="_blank">
+                  <a href="{{ data_get($user->sns_links, 'facebook') }}" target="_blank">
                     <img src="/img/common/icon_circle_facebook.svg" alt="X">
                   </a>
                 </div>
                 @endif
-                @if(!empty(data_get($user, 'sns_instagram')))
+                @if(data_get($user->sns_links, 'instagram'))
                 <div class="c-user__sns-item">
-                  <a href="{{ data_get($user, 'sns_instagram') }}" target="_blank">
+                  <a href="{{ data_get($user->sns_links, 'instagram') }}" target="_blank">
                     <img src="/img/common/icon_circle_instagram.svg" alt="X">
                   </a>
                 </div>

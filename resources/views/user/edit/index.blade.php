@@ -85,21 +85,21 @@
               </div>
               <div class="c-form-item">
                 <label for="sns_x" class="c-form-item-title">X（Twitter）アカウント</label>
-                <input type="text" name="sns_x" id="user-x" value="{{ data_get($user, 'sns_x', '') }}" placeholder="https://twitter.com/username">
+                <input type="text" name="sns_x" id="user-x" value="{{ data_get($user->sns_links, 'x', '') }}" placeholder="https://twitter.com/username">
                 @error('sns_x')
                 <p class="error-text">※{{ $message }}</p>
                 @enderror
               </div>
               <div class="c-form-item">
                 <label for="sns_facebook" class="c-form-item-title">Facebookアカウント</label>
-                <input type="text" name="sns_facebook" id="user-fb" value="{{ data_get($user, 'sns_facebook', '') }}" placeholder="https://www.facebook.com/username/">
+                <input type="text" name="sns_facebook" id="user-fb" value="{{ data_get($user->sns_links, 'facebook', '') }}" placeholder="https://www.facebook.com/username/">
                 @error('sns_facebook')
                 <p class="error-text">※{{ $message }}</p>
                 @enderror
               </div>
               <div class="c-form-item">
                 <label for="sns_insta" class="c-form-item-title">Instagramアカウント</label>
-                <input type="text" name="sns_instagram" id="user-insta" value="{{ data_get($user, 'sns_instagram', '') }}" placeholder="https://www.instagram.com/username/">
+                <input type="text" name="sns_instagram" id="user-insta" value="{{ data_get($user->sns_links, 'instagram', '') }}" placeholder="https://www.instagram.com/username/">
                 @error('sns_instagram')
                 <p class="error-text">※{{ $message }}</p>
                 @enderror
@@ -121,8 +121,7 @@
                       @foreach($list as $key => $val)
                       <?php
                       $checked = '';
-                      $arr_past_join = explode(',', $user->past_join);
-                      if (in_array($key, $arr_past_join)) {
+                      if (in_array($key, $user->past_join ?? [])) {
                         $checked = 'checked';
                       }
                       ?>
