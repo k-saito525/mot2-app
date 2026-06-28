@@ -24,11 +24,7 @@
             <div class="c-user no-link">
               <a href="{{ route('user.show.detail', ['id' => data_get($topic, 'user_id')]) }}">
                 <div class="c-user-icon">
-                  @if(!empty(data_get($topic, 'user.user_icon')))
-                  <img src="{{ asset('storage/'. data_get($topic, 'user.user_icon')) }}" alt="">
-                  @else
-                  <img src="/img/common/dummy_icon.png" alt="">
-                  @endif
+                  <x-user-icon :user="$topic->user" />
                 </div>
                 <div class="c-user-info">
                   <div class="c-user-name">{{ data_get($topic, 'user.name') }}</div>
@@ -54,11 +50,7 @@
               <div class="c-reply c-reply--has-detail">
                 <div class="c-user no-link">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($comment, 'user.user_icon')))
-                    <img src="{{ asset('storage/'. data_get($comment, 'user.user_icon')) }}" alt="">
-                    @else
-                    <img src="/img/common/dummy_icon.png" alt="">
-                    @endif
+                    <x-user-icon :user="$comment->user" />
                   </div>
                   <div class="c-user-info">
                     <div class="c-user-name">{{ data_get($comment, 'user.name') }}</div>

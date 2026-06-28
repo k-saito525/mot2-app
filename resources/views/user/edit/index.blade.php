@@ -29,11 +29,7 @@
               <div class="c-form-item">
                 <label for="user_icon" class="c-form-item-title">アイコン画像</label>
                 <div class="c-form__icon-preview">
-                  @if(!empty(data_get($user, 'user_icon')))
-                  <img src="{{ asset('storage/'. data_get($user, 'user_icon')) }}" alt="">
-                  @else
-                  <img src="/img/common/dummy_icon.png" alt="">
-                  @endif
+                  <x-user-icon :user="$user" />
                 </div>
                 <input type="file" name="user_icon" id="user-icon" accept="image/png, image/jpeg, image/jpg">
                 @error('user_icon')

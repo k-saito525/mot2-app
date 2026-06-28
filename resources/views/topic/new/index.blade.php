@@ -23,11 +23,7 @@
           <div class="p-sub__inner">
             <div class="c-user">
               <div class="c-user-icon">
-                @if(!empty(data_get($user, 'user_icon')))
-                <img src="{{ asset('storage/'. data_get($user, 'user_icon')) }}" alt="">
-                @else
-                <img src="/img/common/dummy_icon.png" alt="">
-                @endif
+                <x-user-icon :user="$user" />
               </div>
               <div class="c-user-name">{{ $user->name }}</div>
             </div>

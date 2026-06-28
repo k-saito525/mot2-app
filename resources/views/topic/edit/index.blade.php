@@ -25,11 +25,7 @@
               <div class="c-form-item">
                 <div class="c-user no-link">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($topic, 'user.user_icon')))
-                    <img src="{{ asset('storage/'. data_get($topic, 'user.user_icon')) }}" alt="">
-                    @else
-                    <img src="/img/common/dummy_icon.png" alt="">
-                    @endif
+                    <x-user-icon :user="$topic->user" />
                   </div>
                   <div class="c-user-info">
                     <div class="c-user-name">{{ data_get($topic, 'user.name') }}</div>

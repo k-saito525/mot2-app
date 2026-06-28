@@ -36,11 +36,7 @@
               <div class="c-user">
                 <a href="{{ route('user.show.detail', ['id' => data_get($recc_topic, 'user_id')]) }}">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($recc_topic, 'user.user_icon')))
-                    <img src="{{ asset('storage/'. data_get($recc_topic, 'user.user_icon')) }}" alt="">
-                    @else
-                    <img src="/img/common/dummy_icon.png" alt="">
-                    @endif
+                    <x-user-icon :user="$recc_topic->user" />
                   </div>
                   <div class="c-user-info">
                     <div class="c-user-name">{{ data_get($recc_topic, 'user.name') }}</div>
@@ -75,11 +71,7 @@
                 @foreach($comment_recc_topics as $comment_recc_topic)
                 <div class="c-reply c-reply--has-detail">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($comment_recc_topic, 'user.user_icon')))
-                    <img src="{{ asset('storage/'. data_get($comment_recc_topic, 'user.user_icon')) }}" alt="">
-                    @else
-                    <img src="/img/common/dummy_icon.png" alt="">
-                    @endif
+                    <x-user-icon :user="$comment_recc_topic->user" />
                   </div>
                   <div class="c-user-info">
                     <div class="c-user-name">{{ data_get($comment_recc_topic, 'user.name') }}</div>
@@ -118,11 +110,7 @@
               <div class="c-user">
                 <a href="{{ route('user.show.detail', ['id' => $topic->user_id]) }}">
                   <div class="c-user-icon">
-                    @if(!empty(data_get($topic, 'user.user_icon')))
-                    <img src="{{ asset('storage/'. data_get($topic, 'user.user_icon')) }}" alt="">
-                    @else
-                    <img src="/img/common/dummy_icon.png" alt="">
-                    @endif
+                    <x-user-icon :user="$topic->user" />
                   </div>
                   <div class="c-user-info">
                     <div class="c-user-name">{{ $topic->user->name }}</div>
