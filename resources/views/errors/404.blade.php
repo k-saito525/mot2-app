@@ -19,7 +19,7 @@
       <main class="l-main">
         <section class="sub">
           <div class="topic-path">
-            <div class="path top"><a href="/">トップページ</a></div>
+            <div class="path top"><a href="{{ route('top') }}">トップページ</a></div>
             <div class="path current"><span>お探しのページが見つかりません</span></div>
           </div>
           <div class="subpage-head-wrap">
@@ -28,7 +28,7 @@
           <div class="subpage-wrap">
             <div class="notfound-wrap">
               <p class="text">大変申し訳ございませんが、お探しのページは削除されたか、名前が変更されている等、現在ご利用できない可能性がございます。</p>
-              <div class="viewmore-btn"><a href="/">トップページへ戻る</a></div>
+              <div class="viewmore-btn"><a href="{{ route('top') }}">トップページへ戻る</a></div>
             </div>
           </div>
         </section>
