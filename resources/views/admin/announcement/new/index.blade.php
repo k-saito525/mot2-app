@@ -24,18 +24,13 @@
                             @csrf
                             <input type="hidden" name="user_id" value="{{ $user_id }}">
                             <div class="c-form-item">
-                                <?php
-                                // 日付選択範囲
-                                $min = date('Y') . '-01-01';
-                                $max = date('Y') + 5 . '-12-31';
-                                ?>
                                 {{-- 公開開始日 --}}
-                                <input type="date" name="pub-start" id="pub-start" value="{{ old('pub-start') }}" min="{{ $min }}" max="{{ $max }}" required>
+                                <input type="date" name="pub-start" id="pub-start" value="{{ old('pub-start') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}" required>
                                 @error('pub-start')
                                 <p class="error-text">※{{ $message }}</p>
                                 @enderror
                                 {{-- 公開終了日 --}}
-                                <input type="date" name="pub-end" id="pub-end" value="{{ old('pub-end') }}" min="{{ $min }}" max="{{ $max }}">
+                                <input type="date" name="pub-end" id="pub-end" value="{{ old('pub-end') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}">
                                 @error('pub-end')
                                 <p class="error-text">※{{ $message }}</p>
                                 @enderror

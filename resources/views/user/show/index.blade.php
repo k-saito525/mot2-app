@@ -70,10 +70,7 @@
         <section class="p-sub__section">
           <h2 class="p-sub__head02">{{ data_get($user, 'name') }}さんのトピック一覧</h2>
           <div class="c-topic-wrap">
-            @if($topics->isEmpty())
-            <p>現在表示できるトピックはありません。</p>
-            @else
-            @foreach($topics as $topic)
+            @forelse($topics as $topic)
             <a href="{{ route('topic.show.detail', ['id' => data_get($topic, 'id')]) }}" class="c-topic-title js-accordion-topic">{{ data_get($topic, 'title') }}</a>
             <div class="p-sub__inner user-topic">
               <div class="c-user">
@@ -111,8 +108,9 @@
                 @endif
               </div>
             </div>
-            @endforeach
-            @endif
+            @empty
+            <p>現在表示できるトピックはありません。</p>
+            @endforelse
           </div>
         </section>
       </main>

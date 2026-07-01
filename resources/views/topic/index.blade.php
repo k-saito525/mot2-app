@@ -25,10 +25,7 @@
           </div>
           <h1 class="p-sub__head01">トピック一覧　(全{{ $topics->total() }}件)</h1>
           @include('components.flash-messages')
-          @if($topics->isEmpty())
-          <p>現在表示できるトピックはありません。</p>
-          @else
-          @foreach($topics as $topic)
+          @forelse($topics as $topic)
           <div class="c-topic-wrap">
             <a href="{{ route('topic.show.detail', ['id' => data_get($topic, 'id')]) }}" class="c-topic-title js-accordion-topic">{{ data_get($topic, 'title') }}</a>
             <div class="p-sub__inner">
@@ -71,8 +68,9 @@
               </div>
             </div>
           </div>
-          @endforeach
-          @endif
+          @empty
+          <p>現在表示できるトピックはありません。</p>
+          @endforelse
           <div class="c-pagenation">
             @if($topics->currentPage() > 1)
             <a href="{{ route('topic.show.list', ['page' => $topics->currentPage() - 1]) }}" class="c-pagenation-item">＜ 前のページ</a>
