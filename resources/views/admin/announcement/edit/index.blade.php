@@ -23,18 +23,13 @@
                             @csrf
                             <input type="hidden" name="announcement_id" value="{{ data_get($announcement, 'id') }}">
                             <div class="c-form-item">
-                                <?php
-                                // 日付選択範囲
-                                $min = date('Y') . '-01-01';
-                                $max = date('Y') + 5 . '-12-31';
-                                ?>
                                 {{-- 公開開始日 --}}
-                                <input type="date" name="pub-start" id="pub-start" value="{{ data_get($announcement, 'pub_start_at') }}" min="{{ $min }}" max="{{ $max }}" required>
+                                <input type="date" name="pub-start" id="pub-start" value="{{ data_get($announcement, 'pub_start_at') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}" required>
                                 @error('pub-start')
                                 <span class="error-text">※{{ $message }}</span>
                                 @enderror
                                 {{-- 公開終了日 --}}
-                                <input type="date" name="pub-end" id="pub-end" value="{{ data_get($announcement, 'pub_end_at') }}" min="{{ $min }}" max="{{ $max }}">
+                                <input type="date" name="pub-end" id="pub-end" value="{{ data_get($announcement, 'pub_end_at') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}">
                                 @error('pub-end')
                                 <span class="error-text">※{{ $message }}</span>
                                 @enderror

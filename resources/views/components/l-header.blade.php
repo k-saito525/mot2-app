@@ -19,7 +19,7 @@
         <div class="l-header__info-list">
           @if(!empty($announcement_info['announcement']))
           @foreach(data_get($announcement_info, 'announcement', []) as $val)
-          <div class="l-header__info-list-item {{ !isset($val->pub_status) ? 'unread' : '' }}">
+          <div @class(['l-header__info-list-item', 'unread' => !isset($val->pub_status)])>
             <a href="{{ route('show.detail.announcement', ['id' => data_get($val, 'id')]) }}">{{ data_get($val, 'title') }}</a>
           </div>
           @endforeach
