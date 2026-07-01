@@ -10,9 +10,7 @@
 <body class="is-subpage">
   <div class="l-container">
 
-    <!-- l-header START -->
     @include('components.l-header')
-    <!-- l-header END -->
 
     <div class="l-contents">
       <main class="l-main">
@@ -50,9 +48,7 @@
           </div>
         </section>
       </main>
-      <!-- l-footer START -->
       @include('components.l-footer')
-      <!-- l-footer END -->
     </div>
   </div>
   @include('components.javascript')

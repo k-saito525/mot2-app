@@ -10,9 +10,7 @@
 <body class="is-subpage">
   <div class="l-container">
 
-    <!-- l-header START -->
     @include('components.l-header')
-    <!-- l-header END -->
 
     <div class="l-contents">
       <main class="l-main">
@@ -170,20 +168,10 @@
         <a href="{{ route('admin.show.index') }}">管理者画面はこちら</a>
         @endif
       </main>
-      <!-- l-footer START -->
       @include('components.l-footer')
-      <!-- l-footer END -->
     </div>
   </div>
   @include('components.javascript')
-  <!-- <script>
-    // メッセージ送信完了時にフォーム部分まで移動させる
-    window.onload = function() {
-      if ($("#contact").hasClass("required")) { //#contactとrequired は任意です。
-        window.location.hash = "message"
-      }
-    };
-  </script> -->
 </body>
 
 </html>

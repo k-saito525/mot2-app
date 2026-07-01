@@ -10,9 +10,7 @@
 <body class="is-subpage">
   <div class="l-container">
 
-    <!-- l-header START -->
     @include('components.l-header')
-    <!-- l-header END -->
 
     <div class="l-contents">
       <main class="l-main">
@@ -40,9 +38,6 @@
                 <div class="c-user-follow-wrap">
                   <a class="c-user-follow not-follow" href="{{ route('user.show.detail', ['id' => data_get($user, 'id')]) }}">もっと見る</a>
                 </div>
-                <!-- <div class="c-user-follow-wrap">
-                  <span class="c-user-follow follow">フォロー中</span>
-                </div> -->
               </div>
               @endforeach
             </div>
@@ -58,9 +53,7 @@
           </div>
         </section>
       </main>
-      <!-- l-footer START -->
       @include('components.l-footer')
-      <!-- l-footer END -->
     </div>
   </div>
   @include('components.javascript')

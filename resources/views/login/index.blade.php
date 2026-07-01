@@ -10,9 +10,7 @@
 <body class="p-top">
   <div class="l-container">
 
-    <!-- l-header START -->
     @include('components.l-header-top')
-    <!-- l-header END -->
 
     <div class="l-contents">
       <main class="l-main">
@@ -54,9 +52,7 @@
           </div>
         </section>
       </main>
-      <!-- l-footer START -->
       @include('components.l-footer-top')
-      <!-- l-footer END -->
     </div>
   </div>
   @include('components.javascript')

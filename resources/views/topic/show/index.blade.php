@@ -10,9 +10,7 @@
 <body class="is-subpage">
   <div class="l-container">
 
-    <!-- l-header START -->
     @include('components.l-header')
-    <!-- l-header END -->
 
     <div class="l-contents">
       <main class="l-main">
@@ -42,8 +40,6 @@
               @endif
             </div>
 
-            <?php // ここからコメント 
-            ?>
             <div class="c-reply-wrap">
               @if($comments->isNotEmpty())
               @foreach($comments as $comment)
@@ -87,9 +83,7 @@
           </div>
         </section>
       </main>
-      <!-- l-footer START -->
       @include('components.l-footer')
-      <!-- l-footer END -->
     </div>
   </div>
   @include('components.javascript')

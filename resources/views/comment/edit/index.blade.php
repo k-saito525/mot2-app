@@ -10,9 +10,7 @@
 <body class="is-subpage">
   <div class="l-container">
 
-    <!-- l-header START -->
     @include('components.l-header')
-    <!-- l-header END -->
 
     <div class="l-contents">
       <main class="l-main">
@@ -90,7 +88,6 @@
                         <div class="c-user-id">@ {{ data_get($target_comment, 'user.user_identifier') }}</div>
                       </div>
                     </div>
-                    <!-- <textarea name="comment" id="comment" cols="30" rows="10">{!! nl2br(htmlspecialchars(data_get($target_comment, 'comment'))) !!}</textarea> -->
                     <textarea name="comment" id="comment" cols="30" rows="10">{{ data_get($target_comment, 'comment') }}</textarea>
                     @error('comment')
                     <p class="error-text">※{{ $message }}</p>
@@ -109,9 +106,7 @@
   </div>
   </section>
   </main>
-  <!-- l-footer START -->
   @include('components.l-footer')
-  <!-- l-footer END -->
   </div>
   </div>
   @include('components.javascript')
