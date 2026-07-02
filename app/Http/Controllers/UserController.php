@@ -94,35 +94,31 @@ class UserController extends Controller
         $input = $request->all();
 
         if (empty($input)) {
-            /* 入力情報が無い場合 ※バリデートがあるため通常操作ではこの処理は通らない想定 */
             return back();
-        } else {
-            // メールアドレスの重複確認
-            if (!empty($input['email'])) {
-                if (User::where('email', $input['email'])->exists()) {
-                    session()->flash('flash_failed_email', __('users.fail.duplicate_mail'));
-                    return back();
-                }
-            }
+        }
 
-            // 更新対象のユーザーを取得
-            $target_user = User::approved()->find((int)Arr::get($input, 'user_id'));
-            if ($target_user === null) {
-                /* ユーザーが取得できなければ404(基本ここは通らない想定) */
-                abort(404);
-            }
+        $target_user = User::approved()->find((int)Arr::get($input, 'user_id'));
+        if ($target_user === null) {
+            abort(404);
+        }
 
-            // 更新実行
-            $error = $this->userService->updateProfile($input, $target_user);
-            if (empty($error)) {
-                /* エラーメッセージがなければ更新成功 */
-                session()->flash('flash_success', __('users.success.updated'));
-                return to_route('user.show.detail', ['id' => $input['user_id']]);
-            } else {
-                /* 更新失敗 */
-                session()->flash('flash_failed', $error);
+        $email = Arr::get($input, 'email');
+        if (!empty($email)) {
+            $duplicate = User::where('email', $email)
+                ->where('id', '!=', $target_user->id)
+                ->exists();
+            if ($duplicate) {
+                session()->flash('flash_failed_email', __('users.fail.duplicate_mail'));
                 return back();
             }
         }
+
+        $error = $this->userService->updateProfile($input, $target_user);
+        if (empty($error)) {
+            session()->flash('flash_success', __('users.success.updated'));
+            return to_route('user.show.detail', ['id' => $input['user_id']]);
+        }
+        session()->flash('flash_failed', $error);
+        return back();
     }
 }
