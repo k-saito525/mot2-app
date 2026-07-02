@@ -156,8 +156,12 @@ Route::middleware('auth')
                 Route::get('/detail/{id}', [TopicController::class, 'showDetail'])->name('show.detail');
                 // トピック編集 - 編集画面の表示
                 Route::get('/edit/{id}', [TopicController::class, 'showEdit'])->name('show.edit');
-                // トピック - 作成・更新・削除実行
+                // トピック - 新規作成実行
                 Route::post('/store', [TopicController::class, 'store'])->name('store');
+                // トピック - 更新実行
+                Route::put('/{id}', [TopicController::class, 'update'])->name('update');
+                // トピック - 削除実行
+                Route::delete('/{id}', [TopicController::class, 'destroy'])->name('destroy');
                 // コメント - 入力画面の表示
                 Route::get('/comment/{id}', [CommentController::class, 'showForm'])->name('show.create.comment');
             });

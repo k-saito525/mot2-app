@@ -12,14 +12,14 @@ class TopicRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $topic_id = $this->input('topic-id');
+        $topic_id = $this->route('id');
 
         // 新規作成はログイン済みなら誰でも可
         if ($topic_id === null) {
             return true;
         }
 
-        // 編集・削除はオーナーのみ
+        // 編集はオーナーのみ
         $topic = Topic::find((int) $topic_id);
         if ($topic === null) {
             return false;
@@ -34,9 +34,14 @@ class TopicRequest extends FormRequest
      */
     public function rules(): array
     {
+        if ($this->route('id') !== null) {
+            return [
+                'topic-detail' => ['required', 'string', 'max:400'],
+            ];
+        }
         return [
-            'topic-title' => ['required', 'string', 'max:50'],  // タイトル:必須,50文字以内
-            'topic-detail' => ['required', 'string', 'max:400'], // コンテンツ:必須 400文字以内
+            'topic-title' => ['required', 'string', 'max:50'],
+            'topic-detail' => ['required', 'string', 'max:400'],
         ];
     }
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\TopicRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Arr;
 use App\Models\Topic;
 use App\Models\Comment;
 use App\Services\TopicService;
@@ -117,64 +116,70 @@ class TopicController extends Controller
     }
 
     /**
-     * トピック - 入力内容の確認、保存実行
+     * トピック - 新規作成実行
      *
      * @return RedirectResponse
      */
     public function store(TopicRequest $request): RedirectResponse
     {
-        $post = $request->post();
-        if (isset($post['delete'])) {
-            /* 削除 */
+        try {
+            $topic          = new Topic();
+            $topic->user_id = $request->user()->id;
+            $topic->title   = $request->input('topic-title');
+            $topic->content = $request->input('topic-detail');
+            $topic->save();
 
-            // 削除実行
-            $result = $this->topicService->delete((int)$post['topic-id']);
-            if ($result) {
-                // 完了したらトピック一覧画面に遷移する
-                session()->flash('flash_success', __('topics.success.delete'));
-                return to_route('topic.show.list');
-            } else {
-                // 失敗したらエラーメッセージ
-                session()->flash('flash_failed', __('topics.fail.failed_delete'));
-                return back();
-            }
-        } else {
-            /* 新規作成・更新 */
-
-            // 入力データを取得
-            $input = $request->all();
-
-            $message = '';
-            try {
-                if (isset($input['topic-id'])) {
-                    /* 編集の場合はトピック情報を取得 */
-                    $topic = $this->m_topic::find((int)$input['topic-id']);
-                    // 更新完了メッセージ
-                    $message = __('topics.success.update');
-                } else {
-                    /* 新規作成の場合は投稿者のユーザーIDも保存する */
-                    $topic = $this->m_topic;
-                    // 投稿者(ログインしているユーザー)の情報を取得
-                    $user = Auth::user();
-                    $topic->user_id = $user->id;
-                    // タイトル
-                    $topic->title = Arr::get($input, 'topic-title');
-                    // 作成完了メッセージ
-                    $message = __('topics.success.create');
-                }
-                // 本文
-                $topic->content = Arr::get($input, 'topic-detail');
-                // 保存実行
-                $topic->save();
-
-                session()->flash('flash_success', $message);
-                // 保存完了したらトピック一覧画面に遷移する
-                return to_route('topic.show.list');
-            } catch (\Exception) {
-                // 失敗したら入力画面に戻す
-                session()->flash('flash_failed', __('topics.fail.failed'));
-                return back();
-            }
+            session()->flash('flash_success', __('topics.success.create'));
+            return to_route('topic.show.list');
+        } catch (\Exception) {
+            session()->flash('flash_failed', __('topics.fail.failed'));
+            return back();
         }
+    }
+
+    /**
+     * トピック - 更新実行
+     *
+     * @param string $id 更新するトピックID
+     * @return RedirectResponse
+     */
+    public function update(TopicRequest $request, string $id): RedirectResponse
+    {
+        $topic = Topic::find((int)$id);
+        if ($topic === null) {
+            abort(404);
+        }
+        try {
+            $topic->content = $request->input('topic-detail');
+            $topic->save();
+
+            session()->flash('flash_success', __('topics.success.update'));
+            return to_route('topic.show.list');
+        } catch (\Exception) {
+            session()->flash('flash_failed', __('topics.fail.failed'));
+            return back();
+        }
+    }
+
+    /**
+     * トピック - 削除実行
+     *
+     * @param string $id 削除するトピックID
+     * @return RedirectResponse
+     */
+    public function destroy(string $id): RedirectResponse
+    {
+        $topic = Topic::find((int)$id);
+        if ($topic === null || $topic->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $result = $this->topicService->delete((int)$id);
+        if ($result) {
+            session()->flash('flash_success', __('topics.success.delete'));
+            return to_route('topic.show.list');
+        }
+        session()->flash('flash_failed', __('topics.fail.failed_delete'));
+        return back();
     }
 }
