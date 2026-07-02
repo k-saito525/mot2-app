@@ -12,7 +12,7 @@ class CommentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $comment_id = $this->input('comment_id');
+        $comment_id = $this->route('id');
 
         // 新規作成はログイン済みなら誰でも可
         if ($comment_id === null) {

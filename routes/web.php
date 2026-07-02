@@ -170,8 +170,10 @@ Route::middleware('auth')
         Route::prefix('/comment')
             ->name('comment.')
             ->group(function () {
-                // コメント新規作成・編集の実行
+                // コメント - 新規作成実行
                 Route::post('/store', [CommentController::class, 'store'])->name('store');
+                // コメント - 更新実行
+                Route::put('/{id}', [CommentController::class, 'update'])->name('update');
                 // コメント編集画面の表示
                 Route::get('/edit/{id}', [CommentController::class, 'showEdit'])->name('show.edit');
             });

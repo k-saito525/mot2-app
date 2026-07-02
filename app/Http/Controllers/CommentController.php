@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CommentRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailComment;
 use App\Models\Comment;
@@ -58,81 +57,70 @@ class CommentController extends Controller
     }
 
     /**
-     * コメント保存
+     * コメント新規作成
      *
      * @param CommentRequest $request
      * @return RedirectResponse
      */
     public function store(CommentRequest $request): RedirectResponse
     {
-        // 入力内容チェック
-        $input = $request->all();
-
-        /* トピックの存在確認 */
-        $topic = $this->m_topic->getTopicById((int) Arr::get($input, 'topic_id'));
-        if (!isset($topic)) {
-            /* 不正なIDもしくはトピックが存在しない場合は一覧に戻す */
+        $topic = $this->m_topic->getTopicById((int) $request->input('topic_id'));
+        if ($topic === null) {
             session()->flash('flash_failed', __('comments.fail.not_exist'));
             return to_route('topic.show.list');
         }
 
-        // コメント主(ユーザー)
         $user_info = Auth::user();
-        $user_id = $user_info->id;
-        // コメント本文
-        $comment = Arr::get($input, 'comment');
-        if (isset($input['comment_id'])) {
-            /* 編集 */
-            // コメントの存在チェック
-            $m_comment = $this->m_comment::whereNull('deleted_at')
-                ->where('id', $input['comment_id'])
-                ->first();
-            if (isset($comment)) {
-                $m_comment->comment = $comment;
 
-                try {
-                    // 更新実行
-                    $m_comment->save();
+        try {
+            $comment           = new Comment();
+            $comment->comment  = $request->input('comment');
+            $comment->topic_id = $topic->id;
+            $comment->user_id  = $user_info->id;
+            $comment->save();
 
-                    // 保存完了したらトピック詳細画面に遷移する
-                    session()->flash('flash_success', __('comments.success.complete_edit'));
-                    return to_route('topic.show.detail', ['id' => $topic->id]);
-                } catch (\Exception) {
-                    // 失敗したら入力画面に戻す
-                    session()->flash('flash_failed', __('comments.fail.failed_edit'));
-                    return back();
-                }
-            } else {
-                // コメントが存在しない場合は処理せずトピック詳細に戻す
-                return to_route('topic.show.detail', ['id' => $topic->id]);
+            if ($user_info->id !== $topic->user_id) {
+                $topic_author = User::approved()->find((int)$topic->user_id);
+                Mail::to($topic_author->email)->send(new MailComment($topic_author, $user_info, $topic->id));
             }
-        } else {
-            /* 新規作成*/
-            // コメント本文
-            $this->m_comment->comment = $comment;
-            // トピックID
-            $this->m_comment->topic_id = data_get($topic, 'id');
-            // ユーザーID(コメント主)
-            $this->m_comment->user_id = $user_id;
 
-            try {
-                // 更新実行
-                $this->m_comment->save();
-                // コメント先のトピック作成者にメール送信
-                if ($user_id !== $topic->user_id) {
-                    /* コメント主がトピック作成者では無い場合のみ送信 */
-                    // トピック作成者情報
-                    $topic_author = User::approved()->find((int)$topic->user_id);
-                    Mail::to($topic_author->email)->send(new MailComment($topic_author, $user_info, $topic->id));
-                }
-                // 保存完了したらトピック詳細画面に遷移する
-                session()->flash('flash_success', __('comments.success.complete_comment'));
-                return to_route('topic.show.detail', ['id' => $topic->id]);
-            } catch (\Exception) {
-                // 失敗したら入力画面に戻す
-                session()->flash('flash_failed', __('comments.fail.failed_comment'));
-                return to_route('topic.show.detail', ['id' => $topic->id]);
-            }
+            session()->flash('flash_success', __('comments.success.complete_comment'));
+            return to_route('topic.show.detail', ['id' => $topic->id]);
+        } catch (\Exception) {
+            session()->flash('flash_failed', __('comments.fail.failed_comment'));
+            return to_route('topic.show.detail', ['id' => $topic->id]);
+        }
+    }
+
+    /**
+     * コメント更新
+     *
+     * @param CommentRequest $request
+     * @param string $id 更新するコメントID
+     * @return RedirectResponse
+     */
+    public function update(CommentRequest $request, string $id): RedirectResponse
+    {
+        $target_comment = $this->m_comment->getCommentByID((int) $id);
+        if ($target_comment === null) {
+            abort(404);
+        }
+
+        $topic = $this->m_topic->getTopicById((int) $target_comment->topic_id);
+        if ($topic === null) {
+            session()->flash('flash_failed', __('comments.fail.not_exist'));
+            return to_route('topic.show.list');
+        }
+
+        try {
+            $target_comment->comment = $request->input('comment');
+            $target_comment->save();
+
+            session()->flash('flash_success', __('comments.success.complete_edit'));
+            return to_route('topic.show.detail', ['id' => $topic->id]);
+        } catch (\Exception) {
+            session()->flash('flash_failed', __('comments.fail.failed_edit'));
+            return back();
         }
     }
 

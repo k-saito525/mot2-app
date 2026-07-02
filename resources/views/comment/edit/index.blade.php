@@ -76,8 +76,9 @@
               @endif
               {{-- 編集対象のコメント --}}
               <div class="c-reply c-reply--has-detail">
-                <form action="{{ route('comment.store') }}" method="POST" class="c-form" style="width: 100%;">
+                <form action="{{ route('comment.update', ['id' => data_get($target_comment, 'id')]) }}" method="POST" class="c-form" style="width: 100%;">
                   @csrf
+                  @method('PUT')
                   <div class="c-form-item">
                     <div class="c-user no-link">
                       <div class="c-user-icon">
@@ -93,7 +94,6 @@
                     <p class="error-text">※{{ $message }}</p>
                     @enderror
                     <input type="hidden" name="topic_id" value="{{ data_get($topic, 'id') }}">
-                    <input type="hidden" name="comment_id" value="{{ data_get($target_comment, 'id') }}">
                   </div>
                   <div class="c-form-submit c-button-wrap">
                     <button type="submit" class="c-button">更新する</button>
