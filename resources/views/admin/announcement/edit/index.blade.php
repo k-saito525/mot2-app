@@ -16,9 +16,9 @@
                 <section class="p-sub__section">
                     <h1 class="p-sub__head01">お知らせの編集</h1>
                     <div class="p-sub__inner">
-                        <form action="{{ route('admin.announcement.store') }}" method="POST" class="c-form">
+                        <form action="{{ route('admin.announcement.update', ['id' => data_get($announcement, 'id')]) }}" method="POST" class="c-form">
                             @csrf
-                            <input type="hidden" name="announcement_id" value="{{ data_get($announcement, 'id') }}">
+                            @method('PUT')
                             <div class="c-form-item">
                                 {{-- 公開開始日 --}}
                                 <input type="date" name="pub-start" id="pub-start" value="{{ data_get($announcement, 'pub_start_at') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}" required>
@@ -50,7 +50,13 @@
                             </div>
                             <div class="c-form-submit c-button-wrap">
                                 <button type="submit" class="c-button">更新する</button>
-                                <button type="submit" class="c-button" name="delete" value="削除">削除する</button>
+                            </div>
+                        </form>
+                        <form action="{{ route('admin.announcement.destroy', ['id' => data_get($announcement, 'id')]) }}" method="POST" class="c-form" style="margin: 10px 0 0;">
+                            @csrf
+                            @method('DELETE')
+                            <div class="c-form-submit c-button-wrap">
+                                <button type="submit" class="c-button">削除する</button>
                             </div>
                         </form>
                     </div>

@@ -19,7 +19,6 @@
                     <div class="p-sub__inner">
                         <form action="{{ route('admin.announcement.store') }}" method="POST" class="c-form">
                             @csrf
-                            <input type="hidden" name="user_id" value="{{ $user_id }}">
                             <div class="c-form-item">
                                 {{-- 公開開始日 --}}
                                 <input type="date" name="pub-start" id="pub-start" value="{{ old('pub-start') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}" required>

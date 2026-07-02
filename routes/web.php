@@ -220,8 +220,12 @@ Route::middleware('auth')
                         Route::get('/announcement/new', [AnnouncementController::class, 'showCreate'])->name('show.announcement.create');
                         // お知らせ 編集画面表示
                         Route::get('/announcement/edit/{id}', [AnnouncementController::class, 'showEdit'])->name('show.announcement.edit');
-                        // お知らせ 保存実行
+                        // お知らせ - 新規作成実行
                         Route::post('/announcement/store', [AnnouncementController::class, 'store'])->name('announcement.store');
+                        // お知らせ - 更新実行
+                        Route::put('/announcement/{id}', [AnnouncementController::class, 'update'])->name('announcement.update');
+                        // お知らせ - 削除実行
+                        Route::delete('/announcement/{id}', [AnnouncementController::class, 'destroy'])->name('announcement.destroy');
                     });
             });
     });

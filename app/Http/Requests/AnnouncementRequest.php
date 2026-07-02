@@ -21,6 +21,9 @@ class AnnouncementRequest extends FormRequest
      */
     public function rules(): array
     {
+        if ($this->isMethod('DELETE')) {
+            return [];
+        }
         return [
             'announcement-title' => ['required', 'string', 'max:50'],  // タイトル:必須,50文字以内
             'announcement-detail' => ['required', 'string', 'max:800'], // 本文:必須 800文字以内
