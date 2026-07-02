@@ -123,10 +123,10 @@ class Topic extends Model
             return '';
         }
         $escaped = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
-        return mb_ereg_replace(
-            "(https?)(://[[:alnum:]\+\$\;\?\.%,!#~*/:@&=_-]+)",
-            '<a class="content-link" href="\1\2">\1\2</a>',
+        return preg_replace(
+            '/(https?)(:\/\/[a-zA-Z0-9+$;?.%,!#~*\/:@&=_-]+)/',
+            '<a class="content-link" href="$1$2">$1$2</a>',
             $escaped
-        );
+        ) ?? $escaped;
     }
 }
