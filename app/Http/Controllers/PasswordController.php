@@ -7,7 +7,6 @@ use App\Http\Requests\PasswordNewRequest;
 use App\Http\Requests\PasswordResetMailCheckRequest;
 use App\Http\Requests\PasswordResetStoreRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailPasswordResetMailCheck;
 use Carbon\Carbon;
@@ -121,8 +120,7 @@ class PasswordController extends Controller
             return to_route('password.reset.show.send');
         } else {
             // アクセスキーの生成
-            $hashed_id = hash('sha256', $user->id);
-            $user->reset_password_access_key = uniqid(rand(), $hashed_id);
+            $user->reset_password_access_key = bin2hex(random_bytes(32));
             // アクセスキーの有効期限は現在時刻から24時間に設定
             $now = Carbon::now();
             $user->reset_password_expire_at = $now->addHours(24)->toDateTimeString();
@@ -194,7 +192,7 @@ class PasswordController extends Controller
             abort(404);
         } else {
 
-            $user->password = Hash::make($password);
+            $user->password = $password;
 
             try {
                 // 保存実行
