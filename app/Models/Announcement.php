@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Arr;
-
 class Announcement extends Model
 {
     use HasFactory, SoftDeletes;
@@ -75,38 +73,5 @@ class Announcement extends Model
         return $query->get()->toArray();
     }
 
-    /**
-     * 公開中のお知らせを未読数・既読状態付きで取得する
-     *
-     * @param  int $user_id ユーザーID
-     * @return array{ unread_count: int, announcement: Announcement[]|string }
-     */
-    public function getStatusRead(int $user_id): array
-    {
-        $announcements = static::published()->get();
-
-        if ($announcements->isEmpty()) {
-            return ['unread_count' => 0, 'announcement' => ''];
-        }
-
-        $announcement_ids = $announcements->pluck('id')->all();
-        $read_info        = (new AnnouncementRead())->getCount($user_id, $announcement_ids);
-        $read_count       = Arr::get($read_info, 'read_count', 0);
-        $read_ids         = collect(Arr::get($read_info, 'reads', []))
-            ->map(fn($r) => data_get($r, 'announcement_id'))
-            ->all();
-
-        // 既読のお知らせに pub_status を付与する（未読はキー自体作成しない）
-        foreach ($announcements as $announcement) {
-            if (in_array($announcement->id, $read_ids)) {
-                $announcement->pub_status = 1;
-            }
-        }
-
-        return [
-            'unread_count' => count($announcement_ids) - $read_count,
-            'announcement' => $announcements->all(),
-        ];
-    }
-
 }
+

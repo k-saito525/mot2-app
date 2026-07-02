@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Announcement;
 use App\Models\AnnouncementRead;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class AnnouncementService
@@ -32,6 +33,39 @@ class AnnouncementService
         }
 
         return true;
+    }
+
+    /**
+     * 公開中のお知らせを未読数・既読状態付きで取得する
+     *
+     * @param  int $user_id ユーザーID
+     * @return array{ unread_count: int, announcement: Announcement[]|string }
+     */
+    public function getStatusRead(int $user_id): array
+    {
+        $announcements = Announcement::published()->get();
+
+        if ($announcements->isEmpty()) {
+            return ['unread_count' => 0, 'announcement' => ''];
+        }
+
+        $announcement_ids = $announcements->pluck('id')->all();
+        $read_info        = (new AnnouncementRead())->getCount($user_id, $announcement_ids);
+        $read_count       = Arr::get($read_info, 'read_count', 0);
+        $read_ids         = collect(Arr::get($read_info, 'reads', []))
+            ->map(fn($r) => data_get($r, 'announcement_id'))
+            ->all();
+
+        foreach ($announcements as $announcement) {
+            if (in_array($announcement->id, $read_ids)) {
+                $announcement->pub_status = 1;
+            }
+        }
+
+        return [
+            'unread_count' => count($announcement_ids) - $read_count,
+            'announcement' => $announcements->all(),
+        ];
     }
 
     /**
