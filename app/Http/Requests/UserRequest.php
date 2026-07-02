@@ -33,11 +33,11 @@ class UserRequest extends FormRequest
             // カバー画像 → ファイルサイズ:2MB, 拡張子:jpg,jpeg,png
             'user_cover_image' => ['max:2048', 'mimes:jpg,jpeg,png'],
             // Xリンク → URL形式
-            'sns_x' => ['nullable', 'url', 'max:200'],
+            'sns_x' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\//'],
             // Facebookリンク → URL形式
-            'sns_facebook' => ['nullable', 'url', 'max:200'],
+            'sns_facebook' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\//'],
             // Instagramリンク → URL形式
-            'sns_instagram' => ['nullable', 'url', 'max:200'],
+            'sns_instagram' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\//'],
             // 自己紹介 → 400文字以内
             'introduction_text' => ['max:400'],
         ];
