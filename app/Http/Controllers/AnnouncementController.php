@@ -126,14 +126,15 @@ class AnnouncementController extends Controller
         /* 新規作成・更新 */
         $input = $request->all();
 
-        if (!empty(Arr::get($input, 'pub-end')) && Carbon::parse(Arr::get($input, 'pub-start'))->gt(Carbon::parse(Arr::get($input, 'pub-end')))) {
+        $pub_start = Arr::get($input, 'pub-start');
+        $pub_end   = Arr::get($input, 'pub-end');
+
+        if (!empty($pub_end) && Carbon::parse($pub_start)->gt(Carbon::parse($pub_end))) {
             session()->flash('pub-start', '日付の選択が正しくありません');
             return back();
         }
-        // 公開ステータスの確認 1:公開中
-        //  現在時刻を取得
         $now = Carbon::now();
-        if ($now->lt(Carbon::parse(Arr::get($input, 'pub-start'))) || $now->gt(Carbon::parse(Arr::get($input, 'pub-end')))) {
+        if ($now->lt(Carbon::parse($pub_start)) || (!empty($pub_end) && $now->gt(Carbon::parse($pub_end)))) {
             $flg_public = 0;
         } else {
             $flg_public = 1;
