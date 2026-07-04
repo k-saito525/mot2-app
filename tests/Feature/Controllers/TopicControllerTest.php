@@ -163,4 +163,82 @@ class TopicControllerTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    // -------------------------------------------------------------------------
+    // validation
+    // -------------------------------------------------------------------------
+
+    public function test_store_passes_when_title_is_exactly_50_chars(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('topic.store'), [
+            'topic_title'  => str_repeat('あ', 50),
+            'topic_detail' => 'テスト本文',
+        ]);
+
+        $response->assertSessionMissingErrors('topic_title');
+    }
+
+    public function test_store_fails_when_title_exceeds_50_chars(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('topic.store'), [
+            'topic_title'  => str_repeat('あ', 51),
+            'topic_detail' => 'テスト本文',
+        ]);
+
+        $response->assertSessionHasErrors('topic_title');
+    }
+
+    public function test_store_passes_when_detail_is_exactly_400_chars(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('topic.store'), [
+            'topic_title'  => 'テストタイトル',
+            'topic_detail' => str_repeat('あ', 400),
+        ]);
+
+        $response->assertSessionMissingErrors('topic_detail');
+    }
+
+    public function test_store_fails_when_detail_exceeds_400_chars(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('topic.store'), [
+            'topic_title'  => 'テストタイトル',
+            'topic_detail' => str_repeat('あ', 401),
+        ]);
+
+        $response->assertSessionHasErrors('topic_detail');
+    }
+
+    public function test_update_passes_when_detail_is_exactly_400_chars(): void
+    {
+        $user  = User::factory()->create();
+        $topic = Topic::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->put(route('topic.update', $topic->id), [
+            'topic_title'  => $topic->title,
+            'topic_detail' => str_repeat('あ', 400),
+        ]);
+
+        $response->assertSessionMissingErrors('topic_detail');
+    }
+
+    public function test_update_fails_when_detail_exceeds_400_chars(): void
+    {
+        $user  = User::factory()->create();
+        $topic = Topic::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->put(route('topic.update', $topic->id), [
+            'topic_title'  => $topic->title,
+            'topic_detail' => str_repeat('あ', 401),
+        ]);
+
+        $response->assertSessionHasErrors('topic_detail');
+    }
 }

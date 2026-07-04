@@ -161,4 +161,35 @@ class CommentControllerTest extends TestCase
         // CommentRequest::authorize() がコントローラーより先に動くため 403
         $response->assertStatus(403);
     }
+
+    // -------------------------------------------------------------------------
+    // validation
+    // -------------------------------------------------------------------------
+
+    public function test_store_passes_when_comment_is_exactly_200_chars(): void
+    {
+        Mail::fake();
+        $user  = User::factory()->create();
+        $topic = Topic::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('comment.store'), [
+            'topic_id' => $topic->id,
+            'comment'  => str_repeat('あ', 200),
+        ]);
+
+        $response->assertSessionMissingErrors('comment');
+    }
+
+    public function test_store_fails_when_comment_exceeds_200_chars(): void
+    {
+        $user  = User::factory()->create();
+        $topic = Topic::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('comment.store'), [
+            'topic_id' => $topic->id,
+            'comment'  => str_repeat('あ', 201),
+        ]);
+
+        $response->assertSessionHasErrors('comment');
+    }
 }

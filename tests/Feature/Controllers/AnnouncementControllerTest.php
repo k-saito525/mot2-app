@@ -156,4 +156,52 @@ class AnnouncementControllerTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    // -------------------------------------------------------------------------
+    // validation
+    // -------------------------------------------------------------------------
+
+    public function test_store_passes_when_title_is_exactly_50_chars(): void
+    {
+        $admin = $this->adminUser();
+
+        $response = $this->actingAs($admin)->post(route('admin.announcement.store'), $this->validParams([
+            'announcement_title' => str_repeat('あ', 50),
+        ]));
+
+        $response->assertSessionMissingErrors('announcement_title');
+    }
+
+    public function test_store_fails_when_title_exceeds_50_chars(): void
+    {
+        $admin = $this->adminUser();
+
+        $response = $this->actingAs($admin)->post(route('admin.announcement.store'), $this->validParams([
+            'announcement_title' => str_repeat('あ', 51),
+        ]));
+
+        $response->assertSessionHasErrors('announcement_title');
+    }
+
+    public function test_store_passes_when_detail_is_exactly_800_chars(): void
+    {
+        $admin = $this->adminUser();
+
+        $response = $this->actingAs($admin)->post(route('admin.announcement.store'), $this->validParams([
+            'announcement_detail' => str_repeat('あ', 800),
+        ]));
+
+        $response->assertSessionMissingErrors('announcement_detail');
+    }
+
+    public function test_store_fails_when_detail_exceeds_800_chars(): void
+    {
+        $admin = $this->adminUser();
+
+        $response = $this->actingAs($admin)->post(route('admin.announcement.store'), $this->validParams([
+            'announcement_detail' => str_repeat('あ', 801),
+        ]));
+
+        $response->assertSessionHasErrors('announcement_detail');
+    }
 }
