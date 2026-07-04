@@ -4,7 +4,6 @@ namespace Tests\Feature\Models;
 
 use App\Models\Comment;
 use App\Models\Topic;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -60,5 +59,26 @@ class CommentModelTest extends TestCase
         $result = (new Comment())->deleteComments(0);
 
         $this->assertTrue($result);
+    }
+
+    // -------------------------------------------------------------------------
+    // getCommentByID
+    // -------------------------------------------------------------------------
+
+    public function test_get_comment_by_id_returns_comment_when_found(): void
+    {
+        $comment = Comment::factory()->create();
+
+        $result = (new Comment())->getCommentByID($comment->id);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($comment->id, $result->id);
+    }
+
+    public function test_get_comment_by_id_returns_null_when_not_found(): void
+    {
+        $result = (new Comment())->getCommentByID(0);
+
+        $this->assertNull($result);
     }
 }

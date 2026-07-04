@@ -79,4 +79,53 @@ class ApplyControllerTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    // -------------------------------------------------------------------------
+    // showConfirm
+    // -------------------------------------------------------------------------
+
+    public function test_show_confirm_returns_view_when_session_has_data(): void
+    {
+        // check でセッションにデータをセット
+        $this->post(route('apply.check'), [
+            'name'  => 'テストユーザー',
+            'email' => 'apply@example.com',
+        ]);
+
+        $response = $this->get(route('apply.show.confirm'));
+
+        $response->assertOk();
+        $response->assertViewHas('form_input');
+    }
+
+    public function test_show_confirm_redirects_to_form_when_session_is_empty(): void
+    {
+        $response = $this->get(route('apply.show.confirm'));
+
+        $response->assertRedirect(route('apply.form'));
+    }
+
+    // -------------------------------------------------------------------------
+    // showComplete
+    // -------------------------------------------------------------------------
+
+    public function test_show_complete_returns_view_when_session_has_data(): void
+    {
+        // check でセッションにデータをセット
+        $this->post(route('apply.check'), [
+            'name'  => 'テストユーザー',
+            'email' => 'apply@example.com',
+        ]);
+
+        $response = $this->get(route('apply.show.complete'));
+
+        $response->assertOk();
+    }
+
+    public function test_show_complete_redirects_to_top_when_session_is_empty(): void
+    {
+        $response = $this->get(route('apply.show.complete'));
+
+        $response->assertRedirect(route('top'));
+    }
 }

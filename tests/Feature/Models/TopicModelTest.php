@@ -5,6 +5,7 @@ namespace Tests\Feature\Models;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Tests\TestCase;
 
 class TopicModelTest extends TestCase
@@ -79,5 +80,50 @@ class TopicModelTest extends TestCase
         $result = (new Topic())->getTopicByUser(0);
 
         $this->assertCount(0, $result);
+    }
+
+    // -------------------------------------------------------------------------
+    // getTopicById
+    // -------------------------------------------------------------------------
+
+    public function test_get_topic_by_id_returns_topic_when_found(): void
+    {
+        $topic = Topic::factory()->create();
+
+        $result = (new Topic())->getTopicById($topic->id);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($topic->id, $result->id);
+    }
+
+    public function test_get_topic_by_id_returns_null_when_not_found(): void
+    {
+        $result = (new Topic())->getTopicById(0);
+
+        $this->assertNull($result);
+    }
+
+    // -------------------------------------------------------------------------
+    // getTopicsList
+    // -------------------------------------------------------------------------
+
+    public function test_get_topics_list_returns_paginator_with_correct_count(): void
+    {
+        Topic::factory()->count(5)->create();
+
+        $result = (new Topic())->getTopicsList(3, 1);
+
+        $this->assertInstanceOf(LengthAwarePaginator::class, $result);
+        $this->assertCount(3, $result->items());
+        $this->assertEquals(5, $result->total());
+    }
+
+    public function test_get_topics_list_returns_second_page(): void
+    {
+        Topic::factory()->count(5)->create();
+
+        $result = (new Topic())->getTopicsList(3, 2);
+
+        $this->assertCount(2, $result->items());
     }
 }
