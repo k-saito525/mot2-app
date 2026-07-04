@@ -26,7 +26,7 @@ class AnnouncementService
         try {
             DB::transaction(function () use ($announcement, $announcementId) {
                 $announcement->delete();
-                (new AnnouncementRead())->deleteReadsByAnnouncementId($announcementId);
+                new AnnouncementRead()->deleteReadsByAnnouncementId($announcementId);
             });
         } catch (\Throwable) {
             return false;
@@ -50,7 +50,7 @@ class AnnouncementService
         }
 
         $announcementIds = $announcements->pluck('id')->all();
-        $readInfo        = (new AnnouncementRead())->getCount($userId, $announcementIds);
+        $readInfo        = new AnnouncementRead()->getCount($userId, $announcementIds);
         $readCount       = Arr::get($readInfo, 'read_count', 0);
         $readIds         = collect(Arr::get($readInfo, 'reads', []))
             ->map(fn($r) => data_get($r, 'announcement_id'))
@@ -85,7 +85,7 @@ class AnnouncementService
                 $isNotPublic = $announcement->pub_start_at->gt($today)
                     || (!empty($announcement->pub_end_at) && $announcement->pub_end_at->lt($today));
                 if ($isNotPublic) {
-                    (new AnnouncementRead())->deleteReadsByAnnouncementId($announcement->id);
+                    new AnnouncementRead()->deleteReadsByAnnouncementId($announcement->id);
                 }
             });
         } catch (\Throwable) {

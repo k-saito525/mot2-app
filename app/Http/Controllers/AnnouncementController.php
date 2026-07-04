@@ -104,7 +104,7 @@ class AnnouncementController extends Controller
         $announcement->user_id = Auth::id();
         $this->fillAnnouncement($announcement, $request, $pubStart, $pubEnd);
 
-        $result = (new AnnouncementService())->saveAndSyncReads($announcement);
+        $result = new AnnouncementService()->saveAndSyncReads($announcement);
         if (!$result) {
             return back();
         }
@@ -134,7 +134,7 @@ class AnnouncementController extends Controller
 
         $this->fillAnnouncement($announcement, $request, $pubStart, $pubEnd);
 
-        $result = (new AnnouncementService())->saveAndSyncReads($announcement);
+        $result = new AnnouncementService()->saveAndSyncReads($announcement);
         if (!$result) {
             return back();
         }
@@ -149,7 +149,7 @@ class AnnouncementController extends Controller
      */
     public function destroy(AnnouncementRequest $request, string $id): RedirectResponse
     {
-        $result = (new AnnouncementService())->delete((int)$id);
+        $result = new AnnouncementService()->delete((int)$id);
         if (!$result) {
             abort(404);
         }

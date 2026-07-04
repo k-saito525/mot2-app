@@ -22,7 +22,7 @@ class CommentModelTest extends TestCase
         Comment::factory()->count(2)->create(['topic_id' => $topic->id]);
         Comment::factory()->create(['topic_id' => $other->id]);
 
-        $result = (new Comment())->getCommentsByTopicID($topic->id);
+        $result = new Comment()->getCommentsByTopicID($topic->id);
 
         $this->assertCount(2, $result);
         $result->each(fn ($c) => $this->assertEquals($topic->id, $c->topic_id));
@@ -34,7 +34,7 @@ class CommentModelTest extends TestCase
         $new   = Comment::factory()->create(['topic_id' => $topic->id, 'created_at' => now()]);
         $old   = Comment::factory()->create(['topic_id' => $topic->id, 'created_at' => now()->subHour()]);
 
-        $result = (new Comment())->getCommentsByTopicID($topic->id);
+        $result = new Comment()->getCommentsByTopicID($topic->id);
 
         $this->assertEquals($old->id, $result->first()->id);
         $this->assertEquals($new->id, $result->last()->id);
@@ -48,7 +48,7 @@ class CommentModelTest extends TestCase
     {
         $comment = Comment::factory()->create();
 
-        $result = (new Comment())->deleteComments($comment->id);
+        $result = new Comment()->deleteComments($comment->id);
 
         $this->assertTrue($result);
         $this->assertSoftDeleted('comments', ['id' => $comment->id]);
@@ -56,7 +56,7 @@ class CommentModelTest extends TestCase
 
     public function test_delete_comments_returns_true_when_not_found(): void
     {
-        $result = (new Comment())->deleteComments(0);
+        $result = new Comment()->deleteComments(0);
 
         $this->assertTrue($result);
     }
@@ -69,7 +69,7 @@ class CommentModelTest extends TestCase
     {
         $comment = Comment::factory()->create();
 
-        $result = (new Comment())->getCommentByID($comment->id);
+        $result = new Comment()->getCommentByID($comment->id);
 
         $this->assertNotNull($result);
         $this->assertEquals($comment->id, $result->id);
@@ -77,7 +77,7 @@ class CommentModelTest extends TestCase
 
     public function test_get_comment_by_id_returns_null_when_not_found(): void
     {
-        $result = (new Comment())->getCommentByID(0);
+        $result = new Comment()->getCommentByID(0);
 
         $this->assertNull($result);
     }

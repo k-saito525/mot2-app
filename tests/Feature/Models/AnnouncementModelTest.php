@@ -109,7 +109,7 @@ class AnnouncementModelTest extends TestCase
     {
         Announcement::factory()->count(3)->create();
 
-        $result = (new Announcement())->getAnnouncements();
+        $result = new Announcement()->getAnnouncements();
 
         $this->assertCount(3, $result);
     }
@@ -120,7 +120,7 @@ class AnnouncementModelTest extends TestCase
         $a2 = Announcement::factory()->create();
         Announcement::factory()->create();
 
-        $result = (new Announcement())->getAnnouncements(false, [$a1->id, $a2->id]);
+        $result = new Announcement()->getAnnouncements(false, [$a1->id, $a2->id]);
 
         $this->assertCount(2, $result);
     }
@@ -129,7 +129,7 @@ class AnnouncementModelTest extends TestCase
     {
         Announcement::factory()->create();
 
-        $result = (new Announcement())->getAnnouncements(true);
+        $result = new Announcement()->getAnnouncements(true);
 
         $this->assertArrayHasKey('id', $result[0]);
         $this->assertArrayNotHasKey('title', $result[0]);

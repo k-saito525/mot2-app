@@ -20,7 +20,7 @@ class TopicModelTest extends TestCase
     {
         Topic::factory()->count(3)->create();
 
-        $result = (new Topic())->getTopics();
+        $result = new Topic()->getTopics();
 
         $this->assertCount(3, $result);
     }
@@ -29,7 +29,7 @@ class TopicModelTest extends TestCase
     {
         Topic::factory()->count(5)->create();
 
-        $result = (new Topic())->getTopics(2);
+        $result = new Topic()->getTopics(2);
 
         $this->assertCount(2, $result);
     }
@@ -40,7 +40,7 @@ class TopicModelTest extends TestCase
         $newer = Topic::factory()->create(['created_at' => now()->subDay()]);
         $newest = Topic::factory()->create(['created_at' => now()]);
 
-        $result = (new Topic())->getTopics();
+        $result = new Topic()->getTopics();
 
         $this->assertEquals($newest->id, $result->first()->id);
         $this->assertEquals($old->id, $result->last()->id);
@@ -52,7 +52,7 @@ class TopicModelTest extends TestCase
         $deleted = Topic::factory()->create();
         $deleted->delete();
 
-        $result = (new Topic())->getTopics();
+        $result = new Topic()->getTopics();
 
         $this->assertCount(1, $result);
         $this->assertEquals($active->id, $result->first()->id);
@@ -69,7 +69,7 @@ class TopicModelTest extends TestCase
         Topic::factory()->count(2)->create(['user_id' => $user->id]);
         Topic::factory()->create(['user_id' => $other->id]);
 
-        $result = (new Topic())->getTopicByUser($user->id);
+        $result = new Topic()->getTopicByUser($user->id);
 
         $this->assertCount(2, $result);
         $result->each(fn ($t) => $this->assertEquals($user->id, $t->user_id));
@@ -77,7 +77,7 @@ class TopicModelTest extends TestCase
 
     public function test_get_topic_by_user_returns_empty_for_unknown_user(): void
     {
-        $result = (new Topic())->getTopicByUser(0);
+        $result = new Topic()->getTopicByUser(0);
 
         $this->assertCount(0, $result);
     }
@@ -90,7 +90,7 @@ class TopicModelTest extends TestCase
     {
         $topic = Topic::factory()->create();
 
-        $result = (new Topic())->getTopicById($topic->id);
+        $result = new Topic()->getTopicById($topic->id);
 
         $this->assertNotNull($result);
         $this->assertEquals($topic->id, $result->id);
@@ -98,7 +98,7 @@ class TopicModelTest extends TestCase
 
     public function test_get_topic_by_id_returns_null_when_not_found(): void
     {
-        $result = (new Topic())->getTopicById(0);
+        $result = new Topic()->getTopicById(0);
 
         $this->assertNull($result);
     }
@@ -111,7 +111,7 @@ class TopicModelTest extends TestCase
     {
         Topic::factory()->count(5)->create();
 
-        $result = (new Topic())->getTopicsList(3, 1);
+        $result = new Topic()->getTopicsList(3, 1);
 
         $this->assertInstanceOf(LengthAwarePaginator::class, $result);
         $this->assertCount(3, $result->items());
@@ -122,7 +122,7 @@ class TopicModelTest extends TestCase
     {
         Topic::factory()->count(5)->create();
 
-        $result = (new Topic())->getTopicsList(3, 2);
+        $result = new Topic()->getTopicsList(3, 2);
 
         $this->assertCount(2, $result->items());
     }
