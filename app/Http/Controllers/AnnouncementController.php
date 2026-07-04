@@ -20,23 +20,8 @@ class AnnouncementController extends Controller
      */
     public function showList(): View
     {
-        // お知らせ取得
-        $m_announcement = new Announcement();
-        $announcement_list = $m_announcement->getAnnouncements();
+        $announcement_list = Announcement::all();
 
-        // 今日の日付
-        $today = Carbon::today();
-        foreach ($announcement_list as $key => $val) {
-            if (!empty($val['pub_end_at']) && Carbon::parse($val['pub_end_at'])->lt($today)) {
-                $announcement_list[$key]['pub_status'] = '公開終了';
-            } elseif (Carbon::parse($val['pub_start_at'])->lte($today)) {
-                /* 公開期間内 */
-                $announcement_list[$key]['pub_status'] = '公開中';
-            } else {
-                /* 公開前 */
-                $announcement_list[$key]['pub_status'] = '公開前';
-            }
-        }
         return view('admin/announcement/index', [
             'announcement_list' => $announcement_list,
         ]);

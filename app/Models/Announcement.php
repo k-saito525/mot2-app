@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,6 +46,27 @@ class Announcement extends Model
     public function reads(): HasMany
     {
         return $this->hasMany(AnnouncementRead::class);
+    }
+
+    /**
+     * 管理者向け表示用の公開ステータスラベルを返すアクセサ
+     *
+     * @return Attribute<string, never>
+     */
+    protected function pubStatus(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $today = now()->startOfDay();
+                if (!empty($this->pub_end_at) && $this->pub_end_at->lt($today)) {
+                    return '公開終了';
+                }
+                if ($this->pub_start_at->lte($today)) {
+                    return '公開中';
+                }
+                return '公開前';
+            }
+        );
     }
 
     public function scopePublished(Builder $query): Builder
