@@ -103,6 +103,9 @@ cp .env.example .env
 
 # マイグレーション実行
 ./vendor/bin/sail artisan migrate
+
+# 管理者ユーザーの作成（新規会員登録の承認に必要。email: admin_user@example.com / password: password123）
+./vendor/bin/sail artisan db:seed
 ```
 
 - アプリ: http://localhost
