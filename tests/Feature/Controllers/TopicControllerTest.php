@@ -40,7 +40,7 @@ class TopicControllerTest extends TestCase
             'topic_detail' => 'テスト本文',
         ]);
 
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('login.show.form'));
     }
 
     public function test_store_fails_validation_when_title_is_missing(): void
@@ -124,7 +124,7 @@ class TopicControllerTest extends TestCase
 
         $response = $this->delete(route('topic.destroy', $topic->id));
 
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('login.show.form'));
     }
 
     // -------------------------------------------------------------------------

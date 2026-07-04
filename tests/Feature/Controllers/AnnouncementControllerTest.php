@@ -61,7 +61,7 @@ class AnnouncementControllerTest extends TestCase
     {
         $response = $this->post(route('admin.announcement.store'), $this->validParams());
 
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('login.show.form'));
     }
 
     public function test_store_returns_error_when_pub_start_is_after_pub_end(): void

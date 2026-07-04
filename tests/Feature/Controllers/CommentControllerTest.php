@@ -106,7 +106,7 @@ class CommentControllerTest extends TestCase
             'comment'  => 'テストコメント',
         ]);
 
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('login.show.form'));
     }
 
     // -------------------------------------------------------------------------
