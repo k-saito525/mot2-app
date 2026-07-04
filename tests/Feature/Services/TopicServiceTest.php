@@ -22,7 +22,7 @@ class TopicServiceTest extends TestCase
 
     public function test_delete_returns_false_when_topic_not_found(): void
     {
-        $result = $this->service->delete(99999);
+        $result = $this->service->delete(0);
 
         $this->assertFalse($result);
     }
