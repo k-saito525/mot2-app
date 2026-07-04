@@ -169,7 +169,7 @@ class AnnouncementControllerTest extends TestCase
             'announcement_title' => str_repeat('あ', 50),
         ]));
 
-        $response->assertSessionMissingErrors('announcement_title');
+        $response->assertRedirect(route('admin.show.announcement.list'));
     }
 
     public function test_store_fails_when_title_exceeds_50_chars(): void
@@ -191,7 +191,7 @@ class AnnouncementControllerTest extends TestCase
             'announcement_detail' => str_repeat('あ', 800),
         ]));
 
-        $response->assertSessionMissingErrors('announcement_detail');
+        $response->assertRedirect(route('admin.show.announcement.list'));
     }
 
     public function test_store_fails_when_detail_exceeds_800_chars(): void

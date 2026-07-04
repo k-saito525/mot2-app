@@ -177,7 +177,7 @@ class TopicControllerTest extends TestCase
             'topic_detail' => 'テスト本文',
         ]);
 
-        $response->assertSessionMissingErrors('topic_title');
+        $response->assertRedirect(route('topic.show.list'));
     }
 
     public function test_store_fails_when_title_exceeds_50_chars(): void
@@ -201,7 +201,7 @@ class TopicControllerTest extends TestCase
             'topic_detail' => str_repeat('あ', 400),
         ]);
 
-        $response->assertSessionMissingErrors('topic_detail');
+        $response->assertRedirect(route('topic.show.list'));
     }
 
     public function test_store_fails_when_detail_exceeds_400_chars(): void
@@ -226,7 +226,7 @@ class TopicControllerTest extends TestCase
             'topic_detail' => str_repeat('あ', 400),
         ]);
 
-        $response->assertSessionMissingErrors('topic_detail');
+        $response->assertRedirect(route('topic.show.list'));
     }
 
     public function test_update_fails_when_detail_exceeds_400_chars(): void

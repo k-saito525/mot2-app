@@ -177,7 +177,7 @@ class CommentControllerTest extends TestCase
             'comment'  => str_repeat('あ', 200),
         ]);
 
-        $response->assertSessionMissingErrors('comment');
+        $response->assertRedirect(route('topic.show.detail', ['id' => $topic->id]));
     }
 
     public function test_store_fails_when_comment_exceeds_200_chars(): void

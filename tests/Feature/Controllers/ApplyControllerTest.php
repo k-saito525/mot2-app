@@ -58,13 +58,14 @@ class ApplyControllerTest extends TestCase
     {
         Mail::fake();
 
-        $response = $this->withSession([
-            'form_input' => [
-                'name'      => 'テストユーザー',
-                'email'     => 'apply@example.com',
-                'past_join' => [],
-            ],
-        ])->post(route('apply.store'));
+        // check でセッションにデータをセット
+        $this->post(route('apply.check'), [
+            'name'  => 'テストユーザー',
+            'email' => 'apply@example.com',
+        ]);
+
+        // store でセッションからデータを読んで登録
+        $response = $this->post(route('apply.store'));
 
         $response->assertRedirect(route('apply.show.complete'));
         $this->assertDatabaseHas('users', ['email' => 'apply@example.com']);

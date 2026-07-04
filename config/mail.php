@@ -109,6 +109,11 @@ return [
 
     // MOT2からの送信元アドレス
     'from' => [
+        // テスト環境
+        'testing' => [
+            'address' => 'no-reply@test.example.com',
+            'name' => 'TEST',
+        ],
         // 開発環境
         'local' => [
             'address' => env('MAIL_FROM_ADDRESS', 'no-reply@local-mot2.iims-japan.org'),
@@ -127,6 +132,10 @@ return [
     ],
     // MOT2から管理者宛へ送信するアドレス(メーリス)
     'to_admin' => [
+        // テスト環境
+        'testing' => [
+            'address' => 'admin@test.example.com',
+        ],
         // 開発環境
         'local' => [
             'address' => 'admin_local-mot2@iims-japan.org',
