@@ -126,4 +126,41 @@ class TopicControllerTest extends TestCase
 
         $response->assertRedirect(route('login'));
     }
+
+    // -------------------------------------------------------------------------
+    // showDetail
+    // -------------------------------------------------------------------------
+
+    public function test_show_detail_returns_404_when_topic_not_found(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('topic.show.detail', ['id' => 0]));
+
+        $response->assertStatus(404);
+    }
+
+    // -------------------------------------------------------------------------
+    // showEdit
+    // -------------------------------------------------------------------------
+
+    public function test_show_edit_redirects_when_not_owner(): void
+    {
+        $owner = User::factory()->create();
+        $other = User::factory()->create();
+        $topic = Topic::factory()->create(['user_id' => $owner->id]);
+
+        $response = $this->actingAs($other)->get(route('topic.show.edit', ['id' => $topic->id]));
+
+        $response->assertRedirect();
+    }
+
+    public function test_show_edit_returns_404_when_topic_not_found(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('topic.show.edit', ['id' => 0]));
+
+        $response->assertStatus(404);
+    }
 }
