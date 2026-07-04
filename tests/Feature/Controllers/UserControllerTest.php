@@ -1,0 +1,107 @@
+<?php
+
+namespace Tests\Feature\Controllers;
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class UserControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function validParams(int $userId, array $overrides = []): array
+    {
+        return array_merge([
+            'user_id'         => $userId,
+            'name'            => 'テストユーザー',
+            'user_identifier' => 'testuser1',
+        ], $overrides);
+    }
+
+    // -------------------------------------------------------------------------
+    // store
+    // -------------------------------------------------------------------------
+
+    public function test_store_updates_own_profile(): void
+    {
+        $user = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($user)->post(route('user.store'), $this->validParams($user->id, [
+            'name' => '更新後の名前',
+        ]));
+
+        $response->assertRedirect(route('user.show.detail', ['id' => $user->id]));
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'name' => '更新後の名前']);
+    }
+
+    public function test_store_returns_403_when_not_own_profile(): void
+    {
+        $owner = User::factory()->create(['is_approved' => 1]);
+        $other = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($other)->post(route('user.store'), $this->validParams($owner->id));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_store_returns_404_when_user_not_approved(): void
+    {
+        $user = User::factory()->create(['is_approved' => 0]);
+
+        $response = $this->actingAs($user)->post(route('user.store'), $this->validParams($user->id));
+
+        $response->assertStatus(404);
+    }
+
+    public function test_store_redirects_back_when_email_is_duplicate(): void
+    {
+        User::factory()->create(['email' => 'taken@example.com', 'is_approved' => 1]);
+        $user = User::factory()->create(['email' => 'own@example.com', 'is_approved' => 1]);
+
+        $response = $this->actingAs($user)->post(route('user.store'), $this->validParams($user->id, [
+            'email' => 'taken@example.com',
+        ]));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('flash_failed_email');
+    }
+
+    // -------------------------------------------------------------------------
+    // validation
+    // -------------------------------------------------------------------------
+
+    public function test_store_fails_when_name_is_missing(): void
+    {
+        $user = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($user)->post(route('user.store'), [
+            'user_id'         => $user->id,
+            'user_identifier' => 'testuser1',
+        ]);
+
+        $response->assertSessionHasErrors('name');
+    }
+
+    public function test_store_fails_when_identifier_is_too_short(): void
+    {
+        $user = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($user)->post(route('user.store'), $this->validParams($user->id, [
+            'user_identifier' => 'short',
+        ]));
+
+        $response->assertSessionHasErrors('user_identifier');
+    }
+
+    public function test_store_fails_when_identifier_has_invalid_chars(): void
+    {
+        $user = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($user)->post(route('user.store'), $this->validParams($user->id, [
+            'user_identifier' => 'invalid-id',
+        ]));
+
+        $response->assertSessionHasErrors('user_identifier');
+    }
+}
