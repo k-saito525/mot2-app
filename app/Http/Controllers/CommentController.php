@@ -81,7 +81,9 @@ class CommentController extends Controller
 
             if ($userInfo->id !== $topic->user_id) {
                 $topicAuthor = User::approved()->find((int)$topic->user_id);
-                Mail::to($topicAuthor->email)->send(new MailComment($topicAuthor, $userInfo, $topic->id));
+                if ($topicAuthor !== null) {
+                    Mail::to($topicAuthor->email)->send(new MailComment($topicAuthor, $userInfo, $topic->id));
+                }
             }
 
             session()->flash('flash_success', __('comments.success.complete_comment'));
