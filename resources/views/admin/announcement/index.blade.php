@@ -5,44 +5,60 @@
     <meta charset="utf-8">
     <title>お知らせ一覧</title>
     @include('components.head')
-    <style>
-        .edit-announcement {
-            font-weight: bold;
-            margin-top: 10px;
-            padding: 3px;
-            background-color: #FFB000;
-            border: solid 1px black;
-            border-radius: 15px;
-        }
-    </style>
 </head>
 
 <body class="is-subpage">
     <div class="l-container">
 
+        @include('components.l-header')
+
         <div class="l-contents">
             <main class="l-main">
                 <section class="p-sub__section">
+                    @include('components.admin.nav')
+                    <div class="p-sub__btns c-admin-create-btn">
+                        <a href="{{ route('admin.show.announcement.create') }}" class="c-button--large">
+                            <img src="{{ asset('/img/common/icon-bell.svg') }}" alt="">
+                            <span>お知らせを新規作成する</span>
+                        </a>
+                    </div>
                     <h1 class="p-sub__head01">お知らせ一覧</h1>
-                    <a href="{{ route('admin.show.announcement.create') }}">★新規作成はこちら★</a>
+                    @include('components.flash-messages')
                     <div class="p-sub__inner">
-                        @forelse($announcement_list as $announcement)
-                        <div class="c-announcement">
-                            <p>【タイトル】<br>
-                                {{ $announcement->title }}
-                            </p>
-                            <p>【本文】<br>
-                                {!! nl2br(htmlspecialchars($announcement->content)) !!}
-                            </p>
-                            <p>【公開開始日】{{ $announcement->pub_start_at }}</p>
-                            <p>【公開終了日】{{ $announcement->pub_end_at }}</p>
-                            <p>【公開状況】{{ $announcement->pub_status }}</p>
-                            <a href="{{ route('admin.show.announcement.edit', ['id' => $announcement->id]) }}" class="edit-announcement">編集する</a>
-                            <p>---------------------------------------</p>
+                        <div class="c-admin-list">
+                            @forelse($announcement_list as $announcement)
+                            @php
+                            $badge_class = match ($announcement->pub_status) {
+                                '公開中' => 'c-badge--active',
+                                '公開前' => 'c-badge--pending',
+                                default => 'c-badge--ended',
+                            };
+                            @endphp
+                            <div class="c-admin-card">
+                                <div class="c-admin-card__head">
+                                    <span class="c-badge {{ $badge_class }}">{{ $announcement->pub_status }}</span>
+                                    <span class="c-admin-card__period">
+                                        公開期間：{{ $announcement->pub_start_at->format('Y/m/d') }} 〜 {{ $announcement->pub_end_at?->format('Y/m/d') ?? '期限なし' }}
+                                    </span>
+                                </div>
+                                <p class="c-admin-card__title">{{ $announcement->title }}</p>
+                                <p class="c-admin-card__body">{!! nl2br(htmlspecialchars($announcement->content)) !!}</p>
+                                <div class="c-admin-card__actions">
+                                    <a href="{{ route('admin.show.announcement.edit', ['id' => $announcement->id]) }}" class="c-button--mini">
+                                        <img src="{{ asset('/img/common/icon-pencil.svg') }}" alt="">
+                                        <span>編集する</span>
+                                    </a>
+                                    <form action="{{ route('admin.announcement.destroy', ['id' => $announcement->id]) }}" method="POST" onsubmit="return confirm('このお知らせを削除しますか？');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="c-button--mini is-danger">削除する</button>
+                                    </form>
+                                </div>
+                            </div>
+                            @empty
+                            <p class="c-empty-message">現在表示できるお知らせはありません。</p>
+                            @endforelse
                         </div>
-                        @empty
-                        <p>現在表示できるお知らせはありません。</p>
-                        @endforelse
                     </div>
                     @include('components.admin.footer')
                 </section>

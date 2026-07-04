@@ -5,36 +5,31 @@
     <meta charset="utf-8">
     <title>管理画面TOP</title>
     @include('components.head')
-    {{-- 暫定対応のためスタイル直書き --}}
-    <style>
-        .p-sub__inner {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-    </style>
 </head>
 
 <body class="is-subpage">
     <div class="l-container">
 
+        @include('components.l-header')
+
         <div class="l-contents">
             <main class="l-main">
                 <section class="p-sub__section">
+                    @include('components.admin.nav')
                     <h1 class="p-sub__head01">管理画面TOP</h1>
-                    <div class="p-sub__inner ">
-                        <p>
-                            <a href="{{ route('admin.show.unapproved.list') }}">▪️承認待ちユーザー一覧</a>
-                        </p>
-                    </div>
-                    <div class="p-sub__inner">
-                        <p>
-                            <a href="{{ route('admin.show.support.list') }}">▪️メッセージ一覧</a>
-                        </p>
-                    </div>
-                    <div class="p-sub__inner">
-                        <p>
-                            <a href="{{ route('admin.show.announcement.list') }}">▪️お知らせ一覧</a>
-                        </p>
+                    <div class="p-sub__btns">
+                        <a href="{{ route('admin.show.unapproved.list') }}" class="c-button--large">
+                            <img src="{{ asset('/img/common/icon-users.svg') }}" alt="">
+                            <span>承認待ちユーザー一覧</span>
+                        </a>
+                        <a href="{{ route('admin.show.support.list') }}" class="c-button--large">
+                            <img src="{{ asset('/img/common/icon-reply.svg') }}" alt="">
+                            <span>メッセージ一覧</span>
+                        </a>
+                        <a href="{{ route('admin.show.announcement.list') }}" class="c-button--large">
+                            <img src="{{ asset('/img/common/icon-bell.svg') }}" alt="">
+                            <span>お知らせ一覧</span>
+                        </a>
                     </div>
                     @include('components.admin.footer')
                 </section>

@@ -10,27 +10,33 @@
 <body class="is-subpage">
     <div class="l-container">
 
+        @include('components.l-header')
+
         <div class="l-contents">
             <main class="l-main">
                 <section class="p-sub__section">
+                    @include('components.admin.nav')
                     <h1 class="p-sub__head01">承認待ちユーザー一覧</h1>
                     <div class="p-sub__inner">
-                        @forelse($users as $user)
-                        <div class="c-user">
-                            <div class="c-user-icon">
-                                <img src="{{ ('/img/common/dummy_icon.png') }}" alt="">
+                        <div class="c-user__list">
+                            @forelse($users as $user)
+                            <div class="c-user has-button">
+                                <a href="{{ route('admin.show.detail', ['id' => $user->id]) }}">
+                                    <div class="c-user-icon">
+                                        <x-user-icon :user="$user" />
+                                    </div>
+                                    <div class="c-user-info">
+                                        <div class="c-user-name">{{ $user->name }}</div>
+                                    </div>
+                                </a>
+                                <div class="c-user-follow-wrap">
+                                    <a href="{{ route('admin.show.detail', ['id' => $user->id]) }}" class="c-button--mini">確認する</a>
+                                </div>
                             </div>
-                            <div class="c-user-info">
-                                <div class="c-user-name">{{ $user->name }}</div>
-                                <!-- <div class="c-user-id">@username</div> -->
-                            </div>
-                            <div>
-                                <button type="submit" onclick="location.href='{{ route('admin.show.detail', ['id' => $user->id]) }}'">確認する</button>
-                            </div>
+                            @empty
+                            <p class="c-empty-message">現在承認待ちのユーザーはおりません。</p>
+                            @endforelse
                         </div>
-                        @empty
-                        <p>現在承認待ちのユーザーはおりません。</p>
-                        @endforelse
                     </div>
                     @include('components.admin.footer')
                 </section>

@@ -31,6 +31,14 @@
         </div>
       </div>
     </div>
+    @if(auth()->user()?->is_admin)
+    <div class="l-header__btn-item">
+      <a href="{{ route('admin.show.index') }}">
+        <img src="{{ asset('/img/common/icon-archive.svg') }}" alt="">
+        <span>管理画面</span>
+      </a>
+    </div>
+    @endif
     <form action="{{ route('logout') }}" method="POST" name="a_form_logout">
       @csrf
       <div class="l-header__btn-item">
