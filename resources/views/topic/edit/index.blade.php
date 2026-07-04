@@ -31,8 +31,8 @@
                     <div class="c-user-id">@ {{ data_get($topic, 'user.user_identifier') }}</div>
                   </div>
                 </div>
-                <textarea name="topic-detail" id="topic-detail" cols="30" rows="10">{{ data_get($topic, 'content') }}</textarea>
-                @error('topic-detail')
+                <textarea name="topic_detail" id="topic_detail" cols="30" rows="10">{{ data_get($topic, 'content') }}</textarea>
+                @error('topic_detail')
                 <p class="error-text">※{{ $message }}</p>
                 @enderror
               </div>

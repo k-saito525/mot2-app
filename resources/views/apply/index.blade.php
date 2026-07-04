@@ -57,8 +57,8 @@
                   <ul>
                     @foreach($list as $key => $val)
                     <li>
-                      <label for="past-join_{{ $key }}">
-                        <input type="checkbox" id="past-join_{{ $key }}" name="past-join[]" value="{{ $key }}">{{ $val }}
+                      <label for="past_join_{{ $key }}">
+                        <input type="checkbox" id="past_join_{{ $key }}" name="past_join[]" value="{{ $key }}">{{ $val }}
                       </label>
                     </li>
                     @endforeach

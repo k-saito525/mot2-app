@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Announcement extends Model
 {
     use HasFactory, SoftDeletes;
@@ -79,14 +80,14 @@ class Announcement extends Model
     /**
      * お知らせ一覧を取得する
      *
-     * @param  bool  $only_id true の場合はIDのみ取得
+     * @param  bool  $onlyId true の場合はIDのみ取得
      * @param  array $target  取得対象のお知らせIDの配列（空の場合は全件）
      * @return array<int, array>
      */
-    public function getAnnouncements(bool $only_id = false, array $target = []): array
+    public function getAnnouncements(bool $onlyId = false, array $target = []): array
     {
         $query = static::query();
-        if ($only_id === true) {
+        if ($onlyId === true) {
             $query->select('id');
         }
         if (!empty($target)) {

@@ -1303,7 +1303,7 @@ screen and (min-width: 482px) and (max-width: 768px) {
 
 /* フラッシュメッセージ - 成功 */
 .flash-complete {
-  padding: 20px 0;
+  padding: 20px;
   background-color: rgb(251, 230, 209);
   border: 2px solid rgb(255, 123, 0);
   border-radius: 10px;
@@ -1381,7 +1381,7 @@ label, input[type='checkbox'] {
 }
 /* エラー関連 */
 .form-error {
-  padding: 20px 0;
+  padding: 20px;
   background-color: #ffe8ec;
   border: 2px solid rgb(233, 69, 69);
   border-radius: 10px;

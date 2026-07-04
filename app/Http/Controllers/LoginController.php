@@ -29,11 +29,11 @@ class LoginController extends Controller
     public function login(LoginRequest $request): RedirectResponse
     {
         // 入力データをバリデーション
-        $tmp_credentials = $request->validated();
+        $validated = $request->validated();
         // 認証条件に「削除されていないユーザー」を追加
         $credentials = [
-            'email' => Arr::get($tmp_credentials, 'email'),
-            'password' => Arr::get($tmp_credentials, 'password'),
+            'email' => Arr::get($validated, 'email'),
+            'password' => Arr::get($validated, 'password'),
             'deleted_at' => null,
         ];
 

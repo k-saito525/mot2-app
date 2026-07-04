@@ -21,10 +21,10 @@ class AnnouncementController extends Controller
      */
     public function showList(): View
     {
-        $announcement_list = Announcement::all();
+        $announcementList = Announcement::all();
 
         return view('admin/announcement/index', [
-            'announcement_list' => $announcement_list,
+            'announcement_list' => $announcementList,
         ]);
     }
 
@@ -36,14 +36,14 @@ class AnnouncementController extends Controller
      */
     public function showDetail(string $id): View|RedirectResponse
     {
-        $announcement_id = (int)$id;
+        $announcementId = (int)$id;
         // お知らせ取得
-        $m_announcement = new Announcement();
-        $announcement = $m_announcement->getAnnouncements(false, array($announcement_id));
+        $announcementModel = new Announcement();
+        $announcement = $announcementModel->getAnnouncements(false, array($announcementId));
 
         // 表層側で表示されたお知らせは既読にする
-        $m_announcement_read = new AnnouncementRead();
-        $res = $m_announcement_read->storeReadStatus(Auth::id(), $announcement_id);
+        $announcementRead = new AnnouncementRead();
+        $res = $announcementRead->storeReadStatus(Auth::id(), $announcementId);
 
         if ($res === false) {
             /* DB更新失敗したらとりあえずHOME画面に戻す */
@@ -74,8 +74,8 @@ class AnnouncementController extends Controller
     public function showEdit(string $id): View
     {
         // お知らせ取得
-        $m_announcement = new Announcement();
-        $announcement = $m_announcement->getAnnouncements(false, (array)$id);
+        $announcementModel = new Announcement();
+        $announcement = $announcementModel->getAnnouncements(false, (array)$id);
         if (empty($announcement)) {
             abort(404);
         }
@@ -92,17 +92,17 @@ class AnnouncementController extends Controller
      */
     public function store(AnnouncementRequest $request): RedirectResponse
     {
-        $pub_start = $request->input('pub-start');
-        $pub_end   = $request->input('pub-end');
+        $pubStart = $request->input('pub_start');
+        $pubEnd   = $request->input('pub_end');
 
-        if (!empty($pub_end) && Carbon::parse($pub_start)->gt(Carbon::parse($pub_end))) {
-            session()->flash('pub-start', '日付の選択が正しくありません');
+        if (!empty($pubEnd) && Carbon::parse($pubStart)->gt(Carbon::parse($pubEnd))) {
+            session()->flash('pub_start', '日付の選択が正しくありません');
             return back();
         }
 
         $announcement          = new Announcement();
         $announcement->user_id = Auth::id();
-        $this->fillAnnouncement($announcement, $request, $pub_start, $pub_end);
+        $this->fillAnnouncement($announcement, $request, $pubStart, $pubEnd);
 
         $result = (new AnnouncementService())->saveAndSyncReads($announcement);
         if (!$result) {
@@ -124,15 +124,15 @@ class AnnouncementController extends Controller
             abort(404);
         }
 
-        $pub_start = $request->input('pub-start');
-        $pub_end   = $request->input('pub-end');
+        $pubStart = $request->input('pub_start');
+        $pubEnd   = $request->input('pub_end');
 
-        if (!empty($pub_end) && Carbon::parse($pub_start)->gt(Carbon::parse($pub_end))) {
-            session()->flash('pub-start', '日付の選択が正しくありません');
+        if (!empty($pubEnd) && Carbon::parse($pubStart)->gt(Carbon::parse($pubEnd))) {
+            session()->flash('pub_start', '日付の選択が正しくありません');
             return back();
         }
 
-        $this->fillAnnouncement($announcement, $request, $pub_start, $pub_end);
+        $this->fillAnnouncement($announcement, $request, $pubStart, $pubEnd);
 
         $result = (new AnnouncementService())->saveAndSyncReads($announcement);
         if (!$result) {
@@ -159,22 +159,22 @@ class AnnouncementController extends Controller
     /**
      * リクエストの値をAnnouncementに反映する
      */
-    private function fillAnnouncement(Announcement $announcement, AnnouncementRequest $request, string $pub_start, ?string $pub_end): void
+    private function fillAnnouncement(Announcement $announcement, AnnouncementRequest $request, string $pubStart, ?string $pubEnd): void
     {
         $now = Carbon::now();
-        if ($now->lt(Carbon::parse($pub_start)) || (!empty($pub_end) && $now->gt(Carbon::parse($pub_end)))) {
-            $flg_public = 0;
+        if ($now->lt(Carbon::parse($pubStart)) || (!empty($pubEnd) && $now->gt(Carbon::parse($pubEnd)))) {
+            $isPublic = 0;
         } else {
-            $flg_public = 1;
+            $isPublic = 1;
         }
 
-        $announcement->title          = $request->input('announcement-title');
-        $announcement->content        = $request->input('announcement-detail');
-        $announcement->pub_start_at   = $pub_start;
-        $announcement->publish_status = $flg_public;
+        $announcement->title          = $request->input('announcement_title');
+        $announcement->content        = $request->input('announcement_detail');
+        $announcement->pub_start_at   = $pubStart;
+        $announcement->publish_status = $isPublic;
 
-        if (!empty($pub_end)) {
-            $announcement->pub_end_at = $pub_end;
+        if (!empty($pubEnd)) {
+            $announcement->pub_end_at = $pubEnd;
         } else {
             $announcement->pub_end_at = null;
         }

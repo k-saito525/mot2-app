@@ -24,7 +24,7 @@ class ApplyController extends Controller
     private array $formApply = [
         'name',
         'email',
-        'past-join',
+        'past_join',
     ];
 
     /**
@@ -35,9 +35,9 @@ class ApplyController extends Controller
     public function showForm(): View
     {
         // IIMS活動情報
-        $activity_list = __('iims_activity');
+        $activityList = __('iims_activity');
         return view('apply/index', [
-            'activity_list' => $activity_list,
+            'activity_list' => $activityList,
         ]);
     }
 
@@ -56,16 +56,16 @@ class ApplyController extends Controller
             return to_route('apply.form');
         }
 
-        $text_past_join = [];
-        if (isset($input['past-join'])) {
+        $textPastJoin = [];
+        if (isset($input['past_join'])) {
             /* 確認画面表示用にIIMS活動情報を取得 */
-            $activity_list = __('iims_activity');
-            foreach ($activity_list as $list) {
-                foreach (Arr::get($input, 'past-join') as $key) {
+            $activityList = __('iims_activity');
+            foreach ($activityList as $list) {
+                foreach (Arr::get($input, 'past_join') as $key) {
                     $res = '';
                     $res = Arr::get($list, $key);
                     if (!empty($res)) {
-                        $text_past_join[$key] = $res;
+                        $textPastJoin[$key] = $res;
                         continue;
                     }
                 }
@@ -76,7 +76,7 @@ class ApplyController extends Controller
         $request->session()->put(['form_input' => [
             'name' => Arr::get($input, 'name'),
             'email' => Arr::get($input, 'email'),
-            'past-join' => $text_past_join,
+            'past_join' => $textPastJoin,
         ]]);
 
         // バリデートにエラーがエラーが無い場合のみ確認画面に遷移
@@ -92,14 +92,14 @@ class ApplyController extends Controller
     public function showConfirm(Request $request): View|RedirectResponse
     {
         // セッションから入力データを取得
-        $form_input = $request->session()->get('form_input');
-        if (empty($form_input)) {
+        $formInput = $request->session()->get('form_input');
+        if (empty($formInput)) {
             // セッションに値がなければ入力画面に戻す
             return to_route('apply.form');
         }
 
         return view('apply/confirm/index', [
-            'form_input' => $form_input,
+            'form_input' => $formInput,
         ]);
     }
 
@@ -112,8 +112,8 @@ class ApplyController extends Controller
     public function store(Request $request): RedirectResponse
     {
         // 確認画面から渡った入力データをセッションから取得
-        $form_input = $request->session()->get('form_input');
-        if (empty($form_input)) {
+        $formInput = $request->session()->get('form_input');
+        if (empty($formInput)) {
             /* 入力データがセッションに存在しない場合は404 */
             abort(404);
         }
@@ -122,11 +122,11 @@ class ApplyController extends Controller
 
         // 入力データをUserモデルのインスタンスにセット
         $user = new User();
-        $user->name = Arr::get($form_input, 'name');
-        $user->email = Arr::get($form_input, 'email');
+        $user->name = Arr::get($formInput, 'name');
+        $user->email = Arr::get($formInput, 'email');
         // past_join は 'array' cast により配列をそのまま代入できる
-        if (!empty($form_input['past-join'])) {
-            $user->past_join = array_keys(Arr::get($form_input, 'past-join'));
+        if (!empty($formInput['past_join'])) {
+            $user->past_join = array_keys(Arr::get($formInput, 'past_join'));
         }
         $user->verify_token = $token;
 
@@ -136,9 +136,9 @@ class ApplyController extends Controller
             $user->save();
 
             // 完了メール送信(ユーザー側)
-            Mail::to($user->email)->send(new MailApplyUser($form_input));
+            Mail::to($user->email)->send(new MailApplyUser($formInput));
             // 完了メール送信(管理者側)
-            Mail::to(config('mail.to_admin')[App::environment()]['address'])->send(new MailApplyAdmin($form_input));
+            Mail::to(config('mail.to_admin')[App::environment()]['address'])->send(new MailApplyAdmin($formInput));
 
             // 申請完了画面に遷移
             return to_route('apply.show.complete');

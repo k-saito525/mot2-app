@@ -16,20 +16,20 @@ class MailComment extends Mailable
     use Queueable, SerializesModels;
 
     // 回答されたトピックのID
-    private $topic_id;
+    private $topicId;
     // トピックの作成者
-    private $topic_author;
+    private $topicAuthor;
     // コメント主
-    private $comment_author;
+    private $commentAuthor;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($topic_author, $comment_author, $topic_id)
+    public function __construct($topicAuthor, $commentAuthor, $topicId)
     {
-        $this->topic_id = $topic_id;
-        $this->topic_author = $topic_author;
-        $this->comment_author = $comment_author;
+        $this->topicId = $topicId;
+        $this->topicAuthor = $topicAuthor;
+        $this->commentAuthor = $commentAuthor;
     }
 
     /**
@@ -52,11 +52,11 @@ class MailComment extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.comment.topicauthor',
+            view: 'mails.comment.topic-author',
             with: [
-                'topic_id' => $this->topic_id,
-                'topic_author' => $this->topic_author,
-                'comment_author' => $this->comment_author,
+                'topic_id' => $this->topicId,
+                'topic_author' => $this->topicAuthor,
+                'comment_author' => $this->commentAuthor,
             ],
         );
     }

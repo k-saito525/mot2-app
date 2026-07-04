@@ -23,7 +23,7 @@
             <p class="error-text">{{ session('complete_regist') }}</p>
           </div>
           @endif
-          <form action="{{ route('login') }}" method='POST' class="c-form">
+          <form action="{{ route('login.store') }}" method='POST' class="c-form">
             @csrf
             <div class="c-form-item">
               <label for="email" class="c-form-item-title">登録メールアドレス</label>

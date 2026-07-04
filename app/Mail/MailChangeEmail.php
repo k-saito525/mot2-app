@@ -20,16 +20,16 @@ class MailChangeEmail extends Mailable
     // ユーザー情報
     private $user;
     // 変更前のメールアドレス
-    private $old_email;
+    private $oldEmail;
     /**
      * Create a new message instance.
      */
-    public function __construct($user, $old_email)
+    public function __construct($user, $oldEmail)
     {
         // ユーザー情報
         $this->user = $user;
         // 変更前のメールアドレス
-        $this->old_email = $old_email;
+        $this->oldEmail = $oldEmail;
     }
 
     /**
@@ -55,7 +55,7 @@ class MailChangeEmail extends Mailable
             view: 'mails.email.change',
             with: [
                 'user' => $this->user,
-                'old_email' => $this->old_email,
+                'old_email' => $this->oldEmail,
             ],
         );
     }

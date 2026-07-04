@@ -18,11 +18,11 @@ use Illuminate\View\View;
  */
 class SupportController extends Controller
 {
-    private Support $m_support;
+    private Support $support;
 
     public function __construct()
     {
-        $this->m_support = new Support();
+        $this->support = new Support();
     }
 
 
@@ -40,14 +40,14 @@ class SupportController extends Controller
             'user_id',
         ]);
 
-        $this->m_support->message = Arr::get($input, 'message');
-        $this->m_support->user_id = Arr::get($input, 'user_id');
+        $this->support->message = Arr::get($input, 'message');
+        $this->support->user_id = Arr::get($input, 'user_id');
         // 登録実行
         try {
-            $this->m_support->save();
+            $this->support->save();
 
             // 管理者へメール送信
-            Mail::to(config('mail.to_admin')[App::environment()]['address'])->send(new MailSupportAdmin($this->m_support));
+            Mail::to(config('mail.to_admin')[App::environment()]['address'])->send(new MailSupportAdmin($this->support));
 
             // 送信成功したら成功メッセージを表示
             session()->flash('flash_success', __('supports.success.complete'));

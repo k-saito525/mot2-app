@@ -11,13 +11,13 @@ class HeaderComposer
 
     public function compose(View $view): void
     {
-        $user_id = auth()->id();
+        $userId = auth()->id();
 
-        $announcement_info = ['unread_count' => 0, 'announcement' => ''];
-        if (!is_null($user_id)) {
-            $announcement_info = $this->announcementService->getStatusRead($user_id);
+        $announcementInfo = ['unread_count' => 0, 'announcement' => ''];
+        if (!is_null($userId)) {
+            $announcementInfo = $this->announcementService->getStatusRead($userId);
         }
 
-        $view->with('announcement_info', $announcement_info);
+        $view->with('announcement_info', $announcementInfo);
     }
 }

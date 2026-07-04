@@ -34,8 +34,8 @@
             </div>
             <div class="c-form-item c-form-item--register">
               <p class="c-form-item-title">過去に参加された多文化交流</p>
-              @if(!empty($form_input['past-join']))
-              @foreach($form_input['past-join'] as $key => $val)
+              @if(!empty($form_input['past_join']))
+              @foreach($form_input['past_join'] as $key => $val)
               <p>・{{ $val }}</p>
               @endforeach
               @else

@@ -12,8 +12,8 @@ use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\CommentController;
 use \App\Http\Controllers\SupportController;
 use \App\Http\Controllers\AnnouncementController;
-use \App\Http\Controllers\Admin\user\ApproveController;
-use \App\Http\Controllers\Admin\support\AdminSupportController;
+use \App\Http\Controllers\Admin\User\ApproveController;
+use \App\Http\Controllers\Admin\Support\AdminSupportController;
 
 /* ------------------------------------------------------------------------------------------------ */
 /* ログイン状態に関わらずアクセス可能 */
@@ -86,13 +86,13 @@ Route::middleware('guest')
 
             /* ログイン */
             Route::prefix('/login')
-                ->name('login')
+                ->name('login.')
                 ->group(
                     function () {
                         // ログインフォームの表示
-                        Route::get('/', [LoginController::class, 'showForm'])->name('.show.form');
+                        Route::get('/', [LoginController::class, 'showForm'])->name('show.form');
                         // ログイン処理
-                        Route::post('/', [LoginController::class, 'login'])->name('');
+                        Route::post('/', [LoginController::class, 'login'])->name('store');
                     }
                 );
 
@@ -125,7 +125,7 @@ Route::middleware('auth')
         Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 
         // お知らせ詳細画面の表示
-        Route::get('/announcement/detail/{id}', [AnnouncementController::class, 'showDetail'])->name('show.detail.announcement');
+        Route::get('/announcement/detail/{id}', [AnnouncementController::class, 'showDetail'])->name('show.announcement.detail');
 
         // ログアウト処理
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -191,7 +191,7 @@ Route::middleware('auth')
          * 管理者側
          * 管理者権限チェックはログイン認証時に行っている
          */
-        Route::middleware('AdminMiddleware')
+        Route::middleware('admin')
             ->group(function () {
                 Route::prefix('/admin')
                     ->name('admin.')
@@ -207,7 +207,7 @@ Route::middleware('auth')
                         // 承認待ちユーザー 詳細画面の表示
                         Route::get('/user/unapproved/{id}', [ApproveController::class, 'showDetail'])->name('show.detail');
                         // 承認処理
-                        Route::post('/user/approve', [ApproveController::class, 'approve'])->name('unapprovedUser.approve');
+                        Route::post('/user/approve', [ApproveController::class, 'approve'])->name('unapproved.approve');
 
                         /* サポート */
                         // メッセージ 一覧画面表示

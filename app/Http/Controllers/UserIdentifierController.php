@@ -77,6 +77,6 @@ class UserIdentifierController extends Controller
     public function showComplete(): View
     {
 
-        return view('identifier.complete.index');
+        return view('identifier/complete/index');
     }
 }

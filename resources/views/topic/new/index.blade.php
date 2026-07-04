@@ -28,16 +28,16 @@
             <form action="{{ route('topic.store') }}" method="POST" class="c-form">
               @csrf
               <div class="c-form-item">
-                <label for="topic-title" class="c-form-item-title">トピックのタイトル</label>
-                <input type="text" name="topic-title" id="topic-title" value="{{ old('topic-title') }}">
-                @error('topic-title')
+                <label for="topic_title" class="c-form-item-title">トピックのタイトル</label>
+                <input type="text" name="topic_title" id="topic_title" value="{{ old('topic_title') }}">
+                @error('topic_title')
                 <p class="error-text">※{{ $message }}</p>
                 @enderror
               </div>
               <div class="c-form-item">
-                <label for="topic-detail" class="c-form-item-title">トピックの本文</label>
-                <textarea name="topic-detail" id="topic-detail" cols="30" rows="10">{{ old('topic-detail') }}</textarea>
-                @error('topic-detail')
+                <label for="topic_detail" class="c-form-item-title">トピックの本文</label>
+                <textarea name="topic_detail" id="topic_detail" cols="30" rows="10">{{ old('topic_detail') }}</textarea>
+                @error('topic_detail')
                 <p class="error-text">※{{ $message }}</p>
                 @enderror
               </div>

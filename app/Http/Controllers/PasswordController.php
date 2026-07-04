@@ -182,10 +182,10 @@ class PasswordController extends Controller
         // 入力データを取得
         $password = $request->input('password');
         // セッションから再設定キーを取得
-        $reset_token = $request->session()->get('reset_token');
+        $resetToken = $request->session()->get('reset_token');
 
         // 入力されたメールアドレスからユーザー情報を特定
-        $user = User::where('reset_password_access_key', $reset_token)->first();
+        $user = User::where('reset_password_access_key', $resetToken)->first();
 
         if (empty($user)) {
             // ユーザー情報が間違っている場合は404にしておく

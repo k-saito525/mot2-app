@@ -54,14 +54,14 @@ class Comment extends Model
     /**
      * トピックIDに紐づくコメント一覧を取得する
      *
-     * @param  int $topic_id トピックID
+     * @param  int $topicId トピックID
      * @return Collection<int, static>
      */
-    public function getCommentsByTopicID(int $topic_id): Collection
+    public function getCommentsByTopicID(int $topicId): Collection
     {
         return static::query()
             ->with('user')
-            ->where('topic_id', $topic_id)
+            ->where('topic_id', $topicId)
             ->orderBy('created_at', 'asc')
             ->get();
     }
@@ -69,25 +69,25 @@ class Comment extends Model
     /**
      * IDを指定してコメントを1件取得する
      *
-     * @param  int $comment_id コメントID
+     * @param  int $commentId コメントID
      * @return ?static null: 対象コメントなし
      */
-    public function getCommentByID(int $comment_id): ?static
+    public function getCommentByID(int $commentId): ?static
     {
         return static::query()
             ->with('user')
-            ->find($comment_id);
+            ->find($commentId);
     }
 
     /**
      * コメントを削除する
      *
-     * @param  int $comment_id コメントID
+     * @param  int $commentId コメントID
      * @return bool true: 削除成功
      */
-    public function deleteComments(int $comment_id): bool
+    public function deleteComments(int $commentId): bool
     {
-        $comment = self::find($comment_id);
+        $comment = self::find($commentId);
         if (!empty($comment)) {
             try {
                 $comment->delete();

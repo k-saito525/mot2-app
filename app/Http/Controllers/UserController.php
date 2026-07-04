@@ -75,11 +75,11 @@ class UserController extends Controller
             return to_route('user.show.list');
         }
         // IIMS活動参加歴
-        $activity_list = __('iims_activity');
+        $activityList = __('iims_activity');
 
         return view('user/edit/index', [
             'user' => $user,
-            'activity_list' => $activity_list,
+            'activity_list' => $activityList,
         ]);
     }
 
@@ -97,15 +97,15 @@ class UserController extends Controller
             return back();
         }
 
-        $target_user = User::approved()->find((int)Arr::get($input, 'user_id'));
-        if ($target_user === null) {
+        $targetUser = User::approved()->find((int)Arr::get($input, 'user_id'));
+        if ($targetUser === null) {
             abort(404);
         }
 
         $email = Arr::get($input, 'email');
         if (!empty($email)) {
             $duplicate = User::where('email', $email)
-                ->where('id', '!=', $target_user->id)
+                ->where('id', '!=', $targetUser->id)
                 ->exists();
             if ($duplicate) {
                 session()->flash('flash_failed_email', __('users.fail.duplicate_mail'));
@@ -113,7 +113,7 @@ class UserController extends Controller
             }
         }
 
-        $error = $this->userService->updateProfile($input, $target_user);
+        $error = $this->userService->updateProfile($input, $targetUser);
         if (empty($error)) {
             session()->flash('flash_success', __('users.success.updated'));
             return to_route('user.show.detail', ['id' => $input['user_id']]);

@@ -39,7 +39,7 @@
                             <p class="c-admin-card__body">選択されていません</p>
                             @endif
                         </div>
-                        <form action="{{ route('admin.unapprovedUser.approve') }}" method="POST">
+                        <form action="{{ route('admin.unapproved.approve') }}" method="POST">
                             @csrf
                             <input type="hidden" name="id" value="{{ $user->id }}">
                             <div class="c-button-wrap">

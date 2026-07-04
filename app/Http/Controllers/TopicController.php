@@ -19,11 +19,11 @@ class TopicController extends Controller
     // トピック一覧画面のデフォルト表示件数
     const int SHOW_CNT_TOPICS = 20;
 
-    private Topic $m_topic;
+    private Topic $topic;
 
     public function __construct(private readonly TopicService $topicService)
     {
-        $this->m_topic = new Topic();
+        $this->topic = new Topic();
     }
 
     /**
@@ -35,7 +35,7 @@ class TopicController extends Controller
     public function showList(string $page = '1'): View
     {
         $page = max(1, (int)$page);
-        $topics = $this->m_topic->getTopicsList(self::SHOW_CNT_TOPICS, $page);
+        $topics = $this->topic->getTopicsList(self::SHOW_CNT_TOPICS, $page);
 
         return view('topic/index', [
             'topics' => $topics,
@@ -52,23 +52,23 @@ class TopicController extends Controller
     public function showDetail(string $id): View|RedirectResponse
     {
         // IDを元にトピックの詳細を取得
-        $topic_id = (int)$id;
-        $topic = $this->m_topic->getTopicById($topic_id);
+        $topicId = (int)$id;
+        $topic = $this->topic->getTopicById($topicId);
         // 存在しないIDもしくは削除済みの場合は404
         if ($topic === null) {
             abort(404);
         }
 
         // トピックIDをもとに紐づくコメントを取得
-        $comments = new Comment()->getCommentsByTopicID($topic_id);
+        $comments = new Comment()->getCommentsByTopicID($topicId);
 
         // コメント編集権限があるかどうかの確認用(投稿主か否か)
-        $user_id = Auth::id();
+        $userId = Auth::id();
 
         return view('topic/show/index', [
             'topic' => $topic,
             'comments' => $comments,
-            'user_id' => $user_id,
+            'user_id' => $userId,
         ]);
     }
 
@@ -98,7 +98,7 @@ class TopicController extends Controller
         // ログインしているユーザー情報を取得
         $user = Auth::user();
         // トピックIDを元にトピック情報を取得
-        $topic = $this->m_topic->getTopicById((int)$id);
+        $topic = $this->topic->getTopicById((int)$id);
 
         // 不正アクセス対策
         if ($topic === null) {
@@ -125,8 +125,8 @@ class TopicController extends Controller
         try {
             $topic          = new Topic();
             $topic->user_id = $request->user()->id;
-            $topic->title   = $request->input('topic-title');
-            $topic->content = $request->input('topic-detail');
+            $topic->title   = $request->input('topic_title');
+            $topic->content = $request->input('topic_detail');
             $topic->save();
 
             session()->flash('flash_success', __('topics.success.create'));
@@ -150,7 +150,7 @@ class TopicController extends Controller
             abort(404);
         }
         try {
-            $topic->content = $request->input('topic-detail');
+            $topic->content = $request->input('topic_detail');
             $topic->save();
 
             session()->flash('flash_success', __('topics.success.update'));

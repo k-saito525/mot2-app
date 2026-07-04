@@ -25,18 +25,18 @@ class AnnouncementRequest extends FormRequest
             return [];
         }
         return [
-            'announcement-title' => ['required', 'string', 'max:50'],  // タイトル:必須,50文字以内
-            'announcement-detail' => ['required', 'string', 'max:800'], // 本文:必須 800文字以内
+            'announcement_title' => ['required', 'string', 'max:50'],  // タイトル:必須,50文字以内
+            'announcement_detail' => ['required', 'string', 'max:800'], // 本文:必須 800文字以内
         ];
     }
 
     public function messages(): array
     {
         return [
-            'announcement-title.required'  => 'タイトルは必ず入力してください。',
-            'announcement-title.max'       => 'タイトルは50文字以内で入力してください。',
-            'announcement-detail.required' => '本文は必ず入力してください。',
-            'announcement-detail.max'      => '本文は800文字以内で入力してください。',
+            'announcement_title.required'  => 'タイトルは必ず入力してください。',
+            'announcement_title.max'       => 'タイトルは50文字以内で入力してください。',
+            'announcement_detail.required' => '本文は必ず入力してください。',
+            'announcement_detail.max'      => '本文は800文字以内で入力してください。',
         ];
     }
 }

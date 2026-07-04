@@ -27,35 +27,35 @@
                             <div class="c-form-item">
                                 <div class="c-form-item-row">
                                     <div class="c-form-item-row__col">
-                                        <label for="pub-start" class="c-form-item-title">公開開始日</label>
-                                        <input type="date" name="pub-start" id="pub-start" value="{{ data_get($announcement, 'pub_start_at') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}" required>
-                                        @error('pub-start')
+                                        <label for="pub_start" class="c-form-item-title">公開開始日</label>
+                                        <input type="date" name="pub_start" id="pub_start" value="{{ data_get($announcement, 'pub_start_at') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}" required>
+                                        @error('pub_start')
                                         <span class="error-text">※{{ $message }}</span>
                                         @enderror
                                     </div>
                                     <div class="c-form-item-row__col">
-                                        <label for="pub-end" class="c-form-item-title">公開終了日</label>
-                                        <input type="date" name="pub-end" id="pub-end" value="{{ data_get($announcement, 'pub_end_at') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}">
-                                        @error('pub-end')
+                                        <label for="pub_end" class="c-form-item-title">公開終了日</label>
+                                        <input type="date" name="pub_end" id="pub_end" value="{{ data_get($announcement, 'pub_end_at') }}" min="{{ now()->format('Y') . '-01-01' }}" max="{{ (now()->year + 5) . '-12-31' }}">
+                                        @error('pub_end')
                                         <span class="error-text">※{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
-                                @if(session('pub-start'))
-                                <p class="error-text">※{{ session('pub-start') }}</p>
+                                @if(session('pub_start'))
+                                <p class="error-text">※{{ session('pub_start') }}</p>
                                 @endif
                             </div>
                             <div class="c-form-item">
-                                <label for="announcement-title" class="c-form-item-title">お知らせのタイトル</label>
-                                <input type="text" name="announcement-title" id="announcement-title" value="{{ data_get($announcement, 'title') }}">
-                                @error('announcement-title')
+                                <label for="announcement_title" class="c-form-item-title">お知らせのタイトル</label>
+                                <input type="text" name="announcement_title" id="announcement_title" value="{{ data_get($announcement, 'title') }}">
+                                @error('announcement_title')
                                 <p class="error-text">※{{ $message }}</p>
                                 @enderror
                             </div>
                             <div class="c-form-item">
-                                <label for="announcement-detail" class="c-form-item-title">お知らせの本文</label>
-                                <textarea name="announcement-detail" id="announcement-detail" cols="30" rows="10">{{ data_get($announcement, 'content') }}</textarea>
-                                @error('announcement-detail')
+                                <label for="announcement_detail" class="c-form-item-title">お知らせの本文</label>
+                                <textarea name="announcement_detail" id="announcement_detail" cols="30" rows="10">{{ data_get($announcement, 'content') }}</textarea>
+                                @error('announcement_detail')
                                 <p class="error-text">※{{ $message }}</p>
                                 @enderror
                             </div>

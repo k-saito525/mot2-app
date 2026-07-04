@@ -13,20 +13,20 @@ class AnnouncementService
     /**
      * お知らせと関連する既読レコードを削除する
      *
-     * @param  int $announcement_id お知らせID
+     * @param  int $announcementId お知らせID
      * @return bool true: 削除成功、false: 対象なし or 削除失敗
      */
-    public function delete(int $announcement_id): bool
+    public function delete(int $announcementId): bool
     {
-        $announcement = Announcement::find($announcement_id);
+        $announcement = Announcement::find($announcementId);
         if (!$announcement) {
             return false;
         }
 
         try {
-            DB::transaction(function () use ($announcement, $announcement_id) {
+            DB::transaction(function () use ($announcement, $announcementId) {
                 $announcement->delete();
-                (new AnnouncementRead())->deleteReadsByAnnouncementId($announcement_id);
+                (new AnnouncementRead())->deleteReadsByAnnouncementId($announcementId);
             });
         } catch (\Throwable) {
             return false;
@@ -38,10 +38,10 @@ class AnnouncementService
     /**
      * 公開中のお知らせを未読数・既読状態付きで取得する
      *
-     * @param  int $user_id ユーザーID
+     * @param  int $userId ユーザーID
      * @return array{ unread_count: int, announcement: Announcement[]|string }
      */
-    public function getStatusRead(int $user_id): array
+    public function getStatusRead(int $userId): array
     {
         $announcements = Announcement::published()->get();
 
@@ -49,21 +49,21 @@ class AnnouncementService
             return ['unread_count' => 0, 'announcement' => ''];
         }
 
-        $announcement_ids = $announcements->pluck('id')->all();
-        $read_info        = (new AnnouncementRead())->getCount($user_id, $announcement_ids);
-        $read_count       = Arr::get($read_info, 'read_count', 0);
-        $read_ids         = collect(Arr::get($read_info, 'reads', []))
+        $announcementIds = $announcements->pluck('id')->all();
+        $readInfo        = (new AnnouncementRead())->getCount($userId, $announcementIds);
+        $readCount       = Arr::get($readInfo, 'read_count', 0);
+        $readIds         = collect(Arr::get($readInfo, 'reads', []))
             ->map(fn($r) => data_get($r, 'announcement_id'))
             ->all();
 
         foreach ($announcements as $announcement) {
-            if (in_array($announcement->id, $read_ids)) {
+            if (in_array($announcement->id, $readIds)) {
                 $announcement->pub_status = 1;
             }
         }
 
         return [
-            'unread_count' => count($announcement_ids) - $read_count,
+            'unread_count' => count($announcementIds) - $readCount,
             'announcement' => $announcements->all(),
         ];
     }
@@ -82,9 +82,9 @@ class AnnouncementService
             DB::transaction(function () use ($announcement) {
                 $announcement->save();
                 $today = Carbon::today();
-                $is_not_public = $announcement->pub_start_at->gt($today)
+                $isNotPublic = $announcement->pub_start_at->gt($today)
                     || (!empty($announcement->pub_end_at) && $announcement->pub_end_at->lt($today));
-                if ($is_not_public) {
+                if ($isNotPublic) {
                     (new AnnouncementRead())->deleteReadsByAnnouncementId($announcement->id);
                 }
             });

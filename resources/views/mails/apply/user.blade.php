@@ -8,7 +8,7 @@
     【送信内容】<br>
     お名前：{{ Arr::get($user, 'name') }}<br>
     メールアドレス：{{ Arr::get($user, 'email') }}<br>
-    過去のIIMS活動参加歴：{{ Arr::get($user, 'past-join') }}
+    過去のIIMS活動参加歴：{{ Arr::get($user, 'past_join') }}
 </p>
 <br>
 <br>

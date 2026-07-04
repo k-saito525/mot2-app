@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\user;
+namespace App\Http\Controllers\Admin\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -24,10 +24,10 @@ class ApproveController extends Controller
     public function showList(): View
     {
         // 承認待ちのユーザー情報を取得
-        $unapproved_users = User::unapproved()->get();
+        $unapprovedUsers = User::unapproved()->get();
 
         return view('admin/user/unapproved/list', [
-            'users' => $unapproved_users,
+            'users' => $unapprovedUsers,
         ]);
     }
 
@@ -40,27 +40,27 @@ class ApproveController extends Controller
     public function showDetail(string $id): View
     {
         // IDを元にユーザー情報を取得
-        $unapproved_user = User::unapproved()->find((int)$id);
-        if ($unapproved_user === null) {
+        $unapprovedUser = User::unapproved()->find((int)$id);
+        if ($unapprovedUser === null) {
             abort(404);
         }
         // 活動参加歴を表示用に調整
-        $activity_list = __('iims_activity');
-        if (!empty($unapproved_user->past_join)) {
-            $text_past_join = [];
-            foreach ($activity_list as $list) {
-                foreach ($unapproved_user->past_join as $key) {
+        $activityList = __('iims_activity');
+        if (!empty($unapprovedUser->past_join)) {
+            $textPastJoin = [];
+            foreach ($activityList as $list) {
+                foreach ($unapprovedUser->past_join as $key) {
                     $res = Arr::get($list, $key);
                     if (!empty($res)) {
-                        $text_past_join[] = $res;
+                        $textPastJoin[] = $res;
                     }
                 }
             }
-            $unapproved_user->past_join = $text_past_join;
+            $unapprovedUser->past_join = $textPastJoin;
         }
 
         return view('admin/user/unapproved/detail', [
-            'user' => $unapproved_user,
+            'user' => $unapprovedUser,
         ]);
     }
 

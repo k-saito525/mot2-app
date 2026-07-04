@@ -26,14 +26,14 @@ class MailApplyAdmin extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(array $user_data)
+    public function __construct(array $userData)
     {
-        if (!empty($user_data['past-join'])) {
-            $user_data['past-join'] = implode(',', $user_data['past-join']);
+        if (!empty($userData['past_join'])) {
+            $userData['past_join'] = implode(',', $userData['past_join']);
         } else {
-            $user_data['past-join'] = '';
+            $userData['past_join'] = '';
         }
-        $this->user = $user_data;
+        $this->user = $userData;
     }
 
     /**

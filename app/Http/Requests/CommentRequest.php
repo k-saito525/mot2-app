@@ -12,15 +12,15 @@ class CommentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $comment_id = $this->route('id');
+        $commentId = $this->route('id');
 
         // 新規作成はログイン済みなら誰でも可
-        if ($comment_id === null) {
+        if ($commentId === null) {
             return true;
         }
 
         // 編集はオーナーのみ
-        $comment = Comment::find((int) $comment_id);
+        $comment = Comment::find((int) $commentId);
         if ($comment === null) {
             return false;
         }

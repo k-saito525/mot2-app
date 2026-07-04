@@ -87,27 +87,27 @@ class Topic extends Model
     /**
      * IDを指定してトピックを1件取得する
      *
-     * @param  int $topic_id トピックID
+     * @param  int $topicId トピックID
      * @return ?static null: 対象トピックなし
      */
-    public function getTopicById(int $topic_id): ?static
+    public function getTopicById(int $topicId): ?static
     {
         return static::query()
             ->with('user')
-            ->find($topic_id);
+            ->find($topicId);
     }
 
     /**
      * ユーザーIDに紐づくトピック一覧を取得する
      *
-     * @param  int $user_id ユーザーID
+     * @param  int $userId ユーザーID
      * @return Collection<int, static>
      */
-    public function getTopicByUser(int $user_id): Collection
+    public function getTopicByUser(int $userId): Collection
     {
         return static::query()
             ->with('user')
-            ->where('user_id', $user_id)
+            ->where('user_id', $userId)
             ->get();
     }
 

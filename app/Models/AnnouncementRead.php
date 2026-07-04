@@ -36,15 +36,15 @@ class AnnouncementRead extends Model
     /**
      * お知らせIDをもとに既読レコードと既読数を取得する
      *
-     * @param  int        $user_id          ユーザーID
-     * @param  array<int> $announcement_ids 対象お知らせIDの配列
+     * @param  int        $userId          ユーザーID
+     * @param  array<int> $announcementIds 対象お知らせIDの配列
      * @return array{ reads: array<int, array{user_id: int, announcement_id: int}>, read_count: int }
      */
-    public function getCount(int $user_id, array $announcement_ids): array
+    public function getCount(int $userId, array $announcementIds): array
     {
         $reads = static::query()
-            ->where('user_id', $user_id)
-            ->whereIn('announcement_id', $announcement_ids)
+            ->where('user_id', $userId)
+            ->whereIn('announcement_id', $announcementIds)
             ->get();
 
         return [
@@ -56,16 +56,16 @@ class AnnouncementRead extends Model
     /**
      * お知らせを既読にする
      *
-     * @param  int $user_id         ユーザーID
-     * @param  int $announcement_id 既読にするお知らせID
+     * @param  int $userId         ユーザーID
+     * @param  int $announcementId 既読にするお知らせID
      * @return bool true: 登録成功または既に既読、false: 登録失敗
      */
-    public function storeReadStatus(int $user_id, int $announcement_id): bool
+    public function storeReadStatus(int $userId, int $announcementId): bool
     {
         try {
             static::query()->firstOrCreate([
-                'user_id'         => $user_id,
-                'announcement_id' => $announcement_id,
+                'user_id'         => $userId,
+                'announcement_id' => $announcementId,
             ]);
             return true;
         } catch (\Exception) {
@@ -76,13 +76,13 @@ class AnnouncementRead extends Model
     /**
      * お知らせIDに紐づく既読レコードを削除する
      *
-     * @param  int $announcement_id お知らせID
+     * @param  int $announcementId お知らせID
      * @return void
      */
-    public function deleteReadsByAnnouncementId(int $announcement_id): void
+    public function deleteReadsByAnnouncementId(int $announcementId): void
     {
         static::query()
-            ->where('announcement_id', $announcement_id)
+            ->where('announcement_id', $announcementId)
             ->delete();
     }
 }
