@@ -32,13 +32,8 @@ class UserService
             $user->name = Arr::get($input, 'name', '');
         }
 
+        // email/user_identifierの重複確認はUserRequestのuniqueルールで実施済み
         if (!empty(Arr::get($input, 'user_identifier', ''))) {
-            $duplicate = User::where('user_identifier', Arr::get($input, 'user_identifier', ''))
-                ->where('id', '!=', $user->id)
-                ->exists();
-            if ($duplicate) {
-                return __('users.fail.duplicate_identifier');
-            }
             $user->user_identifier = Arr::get($input, 'user_identifier', '');
         }
 

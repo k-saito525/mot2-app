@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ApplyRequest extends FormRequest
 {
@@ -23,7 +24,22 @@ class ApplyRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:50'],  // 氏名:必須,50文字以内
-            'email' => ['required', 'email', 'max:255'], // メールアドレス:必須,(重複確認はコントローラで行う),255文字以内
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->whereNull('deleted_at'),
+            ], // メールアドレス:必須,重複不可,255文字以内
+        ];
+    }
+
+    /**
+     * エラーメッセージのカスタム
+     */
+    public function messages(): array
+    {
+        return [
+            'email.unique' => __('users.fail.duplicate_mail'),
         ];
     }
 }

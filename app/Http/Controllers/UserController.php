@@ -102,17 +102,6 @@ class UserController extends Controller
             abort(404);
         }
 
-        $email = Arr::get($input, 'email');
-        if (!empty($email)) {
-            $duplicate = User::where('email', $email)
-                ->where('id', '!=', $targetUser->id)
-                ->exists();
-            if ($duplicate) {
-                session()->flash('flash_failed_email', __('users.fail.duplicate_mail'));
-                return back();
-            }
-        }
-
         $error = $this->userService->updateProfile($input, $targetUser);
         if (empty($error)) {
             session()->flash('flash_success', __('users.success.updated'));

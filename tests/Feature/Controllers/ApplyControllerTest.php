@@ -28,7 +28,7 @@ class ApplyControllerTest extends TestCase
         $response->assertSessionHas('form_input');
     }
 
-    public function test_check_redirects_back_when_email_is_duplicate(): void
+    public function test_check_fails_validation_when_email_is_duplicate(): void
     {
         User::factory()->create(['email' => 'taken@example.com']);
 
@@ -37,8 +37,7 @@ class ApplyControllerTest extends TestCase
             'email' => 'taken@example.com',
         ]);
 
-        $response->assertRedirect(route('apply.form'));
-        $response->assertSessionHas('flash_failed');
+        $response->assertSessionHasErrors('email');
     }
 
     public function test_check_fails_validation_when_name_is_missing(): void

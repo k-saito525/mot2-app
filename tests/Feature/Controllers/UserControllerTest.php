@@ -54,7 +54,7 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_store_redirects_back_when_email_is_duplicate(): void
+    public function test_store_fails_validation_when_email_is_duplicate(): void
     {
         User::factory()->create(['email' => 'taken@example.com', 'is_approved' => 1]);
         $user = User::factory()->create(['email' => 'own@example.com', 'is_approved' => 1]);
@@ -63,8 +63,35 @@ class UserControllerTest extends TestCase
             'email' => 'taken@example.com',
         ]));
 
-        $response->assertRedirect();
-        $response->assertSessionHas('flash_failed_email');
+        $response->assertSessionHasErrors('email');
+    }
+
+    public function test_store_fails_validation_when_identifier_is_duplicate(): void
+    {
+        User::factory()->create(['user_identifier' => 'taken0001', 'is_approved' => 1]);
+        $user = User::factory()->create(['user_identifier' => 'myself001', 'is_approved' => 1]);
+
+        $response = $this->actingAs($user)->post(route('user.store'), $this->validParams($user->id, [
+            'user_identifier' => 'taken0001',
+        ]));
+
+        $response->assertSessionHasErrors('user_identifier');
+    }
+
+    public function test_store_allows_keeping_own_email_and_identifier(): void
+    {
+        $user = User::factory()->create([
+            'email'           => 'own@example.com',
+            'user_identifier' => 'myself001',
+            'is_approved'     => 1,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('user.store'), $this->validParams($user->id, [
+            'email'           => 'own@example.com',
+            'user_identifier' => 'myself001',
+        ]));
+
+        $response->assertRedirect(route('user.show.detail', ['id' => $user->id]));
     }
 
     // -------------------------------------------------------------------------

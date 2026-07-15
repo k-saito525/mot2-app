@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
 {
@@ -26,10 +27,21 @@ class UserRequest extends FormRequest
             'user_icon' => ['max:2048', 'mimes:jpg,jpeg,png'],
             // 名前 → 必須, 50文字以内
             'name' => ['required', 'max:50'],
-            // 表示用のユーザーID → 必須, 半角英(大小)数アンダーバーのみ
-            'user_identifier' => ['required', 'regex:/^[a-zA-Z0-9_]+$/', 'min:8', 'max:24'],
-            // メールアドレス:必須,(重複確認はコントローラで行う),255文字以内
-            'email' => ['nullable', 'email', 'max:255'],
+            // 表示用のユーザーID → 必須, 半角英(大小)数アンダーバーのみ, 重複不可
+            'user_identifier' => [
+                'required',
+                'regex:/^[a-zA-Z0-9_]+$/',
+                'min:8',
+                'max:24',
+                Rule::unique('users', 'user_identifier')->ignore($this->input('user_id'))->whereNull('deleted_at'),
+            ],
+            // メールアドレス:必須,重複不可,255文字以内
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($this->input('user_id'))->whereNull('deleted_at'),
+            ],
             // カバー画像 → ファイルサイズ:2MB, 拡張子:jpg,jpeg,png
             'user_cover_image' => ['max:2048', 'mimes:jpg,jpeg,png'],
             // Xリンク → URL形式
@@ -53,7 +65,9 @@ class UserRequest extends FormRequest
             'user_identifier.regex'    => '使用できない文字が含まれています。',
             'user_identifier.min'      => 'ユーザーIDは8文字以上24文字以内で入力してください。',
             'user_identifier.max'      => 'ユーザーIDは8文字以上24文字以内で入力してください。',
+            'user_identifier.unique'   => __('users.fail.duplicate_identifier'),
             'email.max'                => 'メールアドレスは255文字以内で入力してください。',
+            'email.unique'             => __('users.fail.duplicate_mail'),
             'user_cover_image.max'     => 'プロフィールカバー画像のファイルサイズは2MB以内にしてください。',
             'user_cover_image.mimes'   => 'プロフィールカバー画像はjpg,jpeg,pngのいずれかの形式で登録してください。',
             'sns_x.url'                => 'URLの形式が正しくありません。',

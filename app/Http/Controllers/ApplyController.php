@@ -51,11 +51,6 @@ class ApplyController extends Controller
     public function check(ApplyRequest $request): RedirectResponse
     {
         $input = $request->only($this->formApply);
-        // メールアドレスの重複確認
-        if (User::where('email', $input['email'])->exists()) {
-            session()->flash('flash_failed', __('users.fail.duplicate_mail'));
-            return to_route('apply.form');
-        }
 
         $textPastJoin = [];
         if (isset($input['past_join'])) {

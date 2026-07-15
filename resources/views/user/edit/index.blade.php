@@ -58,10 +58,6 @@
                 @error('email')
                 <p class="error-text">※{{ $message }}</p>
                 @enderror
-                @if(session('flash_failed_email'))
-                {{-- 重複チェックエラー --}}
-                <p class="error-text">{{ session('flash_failed_email') }}</p>
-                @endif
               </div>
               <div class="c-form-item">
                 <label for="user_cover_image" class="c-form-item-title">プロフィールカバー画像</label>
