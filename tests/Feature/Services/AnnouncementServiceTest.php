@@ -95,4 +95,71 @@ class AnnouncementServiceTest extends TestCase
             'announcement_id' => $announcement->id,
         ]);
     }
+
+    // -------------------------------------------------------------------------
+    // markAsRead
+    // -------------------------------------------------------------------------
+
+    public function test_mark_as_read_creates_read_record(): void
+    {
+        $user         = User::factory()->create();
+        $announcement = Announcement::factory()->create();
+
+        $result = $this->service->markAsRead($user->id, $announcement->id);
+
+        $this->assertTrue($result);
+        $this->assertDatabaseHas('announcement_reads', [
+            'user_id'         => $user->id,
+            'announcement_id' => $announcement->id,
+        ]);
+    }
+
+    public function test_mark_as_read_is_idempotent_when_already_read(): void
+    {
+        $user         = User::factory()->create();
+        $announcement = Announcement::factory()->create();
+        AnnouncementRead::create([
+            'user_id'         => $user->id,
+            'announcement_id' => $announcement->id,
+        ]);
+
+        $result = $this->service->markAsRead($user->id, $announcement->id);
+
+        $this->assertTrue($result);
+        $this->assertDatabaseCount('announcement_reads', 1);
+    }
+
+    // -------------------------------------------------------------------------
+    // getAnnouncements
+    // -------------------------------------------------------------------------
+
+    public function test_get_announcements_returns_all_when_no_filter(): void
+    {
+        Announcement::factory()->count(3)->create();
+
+        $result = $this->service->getAnnouncements();
+
+        $this->assertCount(3, $result);
+    }
+
+    public function test_get_announcements_filters_by_target_ids(): void
+    {
+        $a1 = Announcement::factory()->create();
+        $a2 = Announcement::factory()->create();
+        Announcement::factory()->create();
+
+        $result = $this->service->getAnnouncements(false, [$a1->id, $a2->id]);
+
+        $this->assertCount(2, $result);
+    }
+
+    public function test_get_announcements_returns_only_ids_when_only_id_is_true(): void
+    {
+        Announcement::factory()->create();
+
+        $result = $this->service->getAnnouncements(true);
+
+        $this->assertArrayHasKey('id', $result[0]);
+        $this->assertArrayNotHasKey('title', $result[0]);
+    }
 }

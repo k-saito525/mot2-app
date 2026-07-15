@@ -3,7 +3,6 @@
 namespace Tests\Feature\Models;
 
 use App\Models\Announcement;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -99,39 +98,5 @@ class AnnouncementModelTest extends TestCase
         ]);
 
         $this->assertSame('公開終了', $announcement->pub_status);
-    }
-
-    // -------------------------------------------------------------------------
-    // getAnnouncements
-    // -------------------------------------------------------------------------
-
-    public function test_get_announcements_returns_all_when_no_filter(): void
-    {
-        Announcement::factory()->count(3)->create();
-
-        $result = new Announcement()->getAnnouncements();
-
-        $this->assertCount(3, $result);
-    }
-
-    public function test_get_announcements_filters_by_target_ids(): void
-    {
-        $a1 = Announcement::factory()->create();
-        $a2 = Announcement::factory()->create();
-        Announcement::factory()->create();
-
-        $result = new Announcement()->getAnnouncements(false, [$a1->id, $a2->id]);
-
-        $this->assertCount(2, $result);
-    }
-
-    public function test_get_announcements_returns_only_ids_when_only_id_is_true(): void
-    {
-        Announcement::factory()->create();
-
-        $result = new Announcement()->getAnnouncements(true);
-
-        $this->assertArrayHasKey('id', $result[0]);
-        $this->assertArrayNotHasKey('title', $result[0]);
     }
 }

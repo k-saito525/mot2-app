@@ -41,27 +41,6 @@ class CommentModelTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // deleteComments
-    // -------------------------------------------------------------------------
-
-    public function test_delete_comments_soft_deletes_and_returns_true(): void
-    {
-        $comment = Comment::factory()->create();
-
-        $result = new Comment()->deleteComments($comment->id);
-
-        $this->assertTrue($result);
-        $this->assertSoftDeleted('comments', ['id' => $comment->id]);
-    }
-
-    public function test_delete_comments_returns_true_when_not_found(): void
-    {
-        $result = new Comment()->deleteComments(0);
-
-        $this->assertTrue($result);
-    }
-
-    // -------------------------------------------------------------------------
     // getCommentByID
     // -------------------------------------------------------------------------
 

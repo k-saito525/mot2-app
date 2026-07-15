@@ -6,7 +6,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\AnnouncementRequest;
 use App\Models\Announcement;
-use App\Models\AnnouncementRead;
 use App\Services\AnnouncementService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -38,12 +37,10 @@ class AnnouncementController extends Controller
     {
         $announcementId = (int)$id;
         // お知らせ取得
-        $announcementModel = new Announcement();
-        $announcement = $announcementModel->getAnnouncements(false, array($announcementId));
+        $announcement = new AnnouncementService()->getAnnouncements(false, [$announcementId]);
 
         // 表層側で表示されたお知らせは既読にする
-        $announcementRead = new AnnouncementRead();
-        $res = $announcementRead->storeReadStatus(Auth::id(), $announcementId);
+        $res = new AnnouncementService()->markAsRead(Auth::id(), $announcementId);
 
         if ($res === false) {
             /* DB更新失敗したらとりあえずHOME画面に戻す */
@@ -74,8 +71,7 @@ class AnnouncementController extends Controller
     public function showEdit(string $id): View
     {
         // お知らせ取得
-        $announcementModel = new Announcement();
-        $announcement = $announcementModel->getAnnouncements(false, (array)$id);
+        $announcement = new AnnouncementService()->getAnnouncements(false, (array)$id);
         if (empty($announcement)) {
             abort(404);
         }

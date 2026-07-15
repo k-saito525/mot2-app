@@ -76,25 +76,5 @@ class Announcement extends Model
         return $query->where('pub_start_at', '<=', $now)
             ->where(fn($q) => $q->whereNull('pub_end_at')->orWhere('pub_end_at', '>=', $now));
     }
-
-    /**
-     * お知らせ一覧を取得する
-     *
-     * @param  bool  $onlyId true の場合はIDのみ取得
-     * @param  array $target  取得対象のお知らせIDの配列（空の場合は全件）
-     * @return array<int, array>
-     */
-    public function getAnnouncements(bool $onlyId = false, array $target = []): array
-    {
-        $query = static::query();
-        if ($onlyId === true) {
-            $query->select('id');
-        }
-        if (!empty($target)) {
-            $query->whereIn('id', $target);
-        }
-        return $query->get()->toArray();
-    }
-
 }
 

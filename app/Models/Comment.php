@@ -78,23 +78,4 @@ class Comment extends Model
             ->with('user')
             ->find($commentId);
     }
-
-    /**
-     * コメントを削除する
-     *
-     * @param  int $commentId コメントID
-     * @return bool true: 削除成功
-     */
-    public function deleteComments(int $commentId): bool
-    {
-        $comment = self::find($commentId);
-        if (!empty($comment)) {
-            try {
-                $comment->delete();
-            } catch (\Exception) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

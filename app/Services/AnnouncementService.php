@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Announcement;
 use App\Models\AnnouncementRead;
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class AnnouncementService
@@ -26,7 +25,7 @@ class AnnouncementService
         try {
             DB::transaction(function () use ($announcement, $announcementId) {
                 $announcement->delete();
-                new AnnouncementRead()->deleteReadsByAnnouncementId($announcementId);
+                $this->deleteReadsByAnnouncementId($announcementId);
             });
         } catch (\Throwable) {
             return false;
@@ -50,11 +49,11 @@ class AnnouncementService
         }
 
         $announcementIds = $announcements->pluck('id')->all();
-        $readInfo        = new AnnouncementRead()->getCount($userId, $announcementIds);
-        $readCount       = Arr::get($readInfo, 'read_count', 0);
-        $readIds         = collect(Arr::get($readInfo, 'reads', []))
-            ->map(fn($r) => data_get($r, 'announcement_id'))
-            ->all();
+        $reads           = AnnouncementRead::query()
+            ->where('user_id', $userId)
+            ->whereIn('announcement_id', $announcementIds)
+            ->get();
+        $readIds = $reads->pluck('announcement_id')->all();
 
         foreach ($announcements as $announcement) {
             if (in_array($announcement->id, $readIds)) {
@@ -63,7 +62,7 @@ class AnnouncementService
         }
 
         return [
-            'unread_count' => count($announcementIds) - $readCount,
+            'unread_count' => count($announcementIds) - $reads->count(),
             'announcement' => $announcements->all(),
         ];
     }
@@ -85,7 +84,7 @@ class AnnouncementService
                 $isNotPublic = $announcement->pub_start_at->gt($today)
                     || (!empty($announcement->pub_end_at) && $announcement->pub_end_at->lt($today));
                 if ($isNotPublic) {
-                    new AnnouncementRead()->deleteReadsByAnnouncementId($announcement->id);
+                    $this->deleteReadsByAnnouncementId($announcement->id);
                 }
             });
         } catch (\Throwable) {
@@ -93,5 +92,57 @@ class AnnouncementService
         }
 
         return true;
+    }
+
+    /**
+     * お知らせを既読にする
+     *
+     * @param  int $userId         ユーザーID
+     * @param  int $announcementId 既読にするお知らせID
+     * @return bool true: 登録成功または既に既読、false: 登録失敗
+     */
+    public function markAsRead(int $userId, int $announcementId): bool
+    {
+        try {
+            AnnouncementRead::query()->firstOrCreate([
+                'user_id'         => $userId,
+                'announcement_id' => $announcementId,
+            ]);
+            return true;
+        } catch (\Exception) {
+            return false;
+        }
+    }
+
+    /**
+     * お知らせ一覧を取得する
+     *
+     * @param  bool  $onlyId true の場合はIDのみ取得
+     * @param  array $target  取得対象のお知らせIDの配列（空の場合は全件）
+     * @return array<int, array>
+     */
+    public function getAnnouncements(bool $onlyId = false, array $target = []): array
+    {
+        $query = Announcement::query();
+        if ($onlyId === true) {
+            $query->select('id');
+        }
+        if (!empty($target)) {
+            $query->whereIn('id', $target);
+        }
+        return $query->get()->toArray();
+    }
+
+    /**
+     * お知らせIDに紐づく既読レコードを削除する
+     *
+     * @param  int $announcementId お知らせID
+     * @return void
+     */
+    private function deleteReadsByAnnouncementId(int $announcementId): void
+    {
+        AnnouncementRead::query()
+            ->where('announcement_id', $announcementId)
+            ->delete();
     }
 }
