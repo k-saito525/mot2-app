@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CommentRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\MailComment;
 use App\Models\Comment;
 use App\Models\Topic;
-use App\Models\User;
+use App\Services\CommentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -18,6 +16,8 @@ use Illuminate\View\View;
  */
 class CommentController extends Controller
 {
+    public function __construct(private readonly CommentService $commentService) {}
+
     /**
      * コメント入力画面の表示
      *
@@ -62,26 +62,13 @@ class CommentController extends Controller
 
         $userInfo = Auth::user();
 
-        try {
-            $comment           = new Comment();
-            $comment->comment  = $request->input('comment');
-            $comment->topic_id = $topic->id;
-            $comment->user_id  = $userInfo->id;
-            $comment->save();
-
-            if ($userInfo->id !== $topic->user_id) {
-                $topicAuthor = User::approved()->find((int)$topic->user_id);
-                if ($topicAuthor !== null) {
-                    Mail::to($topicAuthor->email)->send(new MailComment($topicAuthor, $userInfo, $topic->id));
-                }
-            }
-
+        $result = $this->commentService->create($topic, $userInfo, $request->input('comment'));
+        if ($result) {
             session()->flash('flash_success', __('comments.success.complete_comment'));
-            return to_route('topic.show.detail', ['id' => $topic->id]);
-        } catch (\Exception) {
+        } else {
             session()->flash('flash_failed', __('comments.fail.failed_comment'));
-            return to_route('topic.show.detail', ['id' => $topic->id]);
         }
+        return to_route('topic.show.detail', ['id' => $topic->id]);
     }
 
     /**
@@ -104,16 +91,13 @@ class CommentController extends Controller
             return to_route('topic.show.list');
         }
 
-        try {
-            $targetComment->comment = $request->input('comment');
-            $targetComment->save();
-
+        $result = $this->commentService->updateComment($targetComment, $request->input('comment'));
+        if ($result) {
             session()->flash('flash_success', __('comments.success.complete_edit'));
             return to_route('topic.show.detail', ['id' => $topic->id]);
-        } catch (\Exception) {
-            session()->flash('flash_failed', __('comments.fail.failed_edit'));
-            return back();
         }
+        session()->flash('flash_failed', __('comments.fail.failed_edit'));
+        return back();
     }
 
     /**

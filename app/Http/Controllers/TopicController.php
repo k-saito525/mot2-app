@@ -117,19 +117,17 @@ class TopicController extends Controller
      */
     public function store(TopicRequest $request): RedirectResponse
     {
-        try {
-            $topic          = new Topic();
-            $topic->user_id = $request->user()->id;
-            $topic->title   = $request->input('topic_title');
-            $topic->content = $request->input('topic_detail');
-            $topic->save();
-
+        $result = $this->topicService->create(
+            $request->user()->id,
+            $request->input('topic_title'),
+            $request->input('topic_detail'),
+        );
+        if ($result) {
             session()->flash('flash_success', __('topics.success.create'));
             return to_route('topic.show.list');
-        } catch (\Exception) {
-            session()->flash('flash_failed', __('topics.fail.failed'));
-            return back();
         }
+        session()->flash('flash_failed', __('topics.fail.failed'));
+        return back();
     }
 
     /**
@@ -144,16 +142,14 @@ class TopicController extends Controller
         if ($topic === null) {
             abort(404);
         }
-        try {
-            $topic->content = $request->input('topic_detail');
-            $topic->save();
 
+        $result = $this->topicService->updateContent($topic, $request->input('topic_detail'));
+        if ($result) {
             session()->flash('flash_success', __('topics.success.update'));
             return to_route('topic.show.list');
-        } catch (\Exception) {
-            session()->flash('flash_failed', __('topics.fail.failed'));
-            return back();
         }
+        session()->flash('flash_failed', __('topics.fail.failed'));
+        return back();
     }
 
     /**

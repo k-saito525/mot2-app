@@ -13,6 +13,8 @@ use Illuminate\View\View;
 
 class AnnouncementController extends Controller
 {
+    public function __construct(private readonly AnnouncementService $announcementService) {}
+
     /**
      * お知らせ - 一覧画面の表示(管理者側)
      *
@@ -37,10 +39,10 @@ class AnnouncementController extends Controller
     {
         $announcementId = (int)$id;
         // お知らせ取得
-        $announcement = new AnnouncementService()->getAnnouncements(false, [$announcementId]);
+        $announcement = $this->announcementService->getAnnouncements(false, [$announcementId]);
 
         // 表層側で表示されたお知らせは既読にする
-        $res = new AnnouncementService()->markAsRead(Auth::id(), $announcementId);
+        $res = $this->announcementService->markAsRead(Auth::id(), $announcementId);
 
         if ($res === false) {
             /* DB更新失敗したらとりあえずHOME画面に戻す */
@@ -71,7 +73,7 @@ class AnnouncementController extends Controller
     public function showEdit(string $id): View
     {
         // お知らせ取得
-        $announcement = new AnnouncementService()->getAnnouncements(false, (array)$id);
+        $announcement = $this->announcementService->getAnnouncements(false, (array)$id);
         if (empty($announcement)) {
             abort(404);
         }
@@ -100,7 +102,7 @@ class AnnouncementController extends Controller
         $announcement->user_id = Auth::id();
         $this->fillAnnouncement($announcement, $request, $pubStart, $pubEnd);
 
-        $result = new AnnouncementService()->saveAndSyncReads($announcement);
+        $result = $this->announcementService->saveAndSyncReads($announcement);
         if (!$result) {
             return back();
         }
@@ -130,7 +132,7 @@ class AnnouncementController extends Controller
 
         $this->fillAnnouncement($announcement, $request, $pubStart, $pubEnd);
 
-        $result = new AnnouncementService()->saveAndSyncReads($announcement);
+        $result = $this->announcementService->saveAndSyncReads($announcement);
         if (!$result) {
             return back();
         }
@@ -145,7 +147,7 @@ class AnnouncementController extends Controller
      */
     public function destroy(AnnouncementRequest $request, string $id): RedirectResponse
     {
-        $result = new AnnouncementService()->delete((int)$id);
+        $result = $this->announcementService->delete((int)$id);
         if (!$result) {
             abort(404);
         }
