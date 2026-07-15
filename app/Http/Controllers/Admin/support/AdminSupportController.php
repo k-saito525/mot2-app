@@ -16,7 +16,7 @@ class AdminSupportController extends Controller
     public function showList(): View
     {
         // 承認待ちのユーザー情報を取得
-        $messages = new Support()->getMessages();
+        $messages = Support::withAuthor()->latest()->get();
 
         return view('admin/support/index', [
             'messages' => $messages,

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -52,30 +52,13 @@ class Comment extends Model
     }
 
     /**
-     * トピックIDに紐づくコメント一覧を取得する
+     * 投稿者を事前読み込みするスコープ
      *
-     * @param  int $topicId トピックID
-     * @return Collection<int, static>
+     * @param  Builder $query クエリビルダ
+     * @return Builder
      */
-    public function getCommentsByTopicID(int $topicId): Collection
+    public function scopeWithAuthor(Builder $query): Builder
     {
-        return static::query()
-            ->with('user')
-            ->where('topic_id', $topicId)
-            ->orderBy('created_at', 'asc')
-            ->get();
-    }
-
-    /**
-     * IDを指定してコメントを1件取得する
-     *
-     * @param  int $commentId コメントID
-     * @return ?static null: 対象コメントなし
-     */
-    public function getCommentByID(int $commentId): ?static
-    {
-        return static::query()
-            ->with('user')
-            ->find($commentId);
+        return $query->with('user');
     }
 }

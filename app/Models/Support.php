@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,28 +36,13 @@ class Support extends Model
     }
 
     /**
-     * メッセージ一覧を取得する
+     * 投稿者を事前読み込みするスコープ
      *
-     * @return Collection<int, static>
+     * @param  Builder $query クエリビルダ
+     * @return Builder
      */
-    public function getMessages(): Collection
+    public function scopeWithAuthor(Builder $query): Builder
     {
-        return static::query()
-            ->with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
-    }
-
-    /**
-     * IDを指定してメッセージを1件取得する
-     *
-     * @param  int $id supportsテーブルのID
-     * @return ?static null: 対象メッセージなし
-     */
-    public function getMessageById(int $id): ?static
-    {
-        return static::query()
-            ->with('user')
-            ->find($id);
+        return $query->with('user');
     }
 }

@@ -19,12 +19,7 @@ class TopicController extends Controller
     // トピック一覧画面のデフォルト表示件数
     const int SHOW_CNT_TOPICS = 20;
 
-    private Topic $topic;
-
-    public function __construct(private readonly TopicService $topicService)
-    {
-        $this->topic = new Topic();
-    }
+    public function __construct(private readonly TopicService $topicService) {}
 
     /**
      * トピック - 一覧画面の表示
@@ -35,7 +30,7 @@ class TopicController extends Controller
     public function showList(string $page = '1'): View
     {
         $page = max(1, (int)$page);
-        $topics = $this->topic->getTopicsList(self::SHOW_CNT_TOPICS, $page);
+        $topics = Topic::withAuthor()->latest()->paginate(self::SHOW_CNT_TOPICS, ['*'], 'page', $page);
 
         return view('topic/index', [
             'topics' => $topics,
@@ -53,14 +48,14 @@ class TopicController extends Controller
     {
         // IDを元にトピックの詳細を取得
         $topicId = (int)$id;
-        $topic = $this->topic->getTopicById($topicId);
+        $topic = Topic::withAuthor()->find($topicId);
         // 存在しないIDもしくは削除済みの場合は404
         if ($topic === null) {
             abort(404);
         }
 
         // トピックIDをもとに紐づくコメントを取得
-        $comments = new Comment()->getCommentsByTopicID($topicId);
+        $comments = Comment::withAuthor()->oldest()->where('topic_id', $topicId)->get();
 
         // コメント編集権限があるかどうかの確認用(投稿主か否か)
         $userId = Auth::id();
@@ -98,7 +93,7 @@ class TopicController extends Controller
         // ログインしているユーザー情報を取得
         $user = Auth::user();
         // トピックIDを元にトピック情報を取得
-        $topic = $this->topic->getTopicById((int)$id);
+        $topic = Topic::withAuthor()->find((int)$id);
 
         // 不正アクセス対策
         if ($topic === null) {

@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -53,62 +52,14 @@ class Topic extends Model
     }
 
     /**
-     * トピック一覧を取得する
+     * 投稿者を事前読み込みするスコープ
      *
-     * @param  ?int $limit 取得件数（null の場合は全件）
-     * @return Collection<int, static>
+     * @param  Builder $query クエリビルダ
+     * @return Builder
      */
-    public function getTopics(?int $limit = null): Collection
+    public function scopeWithAuthor(Builder $query): Builder
     {
-        $query = static::query()
-            ->with('user')
-            ->orderBy('created_at', 'desc');
-        if ($limit !== null) {
-            $query = $query->limit($limit);
-        }
-        return $query->get();
-    }
-
-    /**
-     * トピック一覧をページネータで取得する
-     *
-     * @param  int $perPage 1ページあたりの取得件数
-     * @param  int $page    ページ番号
-     * @return LengthAwarePaginator
-     */
-    public function getTopicsList(int $perPage, int $page): LengthAwarePaginator
-    {
-        return static::query()
-            ->with('user')
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage, ['*'], 'page', $page);
-    }
-
-    /**
-     * IDを指定してトピックを1件取得する
-     *
-     * @param  int $topicId トピックID
-     * @return ?static null: 対象トピックなし
-     */
-    public function getTopicById(int $topicId): ?static
-    {
-        return static::query()
-            ->with('user')
-            ->find($topicId);
-    }
-
-    /**
-     * ユーザーIDに紐づくトピック一覧を取得する
-     *
-     * @param  int $userId ユーザーID
-     * @return Collection<int, static>
-     */
-    public function getTopicByUser(int $userId): Collection
-    {
-        return static::query()
-            ->with('user')
-            ->where('user_id', $userId)
-            ->get();
+        return $query->with('user');
     }
 
     /**

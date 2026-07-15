@@ -19,15 +19,6 @@ class HomeController extends Controller
     // ホーム画面に表示するトピック数
     const int CNT_SHOW_TOPIC = 5;
 
-    private Topic $topic;
-    private Comment $comment;
-
-    public function __construct()
-    {
-        $this->topic = new Topic();
-        $this->comment = new Comment();
-    }
-
     /**
      * ホーム画面の表示
      *
@@ -40,12 +31,12 @@ class HomeController extends Controller
         $userId = $userInfo->id;
 
         /* 最新のトピックを取得 */
-        // $topics = $this->topic->getTopics(self::CNT_SHOW_TOPIC);
+        // $topics = Topic::withAuthor()->latest()->limit(self::CNT_SHOW_TOPIC)->get();
         /* ※暫定対応 最新順で6件取得して、1件はおすすめトピックとして表示 */
-        $topics = $this->topic->getTopics(6);
+        $topics = Topic::withAuthor()->latest()->limit(6)->get();
         if (!$topics->isEmpty()) {
             $reccTopic = data_get($topics, 0);
-            $commentReccTopics = $this->comment->getCommentsByTopicID(data_get($reccTopic, 'id'));
+            $commentReccTopics = Comment::withAuthor()->oldest()->where('topic_id', data_get($reccTopic, 'id'))->get();
             // 抜き出した最新の1件は削除
             $topics = $topics->slice(1);
         } else {

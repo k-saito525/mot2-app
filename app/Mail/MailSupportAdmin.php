@@ -18,8 +18,6 @@ class MailSupportAdmin extends Mailable
 {
     use Queueable, SerializesModels;
 
-    // サポートインスタンス格納用
-    private $support;
     // メッセージデータ格納用
     private $message;
     /**
@@ -27,7 +25,6 @@ class MailSupportAdmin extends Mailable
      */
     public function __construct($message)
     {
-        $this->support = new Support();
         $this->message = $message;
     }
 
@@ -50,7 +47,7 @@ class MailSupportAdmin extends Mailable
      */
     public function content(): Content
     {
-        $message = $this->support->getMessageById($this->message->id);
+        $message = Support::withAuthor()->find($this->message->id);
 
         return new Content(
             view: 'mails.support.admin',

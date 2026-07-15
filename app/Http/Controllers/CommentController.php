@@ -18,16 +18,6 @@ use Illuminate\View\View;
  */
 class CommentController extends Controller
 {
-
-    private Comment $comment;
-    private Topic $topic;
-
-    public function __construct()
-    {
-        $this->comment = new Comment();
-        $this->topic = new Topic();
-    }
-
     /**
      * コメント入力画面の表示
      *
@@ -37,14 +27,14 @@ class CommentController extends Controller
     public function showForm(string $id): View
     {
         // IDをもとにトピック情報を取得
-        $topic = $this->topic->getTopicById((int)$id);
+        $topic = Topic::withAuthor()->find((int)$id);
         if ($topic === null) {
             /* 存在しないIDもしくは削除済みの場合は404 */
             abort(404);
         }
 
         // トピックIDから紐づくコメントを取得
-        $comments = $this->comment->getCommentsByTopicID((int)$id);
+        $comments = Comment::withAuthor()->oldest()->where('topic_id', (int)$id)->get();
 
         // コメント主の情報
         $user = Auth::user();
@@ -64,7 +54,7 @@ class CommentController extends Controller
      */
     public function store(CommentRequest $request): RedirectResponse
     {
-        $topic = $this->topic->getTopicById((int) $request->input('topic_id'));
+        $topic = Topic::withAuthor()->find((int) $request->input('topic_id'));
         if ($topic === null) {
             session()->flash('flash_failed', __('comments.fail.not_exist'));
             return to_route('topic.show.list');
@@ -103,12 +93,12 @@ class CommentController extends Controller
      */
     public function update(CommentRequest $request, string $id): RedirectResponse
     {
-        $targetComment = $this->comment->getCommentByID((int) $id);
+        $targetComment = Comment::withAuthor()->find((int) $id);
         if ($targetComment === null) {
             abort(404);
         }
 
-        $topic = $this->topic->getTopicById((int) $targetComment->topic_id);
+        $topic = Topic::withAuthor()->find((int) $targetComment->topic_id);
         if ($topic === null) {
             session()->flash('flash_failed', __('comments.fail.not_exist'));
             return to_route('topic.show.list');
@@ -135,14 +125,14 @@ class CommentController extends Controller
     public function showEdit(string $id): View|RedirectResponse
     {
         // 編集するコメント情報を取得
-        $targetComment = $this->comment->getCommentByID((int) $id);
+        $targetComment = Comment::withAuthor()->find((int) $id);
         if (!isset($targetComment)) {
             /* 編集するコメントが存在しない場合は404 */
             abort(404);
         }
 
         // トピックを取得
-        $topic = $this->topic->getTopicById((int)$targetComment->topic_id);
+        $topic = Topic::withAuthor()->find((int)$targetComment->topic_id);
         if (!isset($topic)) {
             /* トピックが存在しない場合は一覧に戻す */
             session()->flash('flash_failed', __('comments.fail.not_exist'));
@@ -160,7 +150,7 @@ class CommentController extends Controller
         }
 
         // トピックIDから紐づくコメントを取得
-        $comments = $this->comment->getCommentsByTopicID($topic->id);
+        $comments = Comment::withAuthor()->oldest()->where('topic_id', $topic->id)->get();
         return view('comment/edit/index', [
             'topic' => $topic,
             'comments' => $comments,

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Models;
 
 use App\Models\Comment;
-use App\Models\Topic;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,52 +11,24 @@ class CommentModelTest extends TestCase
     use RefreshDatabase;
 
     // -------------------------------------------------------------------------
-    // getCommentsByTopicID
+    // scopeWithAuthor
     // -------------------------------------------------------------------------
 
-    public function test_get_comments_by_topic_id_returns_only_that_topics_comments(): void
-    {
-        $topic  = Topic::factory()->create();
-        $other  = Topic::factory()->create();
-        Comment::factory()->count(2)->create(['topic_id' => $topic->id]);
-        Comment::factory()->create(['topic_id' => $other->id]);
-
-        $result = new Comment()->getCommentsByTopicID($topic->id);
-
-        $this->assertCount(2, $result);
-        $result->each(fn ($c) => $this->assertEquals($topic->id, $c->topic_id));
-    }
-
-    public function test_get_comments_by_topic_id_returns_oldest_first(): void
-    {
-        $topic = Topic::factory()->create();
-        $new   = Comment::factory()->create(['topic_id' => $topic->id, 'created_at' => now()]);
-        $old   = Comment::factory()->create(['topic_id' => $topic->id, 'created_at' => now()->subHour()]);
-
-        $result = new Comment()->getCommentsByTopicID($topic->id);
-
-        $this->assertEquals($old->id, $result->first()->id);
-        $this->assertEquals($new->id, $result->last()->id);
-    }
-
-    // -------------------------------------------------------------------------
-    // getCommentByID
-    // -------------------------------------------------------------------------
-
-    public function test_get_comment_by_id_returns_comment_when_found(): void
+    public function test_with_author_scope_eager_loads_user(): void
     {
         $comment = Comment::factory()->create();
 
-        $result = new Comment()->getCommentByID($comment->id);
+        $result = Comment::withAuthor()->find($comment->id);
 
-        $this->assertNotNull($result);
-        $this->assertEquals($comment->id, $result->id);
+        $this->assertTrue($result->relationLoaded('user'));
     }
 
-    public function test_get_comment_by_id_returns_null_when_not_found(): void
+    public function test_with_author_scope_does_not_narrow_results(): void
     {
-        $result = new Comment()->getCommentByID(0);
+        Comment::factory()->count(3)->create();
 
-        $this->assertNull($result);
+        $result = Comment::withAuthor()->get();
+
+        $this->assertCount(3, $result);
     }
 }

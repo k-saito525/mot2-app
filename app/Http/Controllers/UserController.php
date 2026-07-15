@@ -54,7 +54,7 @@ class UserController extends Controller
         }
 
         /* ユーザーIDをもとにそのユーザーが作成したトピックを取得 */
-        $topics = new Topic()->getTopicByUser($id);
+        $topics = Topic::withAuthor()->where('user_id', (int)$id)->get();
         return view('user/show/index', [
             'user' => $user,
             'topics' => $topics,
