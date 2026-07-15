@@ -6,6 +6,7 @@ use App\Models\Announcement;
 use App\Models\AnnouncementRead;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AnnouncementService
 {
@@ -27,7 +28,8 @@ class AnnouncementService
                 $announcement->delete();
                 $this->deleteReadsByAnnouncementId($announcementId);
             });
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            Log::error('お知らせの削除に失敗しました', ['announcement_id' => $announcementId, 'exception' => $e]);
             return false;
         }
 
@@ -87,7 +89,8 @@ class AnnouncementService
                     $this->deleteReadsByAnnouncementId($announcement->id);
                 }
             });
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            Log::error('お知らせの保存に失敗しました', ['announcement_id' => $announcement->id, 'exception' => $e]);
             return false;
         }
 
@@ -109,7 +112,8 @@ class AnnouncementService
                 'announcement_id' => $announcementId,
             ]);
             return true;
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            Log::error('お知らせの既読登録に失敗しました', ['user_id' => $userId, 'announcement_id' => $announcementId, 'exception' => $e]);
             return false;
         }
     }

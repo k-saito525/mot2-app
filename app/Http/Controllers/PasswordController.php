@@ -7,6 +7,7 @@ use App\Http\Requests\PasswordNewRequest;
 use App\Http\Requests\PasswordResetMailCheckRequest;
 use App\Http\Requests\PasswordResetStoreRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailPasswordResetMailCheck;
 use Carbon\Carbon;
@@ -85,7 +86,8 @@ class PasswordController extends Controller
 
             // 登録成功したらユーザーID設定画面に遷移
             return to_route('identifier.show.form', ['token' => $user->verify_token]);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            Log::error('パスワードの新規登録に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
             // 登録失敗したら再度入力フォームに戻してやり直させる
             session()->flash('flash_failed', __('passwords.failed_regist_reset'));
             return back();
@@ -133,7 +135,8 @@ class PasswordController extends Controller
                 Mail::to($user->email)->send(new MailPasswordResetMailCheck($user));
                 // 送信完了画面に遷移
                 return to_route('password.reset.show.send');
-            } catch (\Exception) {
+            } catch (\Exception $e) {
+                Log::error('パスワードリセットメールの送信に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
                 // 処理に失敗したらエラーメッセージを表示
                 session()->flash('flash_failed', __('passwords.failed_send'));
                 return back();
@@ -199,7 +202,8 @@ class PasswordController extends Controller
                 $user->save();
                 // 送信完了画面に遷移
                 return to_route('password.reset.show.complete');
-            } catch (\Exception) {
+            } catch (\Exception $e) {
+                Log::error('パスワードの再設定に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
                 // 処理に失敗したらエラーメッセージを表示
                 session()->flash('flash_failed', __('passwords.failed_send'));
                 return back();

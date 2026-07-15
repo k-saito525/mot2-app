@@ -9,6 +9,7 @@ use App\Http\Requests\ApplyRequest;
 use App\Mail\MailApplyUser;
 use App\Mail\MailApplyAdmin;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Models\User;
@@ -134,18 +135,24 @@ class ApplyController extends Controller
         try {
             // データベースに保存
             $user->save();
+        } catch (\Exception $e) {
+            Log::error('ユーザー登録申請の保存に失敗しました', ['email' => $user->email, 'exception' => $e]);
+            // 登録失敗したら404を表示
+            abort(404);
+        }
 
+        // 完了メール送信。送信失敗しても登録自体は完了しているため、ログのみ残す
+        try {
             // 完了メール送信(ユーザー側)
             Mail::to($user->email)->send(new MailApplyUser($formInput));
             // 完了メール送信(管理者側)
             Mail::to(config('mail.to_admin')[App::environment()]['address'])->send(new MailApplyAdmin($formInput));
-
-            // 申請完了画面に遷移
-            return to_route('apply.show.complete');
-        } catch (\Exception) {
-            // 登録失敗したら404を表示
-            abort(404);
+        } catch (\Exception $e) {
+            Log::error('登録申請完了通知メールの送信に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
         }
+
+        // 申請完了画面に遷移
+        return to_route('apply.show.complete');
     }
 
     /**

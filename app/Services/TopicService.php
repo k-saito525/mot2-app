@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Topic;
+use Illuminate\Support\Facades\Log;
 
 class TopicService
 {
@@ -22,7 +23,8 @@ class TopicService
             $topic->title   = $title;
             $topic->content = $content;
             $topic->save();
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            Log::error('トピックの作成に失敗しました', ['user_id' => $userId, 'exception' => $e]);
             return false;
         }
 
@@ -41,7 +43,8 @@ class TopicService
         try {
             $topic->content = $content;
             $topic->save();
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            Log::error('トピックの更新に失敗しました', ['topic_id' => $topic->id, 'exception' => $e]);
             return false;
         }
 
@@ -66,7 +69,8 @@ class TopicService
         try {
             $topic->comments()->delete();
             $topic->delete();
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            Log::error('トピックの削除に失敗しました', ['topic_id' => $topicId, 'exception' => $e]);
             return false;
         }
 

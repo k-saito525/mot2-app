@@ -7,6 +7,7 @@ use App\Http\Requests\UserIdentifierRequest;
 use Illuminate\Support\Arr;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class UserIdentifierController extends Controller
@@ -63,7 +64,8 @@ class UserIdentifierController extends Controller
 
             // 登録成功したら完了画面に遷移
             return view('identifier/complete/index');
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            Log::error('ユーザーIDの登録に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
             session()->flash('flash_failed', __('users.fail.duplicate_identifier'));
             return back();
         }

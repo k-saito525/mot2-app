@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Mail\MailApprovedUser;
 use App\Mail\MailChangeEmail;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -78,11 +80,17 @@ class UserService
             }
 
             $user->save();
-            if ($changedEmail) {
-                Mail::to($user->email)->send(new MailChangeEmail($user, $oldEmail));
-            }
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            Log::error('ユーザープロフィールの更新に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
             return __('users.fail.failed_update');
+        }
+
+        if ($changedEmail) {
+            try {
+                Mail::to($user->email)->send(new MailChangeEmail($user, $oldEmail));
+            } catch (\Exception $e) {
+                Log::error('メールアドレス変更通知の送信に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
+            }
         }
 
         if ($oldIcon !== null) {
@@ -115,12 +123,21 @@ class UserService
     /**
      * ユーザーを承認する
      *
+     * 承認完了通知メールの送信に失敗しても承認処理自体は成功として扱う(ログにのみ残す)。
+     *
      * @param  int  $id 承認対象のユーザーID
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException 対象ユーザーが存在しない場合
      */
     public function approve(int $id): void
     {
         $user = User::findOrFail($id);
         $user->is_approved = 1;
         $user->save();
+
+        try {
+            Mail::to($user->email)->send(new MailApprovedUser($user));
+        } catch (\Exception $e) {
+            Log::error('承認完了通知メールの送信に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
+        }
     }
 }

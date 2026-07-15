@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Admin\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Mail\MailApprovedUser;
-use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Illuminate\Support\Arr;
 
@@ -76,23 +75,21 @@ class ApproveController extends Controller
         $id = (int) $request->post('id');
         $user = User::unapproved()->find($id);
 
-        if (!empty($user)) {
-            try {
-                // 承認ステータスを更新
-                $this->userService->approve($user->id);
-
-                // ユーザーに承認完了通知を送信
-                Mail::to($user->email)->send(new MailApprovedUser($user));
-
-                // 処理が完了したら承認待ちユーザー一覧画面に遷移
-                return to_route('admin.show.unapproved.list');
-            } catch (\Exception) {
-                // 登録失敗したら404
-                abort(404);
-            }
-        } else {
+        if ($user === null) {
             /* ユーザー情報が取得できなかった場合は承認待ちユーザー一覧に戻す */
             return to_route('admin.show.unapproved.list');
+        }
+
+        try {
+            // 承認ステータスを更新(承認完了通知の送信も内部で行う)
+            $this->userService->approve($user->id);
+
+            // 処理が完了したら承認待ちユーザー一覧画面に遷移
+            return to_route('admin.show.unapproved.list');
+        } catch (\Exception $e) {
+            Log::error('ユーザー承認処理に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
+            // 登録失敗したら404
+            abort(404);
         }
     }
 }
