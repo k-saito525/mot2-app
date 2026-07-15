@@ -111,6 +111,7 @@ class PasswordControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'reset_password_access_key' => 'resetkey123',
+            'reset_password_expire_at'  => now()->addHours(24),
         ]);
 
         $response = $this->withSession(['reset_token' => 'resetkey123'])->post(route('password.reset.store'), [
@@ -126,6 +127,77 @@ class PasswordControllerTest extends TestCase
         $response = $this->withSession(['reset_token' => 'invalid_key'])->post(route('password.reset.store'), [
             'password'              => 'NewPass1',
             'password_confirmation' => 'NewPass1',
+        ]);
+
+        $response->assertStatus(404);
+    }
+
+    public function test_store_reset_returns_403_when_token_expired(): void
+    {
+        $user = User::factory()->create([
+            'reset_password_access_key' => 'resetkey123',
+            'reset_password_expire_at'  => now()->subMinute(),
+        ]);
+
+        $response = $this->withSession(['reset_token' => 'resetkey123'])->post(route('password.reset.store'), [
+            'password'              => 'NewPass1',
+            'password_confirmation' => 'NewPass1',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_store_reset_returns_403_when_token_has_no_expiry(): void
+    {
+        $user = User::factory()->create([
+            'reset_password_access_key' => 'resetkey123',
+            'reset_password_expire_at'  => null,
+        ]);
+
+        $response = $this->withSession(['reset_token' => 'resetkey123'])->post(route('password.reset.store'), [
+            'password'              => 'NewPass1',
+            'password_confirmation' => 'NewPass1',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_store_reset_invalidates_token_after_success(): void
+    {
+        $user = User::factory()->create([
+            'reset_password_access_key' => 'resetkey123',
+            'reset_password_expire_at'  => now()->addHours(24),
+        ]);
+
+        $this->withSession(['reset_token' => 'resetkey123'])->post(route('password.reset.store'), [
+            'password'              => 'NewPass1',
+            'password_confirmation' => 'NewPass1',
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'id'                        => $user->id,
+            'reset_password_access_key' => null,
+            'reset_password_expire_at'  => null,
+        ]);
+    }
+
+    public function test_store_reset_rejects_replaying_same_token(): void
+    {
+        $user = User::factory()->create([
+            'reset_password_access_key' => 'resetkey123',
+            'reset_password_expire_at'  => now()->addHours(24),
+        ]);
+
+        // 1回目は成功する
+        $this->withSession(['reset_token' => 'resetkey123'])->post(route('password.reset.store'), [
+            'password'              => 'NewPass1',
+            'password_confirmation' => 'NewPass1',
+        ]);
+
+        // 同じトークンでの再送信は失敗する(トークンが既に無効化されているため404)
+        $response = $this->withSession(['reset_token' => 'resetkey123'])->post(route('password.reset.store'), [
+            'password'              => 'AnotherPass1',
+            'password_confirmation' => 'AnotherPass1',
         ]);
 
         $response->assertStatus(404);
