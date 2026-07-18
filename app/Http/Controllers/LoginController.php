@@ -35,7 +35,7 @@ class LoginController extends Controller
             'email' => Arr::get($validated, 'email'),
             'password' => Arr::get($validated, 'password'),
             'deleted_at' => null,
-            'is_approved' => 1,
+            'is_approved' => true,
         ];
 
         /* バリデーションOKの場合 */

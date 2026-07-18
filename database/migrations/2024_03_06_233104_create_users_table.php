@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('verify_token')->nullable()->unique()->comment('認証用トークン(会員登録時に使用)');
             $table->string('reset_password_access_key')->nullable()->unique()->comment('パスワード再設定キー');
             $table->timestamp('reset_password_expire_at')->nullable()->comment('パスワード再設定キー有効期限');
-            $table->tinyInteger('is_approved')->default(0)->index()->comment('承認フラグ 1:承認済');
-            $table->tinyInteger('is_admin')->default(0)->comment('管理者フラグ 1:管理者アカウント');
+            $table->boolean('is_approved')->default(false)->index()->comment('承認フラグ true:承認済');
+            $table->boolean('is_admin')->default(false)->comment('管理者フラグ true:管理者アカウント');
             $table->timestamp('created_at')->useCurrent()->comment('作成日時');
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate()->comment('更新日時');
             $table->softDeletes()->comment('論理削除日時');

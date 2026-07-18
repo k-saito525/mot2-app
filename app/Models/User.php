@@ -62,12 +62,12 @@ class User extends Authenticatable
 
     public function scopeApproved(Builder $query): Builder
     {
-        return $query->where('is_approved', 1);
+        return $query->where('is_approved', true);
     }
 
     public function scopeUnapproved(Builder $query): Builder
     {
-        return $query->where('is_approved', 0);
+        return $query->where('is_approved', false);
     }
 
 }

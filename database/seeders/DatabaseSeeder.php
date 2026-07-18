@@ -24,8 +24,8 @@ class DatabaseSeeder extends Seeder
             'password' => 'password123',
         ]);
         $admin->user_identifier = 'admin';
-        $admin->is_admin = 1;
-        $admin->is_approved = 1;
+        $admin->is_admin = true;
+        $admin->is_approved = true;
         $admin->save();
     }
 }

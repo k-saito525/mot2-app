@@ -126,7 +126,7 @@ class UserService
     public function approve(int $id): void
     {
         $user = User::findOrFail($id);
-        $user->is_approved = 1;
+        $user->is_approved = true;
         $user->save();
 
         try {
