@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SupportRequest;
 use App\Services\SupportService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * 運営へのメッセージ関連のコントローラ
@@ -21,11 +22,10 @@ class SupportController extends Controller
      */
     public function store(SupportRequest $request): RedirectResponse
     {
-        // 入力データを取得
-        $input = $request->only([
-            'message',
-            'user_id',
-        ]);
+        $input = [
+            'message' => $request->input('message'),
+            'user_id' => Auth::id(),
+        ];
 
         $result = $this->supportService->create($input);
         if ($result) {

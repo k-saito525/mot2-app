@@ -35,6 +35,28 @@ class SupportControllerTest extends TestCase
         Mail::assertSent(MailSupportAdmin::class);
     }
 
+    public function test_store_ignores_spoofed_user_id(): void
+    {
+        Mail::fake();
+        $author = User::factory()->create();
+        $victim = User::factory()->create();
+
+        $response = $this->actingAs($author)->post(route('support.store'), [
+            'message' => 'なりすましテスト',
+            'user_id' => $victim->id,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('supports', [
+            'user_id' => $author->id,
+            'message' => 'なりすましテスト',
+        ]);
+        $this->assertDatabaseMissing('supports', [
+            'user_id' => $victim->id,
+            'message' => 'なりすましテスト',
+        ]);
+    }
+
     public function test_store_redirects_guest_to_login(): void
     {
         $response = $this->post(route('support.store'), [
