@@ -74,6 +74,10 @@ class UserController extends Controller
         if ($user === null) {
             return to_route('user.show.list');
         }
+        // 本人以外は自分の編集画面に戻す
+        if ($user->id !== Auth::id()) {
+            return to_route('user.show.edit', ['id' => Auth::id()]);
+        }
         // IIMS活動参加歴
         $activityList = __('iims_activity');
 

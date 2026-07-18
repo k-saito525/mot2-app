@@ -20,6 +20,30 @@ class UserControllerTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // showEdit
+    // -------------------------------------------------------------------------
+
+    public function test_show_edit_displays_own_profile(): void
+    {
+        $user = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($user)->get(route('user.show.edit', ['id' => $user->id]));
+
+        $response->assertOk();
+        $response->assertViewHas('user', fn ($viewUser) => $viewUser->id === $user->id);
+    }
+
+    public function test_show_edit_redirects_when_not_own_profile(): void
+    {
+        $owner = User::factory()->create(['is_approved' => 1]);
+        $other = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($other)->get(route('user.show.edit', ['id' => $owner->id]));
+
+        $response->assertRedirect(route('user.show.edit', ['id' => $other->id]));
+    }
+
+    // -------------------------------------------------------------------------
     // store
     // -------------------------------------------------------------------------
 

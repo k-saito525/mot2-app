@@ -19,7 +19,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            $key = $request->user()?->id;
+            if (empty($key)) {
+                $key = $request->ip();
+            }
+            return Limit::perMinute(60)->by($key);
+        });
+
+        // ログイン試行のブルートフォース対策(メールアドレス+IP単位で15分間に5回まで)
+        RateLimiter::for('login', function (Request $request) {
+            $email = (string) $request->input('email');
+            return Limit::perMinutes(15, 5)->by($email . '|' . $request->ip());
         });
 
         View::composer('components.l-header', HeaderComposer::class);

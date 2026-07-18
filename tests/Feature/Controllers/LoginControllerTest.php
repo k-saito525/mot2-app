@@ -58,6 +58,59 @@ class LoginControllerTest extends TestCase
         $response->assertSessionHasErrors('password');
     }
 
+    public function test_login_is_locked_out_after_five_failed_attempts(): void
+    {
+        User::factory()->create([
+            'email'    => 'test@example.com',
+            'password' => Hash::make('Password1'),
+        ]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->post(route('login.store'), [
+                'email'    => 'test@example.com',
+                'password' => 'WrongPass1',
+            ]);
+        }
+
+        // 6回目は正しいパスワードでもロックにより弾かれる
+        $response = $this->post(route('login.store'), [
+            'email'    => 'test@example.com',
+            'password' => 'Password1',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('flash_failed');
+        $this->assertGuest();
+    }
+
+    public function test_login_lockout_is_scoped_per_email(): void
+    {
+        User::factory()->create([
+            'email'    => 'locked@example.com',
+            'password' => Hash::make('Password1'),
+        ]);
+        $other = User::factory()->create([
+            'email'    => 'other@example.com',
+            'password' => Hash::make('Password1'),
+        ]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->post(route('login.store'), [
+                'email'    => 'locked@example.com',
+                'password' => 'WrongPass1',
+            ]);
+        }
+
+        // 別のメールアドレスは同じIPからでもロックされない
+        $response = $this->post(route('login.store'), [
+            'email'    => 'other@example.com',
+            'password' => 'Password1',
+        ]);
+
+        $response->assertRedirect(route('home.index'));
+        $this->assertAuthenticatedAs($other);
+    }
+
     // -------------------------------------------------------------------------
     // logout
     // -------------------------------------------------------------------------

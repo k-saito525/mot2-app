@@ -92,7 +92,7 @@ Route::middleware('guest')
                         // ログインフォームの表示
                         Route::get('/', [LoginController::class, 'showForm'])->name('show.form');
                         // ログイン処理
-                        Route::post('/', [LoginController::class, 'login'])->name('store');
+                        Route::post('/', [LoginController::class, 'login'])->name('store')->middleware('throttle:login');
                     }
                 );
 

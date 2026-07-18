@@ -6,6 +6,8 @@ use App\Http\Middleware\RedirectIfAuthenticated;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,5 +24,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // ログイン試行のロックアウト時は、429エラーではなくフォームへメッセージ付きで戻す
+        $exceptions->render(function (ThrottleRequestsException $e, Request $request) {
+            if ($request->routeIs('login.store') && !$request->expectsJson()) {
+                $seconds = (int) ($e->getHeaders()['Retry-After'] ?? 60);
+                session()->flash('flash_failed', __('auth.throttle', ['seconds' => $seconds]));
+                return back();
+            }
+        });
     })->create();
