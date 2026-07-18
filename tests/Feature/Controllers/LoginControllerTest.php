@@ -53,8 +53,9 @@ class LoginControllerTest extends TestCase
     public function test_login_fails_with_wrong_password(): void
     {
         User::factory()->create([
-            'email'    => 'test@example.com',
-            'password' => Hash::make('Password1'),
+            'email'       => 'test@example.com',
+            'password'    => Hash::make('Password1'),
+            'is_approved' => 1,
         ]);
 
         $response = $this->post(route('login.store'), [
