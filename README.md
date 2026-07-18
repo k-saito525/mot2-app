@@ -36,23 +36,17 @@ NPO法人IIMS（学生時代から携わっている団体）が主催するイ�
 | Static Analysis | Larastan（level 5, 手動実行のみ。`composer analyse`） |
 | Code Formatting | Laravel Pint（デフォルト設定のまま、手動実行のみ。CI等での自動チェックは未導入） |
 
-## 開発方針
-
-本リファクタリングは、可読性・保守性を重視した設計にすることを目的としています。
-Claude Code を活用していますが、AI が提示した改善提案・実装内容はすべて開発者本人が内容を確認したうえで、採用の可否を判断しています。
-
 ## アーキテクチャと設計方針
 
 責務を明確にするため、`Controller → Service → Model` の層構造を意識した設計にしています。
 
-- **Controller**：リクエストの受け渡しに特化し、バリデーションは `FormRequest`（`app/Http/Requests`）に委譲
-- **Service**（`app/Services`）：複数モデルにまたがる更新処理や、削除に伴う関連レコードの整合性維持など、業務ロジックを担当
-  - `TopicService`：トピック削除時に関連コメントを含めて論理削除
+- **Controller**：リクエストの受け渡しに特化し、バリデーションは `FormRequest`（`app/Http/Requests`）で行う
+- **Service**（`app/Services`）：主に業務ロジックを担当
+  - `TopicService`：トピック削除時に関連コメントを含めて削除
   - `UserService`：プロフィール更新（表示用ID、メールアドレス変更通知、SNSリンク、画像アップロード）、ユーザー承認処理
   - `AnnouncementService`：お知らせ削除、既読レコードの同期・既読状態の算出
-- **Model**（`app/Models`）：Eloquent モデル。クエリビルダをコントローラーから直接触らず、一覧・詳細取得などのクエリロジックをメソッドとしてモデルに集約
-- **論理削除**：会員・コンテンツ系テーブル（`users` / `topics` / `comments` / `announcements` / `supports`）で SoftDeletes を採用し、データ追跡性を確保（既読管理用の中間テーブル `announcement_reads` 等は対象外）
-- **文言の一元管理**（`lang/ja`）：バリデーションメッセージや画面文言を言語ファイルに集約。フレームワーク標準メッセージの日本語化には `laravel-lang/lang` を利用（日本語専用で、多言語切り替えは未実装）
+- **Model**（`app/Models`）：Eloquent モデル。承認状態の絞り込みや投稿者情報の事前読み込みなど、再利用性の高い条件はスコープとしてモデルに定義。並び順や取得件数などの表示都合のクエリはController側で組み立てる。
+- **論理削除**：会員・コンテンツ系テーブル（`users` / `topics` / `comments` / `announcements` / `supports`）で SoftDeletes を採用。誤操作からのデータ保護に加え、将来的にユーザーやコメントを復元できるようにする意図があり、削除ではなく論理削除を選択（現時点では復元機能自体は未実装。既読管理用の中間テーブル `announcement_reads` 等は対象外）
 
 ### データモデル
 
