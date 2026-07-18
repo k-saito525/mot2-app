@@ -30,7 +30,7 @@ class CommentService
             $comment->topic_id = $topic->id;
             $comment->user_id  = $author->id;
             $comment->save();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('コメントの作成に失敗しました', ['topic_id' => $topic->id, 'user_id' => $author->id, 'exception' => $e]);
             return false;
         }
@@ -52,7 +52,7 @@ class CommentService
         try {
             $comment->comment = $commentText;
             $comment->save();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('コメントの更新に失敗しました', ['comment_id' => $comment->id, 'exception' => $e]);
             return false;
         }
@@ -72,7 +72,7 @@ class CommentService
         if (!empty($comment)) {
             try {
                 $comment->delete();
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 Log::error('コメントの削除に失敗しました', ['comment_id' => $commentId, 'exception' => $e]);
                 return false;
             }
@@ -103,7 +103,7 @@ class CommentService
 
         try {
             Mail::to($topicAuthor->email)->send(new MailComment($topicAuthor, $author, $topic->id));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('コメント通知メールの送信に失敗しました', [
                 'topic_id'    => $topic->id,
                 'to_user_id'  => $topicAuthor->id,

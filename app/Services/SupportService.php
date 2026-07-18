@@ -26,14 +26,14 @@ class SupportService
             $support->message = Arr::get($input, 'message');
             $support->user_id = Arr::get($input, 'user_id');
             $support->save();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('サポートメッセージの保存に失敗しました', ['user_id' => Arr::get($input, 'user_id'), 'exception' => $e]);
             return false;
         }
 
         try {
             Mail::to(config('mail.to_admin')[App::environment()]['address'])->send(new MailSupportAdmin($support));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('サポート通知メールの送信に失敗しました', ['support_id' => $support->id, 'exception' => $e]);
         }
 

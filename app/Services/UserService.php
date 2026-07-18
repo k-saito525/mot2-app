@@ -75,7 +75,7 @@ class UserService
             }
 
             $user->save();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('ユーザープロフィールの更新に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
             return __('users.fail.failed_update');
         }
@@ -83,7 +83,7 @@ class UserService
         if ($changedEmail) {
             try {
                 Mail::to($user->email)->send(new MailChangeEmail($user, $oldEmail));
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 Log::error('メールアドレス変更通知の送信に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
             }
         }
@@ -131,7 +131,7 @@ class UserService
 
         try {
             Mail::to($user->email)->send(new MailApprovedUser($user));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('承認完了通知メールの送信に失敗しました', ['user_id' => $user->id, 'exception' => $e]);
         }
     }
