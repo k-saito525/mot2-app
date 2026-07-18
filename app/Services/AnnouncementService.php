@@ -59,7 +59,7 @@ class AnnouncementService
 
         foreach ($announcements as $announcement) {
             if (in_array($announcement->id, $readIds)) {
-                $announcement->pub_status = 1;
+                $announcement->is_read = true;
             }
         }
 

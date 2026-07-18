@@ -42,7 +42,7 @@
                                     </span>
                                 </div>
                                 <p class="c-admin-card__title">{{ $announcement->title }}</p>
-                                <p class="c-admin-card__body">{!! nl2br(htmlspecialchars($announcement->content)) !!}</p>
+                                <p class="c-admin-card__body">@safeNl2br($announcement->content)</p>
                                 <div class="c-admin-card__actions">
                                     <a href="{{ route('admin.show.announcement.edit', ['id' => $announcement->id]) }}" class="c-button--mini">
                                         <img src="{{ asset('/img/common/icon-pencil.svg') }}" alt="">

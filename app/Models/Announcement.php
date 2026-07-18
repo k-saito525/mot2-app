@@ -9,7 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property-read Carbon $pub_start_at
+ * @property-write Carbon|string $pub_start_at
+ * @property-read Carbon|null $pub_end_at
+ * @property-write Carbon|string|null $pub_end_at
+ * @property bool|null $is_read DBカラムではなく、既読/未読判定のためAnnouncementService::getStatusRead()が実行時に付与する一時プロパティ
+ */
 class Announcement extends Model
 {
     use HasFactory, SoftDeletes;

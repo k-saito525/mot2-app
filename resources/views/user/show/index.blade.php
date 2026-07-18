@@ -35,7 +35,7 @@
               </div>
             </div>
             <div class="c-user-info__body">
-              {!! nl2br(htmlspecialchars(data_get($user, 'introduction_text', ''))) !!}
+              @safeNl2br(data_get($user, 'introduction_text', ''))
             </div>
             <div class="c-user-info__foot">
               <div class="c-user__sns">

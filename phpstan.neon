@@ -1,0 +1,12 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+
+    level: 5
+
+    # 導入時点の既存指摘は一旦baselineに逃がし、以後の新規発生分から段階的に精度を上げていく
+    # baseline生成: vendor/bin/phpstan analyse --generate-baseline
+    # baseline: phpstan-baseline.neon

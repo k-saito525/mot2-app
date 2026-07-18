@@ -21,7 +21,7 @@
                             <p>【お知らせのタイトル】</p>
                             <p>{{ data_get($announcement, 'title') }}</p>
                             <p>【お知らせの本文】</p>
-                            <p>{!! nl2br(htmlspecialchars(data_get($announcement, 'content'))) !!}</p>
+                            <p>@safeNl2br(data_get($announcement, 'content'))</p>
                         </div>
                     </div>
                 </section>

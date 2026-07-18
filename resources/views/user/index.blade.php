@@ -32,7 +32,7 @@
                     <div class="c-user-id">@ {{ data_get($user, 'user_identifier', '') }}</div>
                   </div>
                   <div class="c-user-detail">
-                    {!! nl2br(htmlspecialchars(data_get($user, 'introduction_text', ''))) !!}
+                    @safeNl2br(data_get($user, 'introduction_text', ''))
                   </div>
                 </a>
                 <div class="c-user-follow-wrap">

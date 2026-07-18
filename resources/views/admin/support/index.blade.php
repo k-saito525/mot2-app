@@ -25,7 +25,7 @@
                                     <span class="c-admin-card__period">{{ data_get($message, 'created_at') }}</span>
                                 </div>
                                 <p class="c-admin-card__title">{{ data_get($message, 'user.name') }} さんからのメッセージ</p>
-                                <p class="c-admin-card__body">{!! nl2br(htmlspecialchars(data_get($message, 'message'))) !!}</p>
+                                <p class="c-admin-card__body">@safeNl2br(data_get($message, 'message'))</p>
                             </div>
                             @empty
                             <p class="c-empty-message">現在表示できるメッセージはありません。</p>
