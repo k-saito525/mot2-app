@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id()->comment('ユーザーID');
             $table->string('name')->comment('ニックネーム');
-            $table->string('nationality')->nullable()->comment('国籍');
             $table->text('introduction_text')->nullable()->comment('自己紹介');
             $table->json('past_join')->nullable()->comment('IIMS活動参加歴');
             $table->string('user_identifier', 50)->nullable()->unique()->comment('表示用ユーザーID');
@@ -19,7 +18,6 @@ return new class extends Migration
             $table->string('user_cover_image')->nullable()->comment('カバー画像');
             $table->json('sns_links')->nullable()->comment('SNSアカウントURL {"x": "...", "facebook": "...", "instagram": "..."}');
             $table->string('email')->unique()->comment('メールアドレス');
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable()->comment('パスワード');
             $table->rememberToken();
             $table->string('verify_token')->nullable()->unique()->comment('認証用トークン(会員登録時に使用)');
@@ -30,6 +28,9 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent()->comment('作成日時');
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate()->comment('更新日時');
             $table->softDeletes()->comment('論理削除日時');
+
+            // 管理画面のユーザー一覧(created_at降順ページネーション)向け
+            $table->index(['deleted_at', 'created_at']);
         });
     }
 
