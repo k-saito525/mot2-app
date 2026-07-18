@@ -31,18 +31,12 @@ class LoginController extends Controller
         // 入力データをバリデーション
         $validated = $request->validated();
         // 認証条件に「削除されていないユーザー」を追加
+        // 管理者権限の確認はログイン後、管理画面へのアクセス時にAdminMiddlewareが行う
         $credentials = [
             'email' => Arr::get($validated, 'email'),
             'password' => Arr::get($validated, 'password'),
             'deleted_at' => null,
         ];
-
-        /*  管理者画面アクセス時は、管理者権限チェックを追加する */
-        // 現在のURL取得
-        $url = url()->current();
-        if (str_contains($url, '/admin')) {
-            $credentials = Arr::add($credentials, 'is_admin', 1);
-        }
 
         /* バリデーションOKの場合 */
         // ログイン情報が正しいか確認
