@@ -29,7 +29,6 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate()->comment('更新日時');
             $table->softDeletes()->comment('論理削除日時');
 
-            // 管理画面のユーザー一覧(created_at降順ページネーション)向け
             $table->index(['deleted_at', 'created_at']);
         });
     }
