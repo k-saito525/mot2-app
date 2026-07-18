@@ -18,8 +18,9 @@ class LoginControllerTest extends TestCase
     public function test_login_succeeds_with_valid_credentials(): void
     {
         $user = User::factory()->create([
-            'email'    => 'test@example.com',
-            'password' => Hash::make('Password1'),
+            'email'       => 'test@example.com',
+            'password'    => Hash::make('Password1'),
+            'is_approved' => 1,
         ]);
 
         $response = $this->post(route('login.store'), [
@@ -29,6 +30,24 @@ class LoginControllerTest extends TestCase
 
         $response->assertRedirect(route('home.index'));
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_login_fails_when_user_is_not_approved(): void
+    {
+        User::factory()->create([
+            'email'       => 'test@example.com',
+            'password'    => Hash::make('Password1'),
+            'is_approved' => 0,
+        ]);
+
+        $response = $this->post(route('login.store'), [
+            'email'    => 'test@example.com',
+            'password' => 'Password1',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('flash_failed');
+        $this->assertGuest();
     }
 
     public function test_login_fails_with_wrong_password(): void
@@ -61,8 +80,9 @@ class LoginControllerTest extends TestCase
     public function test_login_is_locked_out_after_five_failed_attempts(): void
     {
         User::factory()->create([
-            'email'    => 'test@example.com',
-            'password' => Hash::make('Password1'),
+            'email'       => 'test@example.com',
+            'password'    => Hash::make('Password1'),
+            'is_approved' => 1,
         ]);
 
         for ($i = 0; $i < 5; $i++) {
@@ -86,12 +106,14 @@ class LoginControllerTest extends TestCase
     public function test_login_lockout_is_scoped_per_email(): void
     {
         User::factory()->create([
-            'email'    => 'locked@example.com',
-            'password' => Hash::make('Password1'),
+            'email'       => 'locked@example.com',
+            'password'    => Hash::make('Password1'),
+            'is_approved' => 1,
         ]);
         $other = User::factory()->create([
-            'email'    => 'other@example.com',
-            'password' => Hash::make('Password1'),
+            'email'       => 'other@example.com',
+            'password'    => Hash::make('Password1'),
+            'is_approved' => 1,
         ]);
 
         for ($i = 0; $i < 5; $i++) {
