@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\UserIdentifierRequest;
 use Illuminate\Support\Arr;
 use App\Models\User;
