@@ -16,8 +16,10 @@ use Illuminate\View\View;
  */
 class HomeController extends Controller
 {
-    // ホーム画面に表示するトピック数
+    // ホーム画面のトピック一覧に表示する件数(おすすめ枠を除く)
     const int CNT_SHOW_TOPIC = 5;
+    // おすすめ枠として先頭に表示する件数
+    const int CNT_RECOMMENDED_TOPIC = 1;
 
     /**
      * ホーム画面の表示
@@ -30,21 +32,18 @@ class HomeController extends Controller
         $userInfo = Auth::user();
         $userId = $userInfo->id;
 
-        /* 最新のトピックを取得 */
-        // $topics = Topic::withAuthor()->latest()->limit(self::CNT_SHOW_TOPIC)->get();
-        /* ※暫定対応 最新順で6件取得して、1件はおすすめトピックとして表示 */
-        $topics = Topic::withAuthor()->latest()->limit(6)->get();
+        // 最新のトピックを取得(先頭1件をおすすめ枠として表示するため、一覧表示件数+1件取得する)
+        $topics = Topic::withAuthor()->latest()->limit(self::CNT_SHOW_TOPIC + self::CNT_RECOMMENDED_TOPIC)->get();
         if (!$topics->isEmpty()) {
             $reccTopic = data_get($topics, 0);
             $commentReccTopics = Comment::withAuthor()->oldest()->where('topic_id', data_get($reccTopic, 'id'))->get();
-            // 抜き出した最新の1件は削除
-            $topics = $topics->slice(1);
+            // おすすめ枠として抜き出した先頭の1件は一覧から除く
+            $topics = $topics->slice(self::CNT_RECOMMENDED_TOPIC);
         } else {
             /* トピックが1件も存在しない場合はエラー回避のため空配列を作成 */
             $reccTopic = [];
             $commentReccTopics = [];
         }
-
 
         return view('home/index', [
             'user_id' => $userId,
