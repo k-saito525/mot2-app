@@ -33,6 +33,7 @@ NPO法人IIMS（学生時代から携わっている団体）が主催するイ�
 | Email | SMTP（開発時は Mailpit） |
 | Environment | Laravel Sail（Docker） |
 | Testing | PHPUnit, Mockery |
+| Static Analysis | Larastan（level 5, 手動実行のみ。`composer analyse`） |
 | Code Formatting | Laravel Pint（デフォルト設定のまま、手動実行のみ。CI等での自動チェックは未導入） |
 
 ## 開発方針
@@ -109,4 +110,4 @@ cp .env.example .env
 ## 改善余地
 
 - フロントエンドの切り分け：現状は Blade テンプレートによるサーバーサイドレンダリングでフロント/バックエンドが分離できていないため、Next.js や Nuxt.js 等を用いた API 連携構成への移行
-- CI環境の整備（テスト自動実行、Larastan等による静的解析、Laravel Pintの自動チェック等）
+- CI環境の整備（テスト自動実行、Larastanでの静的解析、Laravel Pintのチェックを、手動実行からGitHub Actions等による自動実行に移行）

@@ -162,4 +162,46 @@ class AnnouncementServiceTest extends TestCase
         $this->assertArrayHasKey('id', $result[0]);
         $this->assertArrayNotHasKey('title', $result[0]);
     }
+
+    // -------------------------------------------------------------------------
+    // getStatusRead
+    // -------------------------------------------------------------------------
+
+    public function test_get_status_read_returns_zero_when_no_published_announcements(): void
+    {
+        $user = User::factory()->create();
+
+        $result = $this->service->getStatusRead($user->id);
+
+        $this->assertSame(0, $result['unread_count']);
+        $this->assertSame('', $result['announcement']);
+    }
+
+    public function test_get_status_read_flags_read_announcement_as_is_read(): void
+    {
+        $user         = User::factory()->create();
+        $announcement = Announcement::factory()->create();
+        AnnouncementRead::create([
+            'user_id'         => $user->id,
+            'announcement_id' => $announcement->id,
+        ]);
+
+        $result = $this->service->getStatusRead($user->id);
+
+        $target = collect($result['announcement'])->firstWhere('id', $announcement->id);
+        $this->assertTrue($target->is_read);
+        $this->assertSame(0, $result['unread_count']);
+    }
+
+    public function test_get_status_read_does_not_flag_unread_announcement(): void
+    {
+        $user         = User::factory()->create();
+        $announcement = Announcement::factory()->create();
+
+        $result = $this->service->getStatusRead($user->id);
+
+        $target = collect($result['announcement'])->firstWhere('id', $announcement->id);
+        $this->assertFalse((bool) $target->is_read);
+        $this->assertSame(1, $result['unread_count']);
+    }
 }
