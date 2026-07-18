@@ -14,9 +14,8 @@ return new class extends Migration
             $table->foreignId('user_id')->comment('投稿者(users.id)')->constrained()->onDelete('restrict');
             $table->timestamp('created_at')->useCurrent()->comment('作成日時');
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate()->comment('更新日時');
-            $table->softDeletes()->comment('論理削除日時');
 
-            $table->index(['deleted_at', 'created_at']);
+            $table->index('created_at');
         });
     }
 

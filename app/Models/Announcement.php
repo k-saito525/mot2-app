@@ -81,8 +81,8 @@ class Announcement extends Model
     public function scopePublished(Builder $query): Builder
     {
         $now = now()->toDateString();
-        return $query->where('pub_start_at', '<=', $now)
-            ->where(fn($q) => $q->whereNull('pub_end_at')->orWhere('pub_end_at', '>=', $now));
+        return $query->whereDate('pub_start_at', '<=', $now)
+            ->where(fn($q) => $q->whereNull('pub_end_at')->orWhereDate('pub_end_at', '>=', $now));
     }
 }
 
