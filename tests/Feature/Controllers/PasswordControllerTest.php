@@ -4,8 +4,10 @@ namespace Tests\Feature\Controllers;
 
 use App\Mail\MailPasswordResetMailCheck;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class PasswordControllerTest extends TestCase
@@ -84,10 +86,9 @@ class PasswordControllerTest extends TestCase
         ]);
 
         $response->assertRedirect(route('password.reset.show.send'));
-        $this->assertDatabaseHas('users', [
-            'id'                         => $user->id,
-            'reset_password_access_key'  => $user->fresh()->reset_password_access_key,
-        ]);
+        $user->refresh();
+        $this->assertNotNull($user->reset_password_access_key);
+        $this->assertNotNull($user->reset_password_expire_at);
         Mail::assertSent(MailPasswordResetMailCheck::class);
     }
 
@@ -101,6 +102,44 @@ class PasswordControllerTest extends TestCase
 
         $response->assertRedirect(route('password.reset.show.send'));
         Mail::assertNothingSent();
+    }
+
+    // -------------------------------------------------------------------------
+    // showPasswordFormReset
+    // -------------------------------------------------------------------------
+
+    public function test_show_password_form_reset_returns_view_with_valid_signature(): void
+    {
+        $url = URL::temporarySignedRoute(
+            'password.reset.show.form-password',
+            Carbon::now()->addHours(24),
+            ['reset_token' => 'sometoken123']
+        );
+
+        $response = $this->get($url);
+
+        $response->assertOk();
+        $this->assertSame('sometoken123', session('reset_token'));
+    }
+
+    public function test_show_password_form_reset_returns_403_when_signature_missing(): void
+    {
+        $response = $this->get(route('password.reset.show.form-password', ['reset_token' => 'sometoken123']));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_show_password_form_reset_returns_403_when_signature_expired(): void
+    {
+        $url = URL::temporarySignedRoute(
+            'password.reset.show.form-password',
+            Carbon::now()->subMinute(),
+            ['reset_token' => 'sometoken123']
+        );
+
+        $response = $this->get($url);
+
+        $response->assertStatus(403);
     }
 
     // -------------------------------------------------------------------------

@@ -192,4 +192,63 @@ class CommentControllerTest extends TestCase
 
         $response->assertSessionHasErrors('comment');
     }
+
+    // -------------------------------------------------------------------------
+    // showEdit
+    // -------------------------------------------------------------------------
+
+    public function test_show_edit_returns_view_for_owner(): void
+    {
+        $owner   = User::factory()->create();
+        $topic   = Topic::factory()->create();
+        $comment = Comment::factory()->create([
+            'user_id'  => $owner->id,
+            'topic_id' => $topic->id,
+        ]);
+
+        $response = $this->actingAs($owner)->get(route('comment.show.edit', $comment->id));
+
+        $response->assertOk();
+        $response->assertViewHas('target_comment', fn ($c) => $c->id === $comment->id);
+    }
+
+    public function test_show_edit_returns_404_when_comment_not_found(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('comment.show.edit', 0));
+
+        $response->assertStatus(404);
+    }
+
+    public function test_show_edit_redirects_to_detail_when_not_owner(): void
+    {
+        $owner   = User::factory()->create();
+        $other   = User::factory()->create();
+        $topic   = Topic::factory()->create();
+        $comment = Comment::factory()->create([
+            'user_id'  => $owner->id,
+            'topic_id' => $topic->id,
+        ]);
+
+        $response = $this->actingAs($other)->get(route('comment.show.edit', $comment->id));
+
+        $response->assertRedirect(route('topic.show.detail', ['id' => $topic->id]));
+    }
+
+    public function test_show_edit_redirects_to_list_when_topic_not_found(): void
+    {
+        $owner   = User::factory()->create();
+        $topic   = Topic::factory()->create(['user_id' => $owner->id]);
+        $comment = Comment::factory()->create([
+            'user_id'  => $owner->id,
+            'topic_id' => $topic->id,
+        ]);
+        // トピックのみソフトデリートする(コメントとの外部キー制約はレコードが物理的に残るため維持される)
+        $topic->delete();
+
+        $response = $this->actingAs($owner)->get(route('comment.show.edit', $comment->id));
+
+        $response->assertRedirect(route('topic.show.list'));
+    }
 }

@@ -144,6 +144,17 @@ class TopicControllerTest extends TestCase
     // showEdit
     // -------------------------------------------------------------------------
 
+    public function test_show_edit_returns_view_for_owner(): void
+    {
+        $user  = User::factory()->create();
+        $topic = Topic::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->get(route('topic.show.edit', ['id' => $topic->id]));
+
+        $response->assertOk();
+        $response->assertViewHas('topic', fn ($t) => $t->id === $topic->id);
+    }
+
     public function test_show_edit_redirects_when_not_owner(): void
     {
         $owner = User::factory()->create();

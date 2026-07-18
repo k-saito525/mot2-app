@@ -32,6 +32,58 @@ class AnnouncementControllerTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // showDetail
+    // -------------------------------------------------------------------------
+
+    public function test_show_detail_returns_view_and_marks_announcement_as_read(): void
+    {
+        $user         = $this->generalUser();
+        $announcement = Announcement::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('show.announcement.detail', $announcement->id));
+
+        $response->assertOk();
+        $this->assertDatabaseHas('announcement_reads', [
+            'user_id'         => $user->id,
+            'announcement_id' => $announcement->id,
+        ]);
+    }
+
+    // -------------------------------------------------------------------------
+    // showEdit
+    // -------------------------------------------------------------------------
+
+    public function test_show_edit_returns_view_as_admin(): void
+    {
+        $admin        = $this->adminUser();
+        $announcement = Announcement::factory()->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.show.announcement.edit', $announcement->id));
+
+        $response->assertOk();
+        $response->assertViewHas('announcement');
+    }
+
+    public function test_show_edit_returns_404_when_announcement_not_found(): void
+    {
+        $admin = $this->adminUser();
+
+        $response = $this->actingAs($admin)->get(route('admin.show.announcement.edit', 0));
+
+        $response->assertStatus(404);
+    }
+
+    public function test_show_edit_returns_403_when_not_admin(): void
+    {
+        $user         = $this->generalUser();
+        $announcement = Announcement::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('admin.show.announcement.edit', $announcement->id));
+
+        $response->assertStatus(403);
+    }
+
+    // -------------------------------------------------------------------------
     // store
     // -------------------------------------------------------------------------
 

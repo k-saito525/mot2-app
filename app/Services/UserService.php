@@ -89,10 +89,10 @@ class UserService
         }
 
         if ($oldIcon !== null) {
-            Storage::disk('public')->delete('icon/' . $oldIcon);
+            Storage::disk('public')->delete($oldIcon);
         }
         if ($oldCover !== null) {
-            Storage::disk('public')->delete('cover/' . $oldCover);
+            Storage::disk('public')->delete($oldCover);
         }
 
         return '';
@@ -108,7 +108,7 @@ class UserService
      */
     private function storeImage(UploadedFile $file, string $directory): string
     {
-        $path = $file->store($directory);
+        $path = $file->store($directory, 'public');
         if ($path === false) {
             throw new \RuntimeException('Image upload failed.');
         }

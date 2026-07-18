@@ -13,6 +13,53 @@ class ApproveControllerTest extends TestCase
     use RefreshDatabase;
 
     // -------------------------------------------------------------------------
+    // showDetail
+    // -------------------------------------------------------------------------
+
+    public function test_show_detail_returns_view_with_formatted_past_join(): void
+    {
+        $admin     = User::factory()->create(['is_admin' => true]);
+        $applicant = User::factory()->create([
+            'is_approved' => 0,
+            'past_join'   => ['g_2011_sum'],
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.show.detail', $applicant->id));
+
+        $response->assertOk();
+        $response->assertViewHas('user', fn ($u) => $u->past_join === ['多文化ぐんま2011夏']);
+    }
+
+    public function test_show_detail_returns_404_when_user_not_found(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $response = $this->actingAs($admin)->get(route('admin.show.detail', 0));
+
+        $response->assertStatus(404);
+    }
+
+    public function test_show_detail_returns_404_when_user_already_approved(): void
+    {
+        $admin        = User::factory()->create(['is_admin' => true]);
+        $approvedUser = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($admin)->get(route('admin.show.detail', $approvedUser->id));
+
+        $response->assertStatus(404);
+    }
+
+    public function test_show_detail_returns_403_when_not_admin(): void
+    {
+        $user      = User::factory()->create(['is_admin' => false]);
+        $applicant = User::factory()->create(['is_approved' => 0]);
+
+        $response = $this->actingAs($user)->get(route('admin.show.detail', $applicant->id));
+
+        $response->assertStatus(403);
+    }
+
+    // -------------------------------------------------------------------------
     // approve
     // -------------------------------------------------------------------------
 

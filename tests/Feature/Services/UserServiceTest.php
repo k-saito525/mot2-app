@@ -90,5 +90,21 @@ class UserServiceTest extends TestCase
 
         $this->assertSame('', $result);
         $this->assertNotNull($user->fresh()->user_icon);
+        Storage::disk('public')->assertExists($user->user_icon);
+    }
+
+    public function test_update_profile_deletes_old_icon_when_replaced(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['user_icon' => null]);
+
+        $this->service->updateProfile(['user_icon' => UploadedFile::fake()->image('old.jpg')], $user);
+        $oldIconPath = $user->user_icon;
+        Storage::disk('public')->assertExists($oldIconPath);
+
+        $this->service->updateProfile(['user_icon' => UploadedFile::fake()->image('new.jpg')], $user);
+
+        Storage::disk('public')->assertMissing($oldIconPath);
+        $this->assertNotSame($oldIconPath, $user->user_icon);
     }
 }

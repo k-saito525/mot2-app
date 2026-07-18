@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Controllers;
 
+use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,6 +18,55 @@ class UserControllerTest extends TestCase
             'name'            => 'テストユーザー',
             'user_identifier' => 'testuser1',
         ], $overrides);
+    }
+
+    // -------------------------------------------------------------------------
+    // showList
+    // -------------------------------------------------------------------------
+
+    public function test_show_list_returns_view(): void
+    {
+        $viewer = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($viewer)->get(route('user.show.list'));
+
+        $response->assertOk();
+    }
+
+    // -------------------------------------------------------------------------
+    // showDetail
+    // -------------------------------------------------------------------------
+
+    public function test_show_detail_returns_view_when_user_approved(): void
+    {
+        $viewer = User::factory()->create(['is_approved' => 1]);
+        $target = User::factory()->create(['is_approved' => 1]);
+        $topic  = Topic::factory()->create(['user_id' => $target->id]);
+
+        $response = $this->actingAs($viewer)->get(route('user.show.detail', ['id' => $target->id]));
+
+        $response->assertOk();
+        $response->assertViewHas('user', fn ($u) => $u->id === $target->id);
+        $response->assertViewHas('topics', fn ($topics) => $topics->contains('id', $topic->id));
+    }
+
+    public function test_show_detail_redirects_to_list_when_user_not_found(): void
+    {
+        $viewer = User::factory()->create(['is_approved' => 1]);
+
+        $response = $this->actingAs($viewer)->get(route('user.show.detail', ['id' => 0]));
+
+        $response->assertRedirect(route('user.show.list'));
+    }
+
+    public function test_show_detail_redirects_to_list_when_user_not_approved(): void
+    {
+        $viewer = User::factory()->create(['is_approved' => 1]);
+        $target = User::factory()->create(['is_approved' => 0]);
+
+        $response = $this->actingAs($viewer)->get(route('user.show.detail', ['id' => $target->id]));
+
+        $response->assertRedirect(route('user.show.list'));
     }
 
     // -------------------------------------------------------------------------
